@@ -1,4 +1,4 @@
-package com.example.online_testing;
+package com.example.online_testing.Models;
 
 import com.sun.istack.NotNull;
 
@@ -9,6 +9,7 @@ import javax.persistence.*;
 public class Role {
 
     @Id
+    @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 

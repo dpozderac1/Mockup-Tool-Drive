@@ -1,37 +1,50 @@
-package com.example.online_testing;
+package com.example.online_testing.Models;
+
+import com.sun.istack.NotNull;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.sql.Blob;
 
 @Entity
-@Table(name = "Online_test")
-public class Online_test {
+@Table(name = "OnlineTest")
+public class OnlineTest {
 
     @Id
+    @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @Column(name = "Tests")
+    @NotEmpty(message = "Online test name cannot be null or empty")
+    @Size(min = 5, max = 30, message = "Online test name must be between 5 and 30 characters")
     private String tests;
 
     @Column(name = "Test_results")
+    @NotNull
     private Blob test_results;
 
     @ManyToOne()
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "Server_ID")
     private Server server_ID;
 
     @ManyToOne()
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "User_ID")
     private User user_ID;
 
     @OneToOne()
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "GSPEC_Document_ID")
-    private GSPEC_Document gspec_document_ID;
+    private GSPECDocument gspec_document_ID;
 
-    public Online_test() {}
+    public OnlineTest() {}
 
-    public Online_test(String tests, Blob test_results, Server server_ID, User user_ID, GSPEC_Document gspec_document_ID) {
+    public OnlineTest(String tests, Blob test_results, Server server_ID, User user_ID, GSPECDocument gspec_document_ID) {
         this.tests = tests;
         this.test_results = test_results;
         this.server_ID = server_ID;
@@ -79,11 +92,11 @@ public class Online_test {
         this.user_ID = user_ID;
     }
 
-    public GSPEC_Document getGspec_document_ID() {
+    public GSPECDocument getGspec_document_ID() {
         return gspec_document_ID;
     }
 
-    public void setGspec_document_ID(GSPEC_Document gspec_document_ID) {
+    public void setGspec_document_ID(GSPECDocument gspec_document_ID) {
         this.gspec_document_ID = gspec_document_ID;
     }
 }

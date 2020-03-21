@@ -1,25 +1,33 @@
-package com.example.online_testing;
+package com.example.online_testing.Models;
+
+import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.sql.Blob;
 
 @Entity
-@Table(name = "GSPEC_Document")
-public class GSPEC_Document {
+@Table(name = "GSPECDocument")
+public class GSPECDocument {
 
     @Id
+    @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @Column(name = "Name")
+    @NotEmpty(message = "GSPEC document name cannot be null or empty")
+    @Size(min = 5, max = 30, message = "GSPEC document name must be between 5 and 30 characters")
     private String name;
 
     @Column(name = "File")
+    @NotNull
     private Blob file;
 
-    public GSPEC_Document() {}
+    public GSPECDocument() {}
 
-    public GSPEC_Document(String name, Blob file) {
+    public GSPECDocument(String name, Blob file) {
         this.name = name;
         this.file = file;
     }
