@@ -1,5 +1,7 @@
 package com.example.online_testing.Models;
 
+import com.example.online_testing.Repositories.RoleRepository;
+import com.example.online_testing.Repositories.UserRepository;
 import com.sun.istack.NotNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -19,7 +21,8 @@ public class Server {
     private Long ID;
 
     @Column(name = "URL")
-    @NotEmpty(message = "URL cannot be null or empty")
+    //@NotEmpty(message = "URL cannot be null or empty")
+    @NotNull
     @URL
     private String url;
 
@@ -29,22 +32,28 @@ public class Server {
 
     @Column(name = "Status")
     @NotNull
-    private int status;
+    private String status;
 
     @ManyToOne()
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn (name = "User_ID")
-    private User user_ID;
+    private User userID;
 
     public Server() {}
 
-    public Server(String url, int port, int status, User user_ID) {
+    public Server(String url, int port, String status, User user_ID) {
         this.url = url;
         this.port = port;
         this.status = status;
-        this.user_ID = user_ID;
+        this.userID = user_ID;
     }
 
+    public Server(String url, int port, String status) {
+        this.url = url;
+        this.port = port;
+        this.status = status;
+    }
+    
     public Long getID() {
         return ID;
     }
@@ -69,19 +78,19 @@ public class Server {
         this.port = port;
     }
 
-    public int getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
-    public User getUser_ID() {
-        return user_ID;
+    public User getUserID() {
+        return userID;
     }
 
-    public void setUser_ID(User user_ID) {
-        this.user_ID = user_ID;
+    public void setUserID(User userID) {
+        this.userID = userID;
     }
 }

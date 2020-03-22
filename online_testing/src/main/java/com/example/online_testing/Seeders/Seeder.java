@@ -8,6 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @Component
 public class Seeder {
@@ -62,10 +63,10 @@ public class Seeder {
 
     private void insert_server() {
         User user1 = user_repository.findByID(Long.valueOf(1));
-        Server server1 = new Server("http://nekiserver1.com", 3306, 1, user1);
+        Server server1 = new Server("http://nekiserver1.com", 3306, "1", user1);
         if(!server_repository.existsByurl(server1.getUrl())) server_repository.save(server1);
 
-        Server server2 = new Server("http://nekiserver2.com", 3310, 1, user1);
+        Server server2 = new Server("http://nekiserver2.com", 3310, "1", user1);
         if(!server_repository.existsByurl(server2.getUrl())) server_repository.save(server2);
     }
 
@@ -93,10 +94,25 @@ public class Seeder {
     private void insert_browser() {
         Server server1 = server_repository.findByID(Long.valueOf(1));
         Browser browser1 = new Browser("Mozila Firefox", server1, "Mobile");
-        browser_repository.save(browser1);
 
         Server server2 = server_repository.findByID(Long.valueOf(2));
         Browser browser2 = new Browser("Google Chrome", server2, "Desktop");
-        browser_repository.save(browser2);
+
+        List<Browser> browsers = browser_repository.findAll();
+        boolean postoji1 = false;
+        boolean postoji2 = false;
+        for (Browser b : browsers) {
+            if(b.getName().equals(browser1.getName()) && b.getVersion().equals(browser1.getVersion()) && b.getIdServer() == browser1.getIdServer())  {
+                postoji1 = true;
+            }
+            if(b.getName().equals(browser2.getName()) && b.getVersion().equals(browser2.getVersion()) && b.getIdServer() == browser2.getIdServer())  {
+                postoji2 = true;
+            }
+        }
+        if(!postoji1) browser_repository.save(browser1);
+        if(!postoji2) browser_repository.save(browser2);
+
+
+
     }
 }

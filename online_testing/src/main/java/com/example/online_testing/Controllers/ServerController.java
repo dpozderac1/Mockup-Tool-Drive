@@ -1,11 +1,12 @@
 package com.example.online_testing.Controllers;
 
-import com.example.online_testing.Models.RoleNames;
-import com.example.online_testing.Models.Server;
-import com.example.online_testing.Models.User;
+import com.example.online_testing.Models.*;
+import com.example.online_testing.Repositories.RoleRepository;
 import com.example.online_testing.Repositories.ServerRepository;
 import com.example.online_testing.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sun.rmi.runtime.Log;
 
@@ -19,10 +20,14 @@ import java.util.Optional;
 public class ServerController {
 
     private ServerRepository serverRepository;
+    private UserRepository userRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
-    public ServerController(ServerRepository serverRepository) {
+    public ServerController(ServerRepository serverRepository, UserRepository userRepository, RoleRepository roleRepository) {
         this.serverRepository = serverRepository;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @GetMapping("/servers")
@@ -31,51 +36,76 @@ public class ServerController {
     }
 
     @GetMapping("/server/{id}")
-    Server oneId(@PathVariable Long id) {
-        return serverRepository.findByID(id);
+    ResponseEntity oneId(@PathVariable Long id) {
+        if(serverRepository.existsByID(id)) {
+            Server server = serverRepository.findByID(id);
+            return new ResponseEntity(server, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity("Server does not exist!", HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/server/{id}")
-    String deleteServer(@PathVariable Long id) {
+    ResponseEntity deleteServer(@PathVariable Long id) {
         if(serverRepository.existsByID(id)) {
             serverRepository.deleteById(id);
-            return "Server is successfully deleted!\n";
+            return new ResponseEntity("Server is successfully deleted!", HttpStatus.OK);
         }
-        return "Server does not exist!\n";
+        return new ResponseEntity("Server does not exist!", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/userServers/{id}")
     List<Server> userServers(@PathVariable Long id) {
-        List<Server> servers = serverRepository.findAll();
-        ArrayList<Server> returnServers = new ArrayList<>();
-        for (Server s: servers) {
-            if(s.getUser_ID().getID().equals(id)) returnServers.add(s);
-        }
-        return returnServers;
+        User user = userRepository.findByID(id);
+        List<Server> servers = serverRepository.findAllByuserID(user);
+        return servers;
     }
 
     @PostMapping("/addServer")
-    String addServer(@RequestBody Server server) {
-        if(!serverRepository.existsByurl(server.getUrl())) {
-            if(server.getUser_ID().getRole_ID().equals(RoleNames.ADMIN)) {
-                serverRepository.save(server);
+    ResponseEntity addServer(@RequestBody Server server) {
+        Role admin = roleRepository.findByroleName(RoleNames.ADMIN);
+        User user = userRepository.findByroleID(admin);
+        server.setUserID(user);
+        List<Server> servers = serverRepository.findAll();
+        boolean postoji = false;
+        for (Server s: servers) {
+            if(s.getUrl().equals(server.getUrl()) && s.getPort() == server.getPort() && s.getStatus().equals(server.getStatus()))  {
+                postoji = true;
             }
-            return "OK!";
         }
-        return "Not OK!";
+        if(!postoji) serverRepository.save(server);
+        else return new ResponseEntity("Server already exists!", HttpStatus.CONFLICT);
+        return new ResponseEntity(server, HttpStatus.OK);
     }
 
     @PutMapping("/updateServer/{id}")
-    String updateServer(@RequestBody Server server, @PathVariable Long id) {
+    ResponseEntity updateServer(@RequestBody Server server, @PathVariable Long id) {
         Server oldServer = serverRepository.findByID(id);
-        if(oldServer != null) {
-            oldServer.setUrl(server.getUrl());
-            oldServer.setPort(server.getPort());
-            oldServer.setStatus(server.getStatus());
-            serverRepository.save(oldServer);
-            return "OK!";
+        if(oldServer == null) {
+            return new ResponseEntity("The server you want to update does not exist!", HttpStatus.NOT_FOUND);
         }
-        return "Not OK!";
+        else{
+            if(!server.getUrl().isEmpty()) {
+                oldServer.setUrl(server.getUrl());
+            }
+            if(!Integer.toString(server.getPort()).equals(Integer.toString(0))) {
+                oldServer.setPort(server.getPort());
+            }
+            if(!server.getStatus().isEmpty()) {
+                oldServer.setStatus(server.getStatus());
+            }
+            List<Server> servers = serverRepository.findAll();
+            boolean postoji = false;
+            for (Server s: servers) {
+                if(s.getUrl().equals(oldServer.getUrl()) && s.getPort() == oldServer.getPort() && s.getStatus().equals(oldServer.getStatus()))  {
+                    postoji = true;
+                }
+            }
+            if(!postoji) serverRepository.save(oldServer);
+            else return new ResponseEntity("Server already exists!", HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity(oldServer, HttpStatus.OK);
     }
 
 

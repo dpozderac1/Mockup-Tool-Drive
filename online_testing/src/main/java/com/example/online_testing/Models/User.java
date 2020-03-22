@@ -28,7 +28,7 @@ public class User {
 
     @ManyToOne()
     @JoinColumn (name = "Role_ID")
-    private Role role_ID;
+    private Role roleID;
 
     @Column(name = "Username", unique = true)
     @NotEmpty(message = "Username cannot be null or empty")
@@ -63,7 +63,7 @@ public class User {
     public User() {}
 
     public User(Role role_ID, String username, String password, String email) {
-        this.role_ID = role_ID;
+        this.roleID = role_ID;
         this.username = username;
         this.password = password;
         this.email = email;
@@ -77,12 +77,12 @@ public class User {
         this.ID = ID;
     }
 
-    public Role getRole_ID() {
-        return role_ID;
+    public Role getRoleID() {
+        return roleID;
     }
 
-    public void setRole_ID(Role role_ID) {
-        this.role_ID = role_ID;
+    public void setRoleID(Role roleID) {
+        this.roleID = roleID;
     }
 
     public String getUsername() {

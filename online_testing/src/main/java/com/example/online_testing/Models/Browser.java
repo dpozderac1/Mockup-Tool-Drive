@@ -19,25 +19,36 @@ public class Browser {
     private Long ID;
 
     @Column(name = "Name")
-    @NotEmpty(message = "Browser name cannot be null or empty")
+    //@NotEmpty(message = "Browser name cannot be null or empty")
+    @NotNull
     @Size(min = 5, max = 20, message = "Browser name must be between 5 and 20 characters")
     private String name;
 
     @Column(name = "Version")
-    @NotEmpty(message = "Version cannot be null or empty")
+    //@NotEmpty(message = "Version cannot be null or empty")
+    @NotNull
     @Size(min = 4, max = 15, message = "Version must be between 4 and 15 characters")
     private String version;
 
     @ManyToOne()
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn (name = "Server_ID")
-    private Server server_ID;
+    private Server serverID;
+
+    @Transient
+    private int idServer;
 
     public Browser() {}
 
     public Browser(String name, Server server_ID, String version) {
         this.name = name;
-        this.server_ID = server_ID;
+        this.serverID = server_ID;
+        this.version = version;
+    }
+
+    public Browser(String name, int idServer, String version) {
+        this.name = name;
+        this.idServer = idServer;
         this.version = version;
     }
 
@@ -65,11 +76,19 @@ public class Browser {
         this.version = version;
     }
 
-    public Server getServer_ID() {
-        return server_ID;
+    public Server getServerID() {
+        return serverID;
     }
 
-    public void setServer_ID(Server server_ID) {
-        this.server_ID = server_ID;
+    public void setServerID(Server serverID) {
+        this.serverID = serverID;
+    }
+
+    public int getIdServer() {
+        return idServer;
+    }
+
+    public void setIdServer(int idServer) {
+        this.idServer = idServer;
     }
 }
