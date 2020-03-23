@@ -161,7 +161,7 @@ public class OnlineTestControllerTests {
         given(onlineTestRepository.findAllByuserID(user)).willReturn(onlineTests);
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/onlineTestsUsers/{id}", 1)
+                .get("/onlineTestsUser/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -172,7 +172,7 @@ public class OnlineTestControllerTests {
     public void getOnlineTestsUsersDoesNotExist() throws Exception
     {
         mvc.perform(MockMvcRequestBuilders
-                .get("/onlineTestsUsers/{id}", 1)
+                .get("/onlineTestsUser/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -190,7 +190,7 @@ public class OnlineTestControllerTests {
         given(onlineTestRepository.findBygspecDocumentID(document)).willReturn(onlineTest);
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/onlineTestGSPECDocument/{id}", 1)
+                .get("/onlineTestsGSPECDocument/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -201,7 +201,7 @@ public class OnlineTestControllerTests {
     public void getOnlineTestGSPECDocumentDoesNotExist() throws Exception
     {
         mvc.perform(MockMvcRequestBuilders
-                .get("/onlineTestGSPECDocument/{id}", 1)
+                .get("/onlineTestsGSPECDocument/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())

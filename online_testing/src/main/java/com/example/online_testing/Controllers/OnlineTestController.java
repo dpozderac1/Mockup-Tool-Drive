@@ -63,14 +63,14 @@ public class OnlineTestController {
         return onlineTests;
     }
 
-    @GetMapping("/onlineTestsUsers/{id}")
+    @GetMapping("/onlineTestsUser/{id}")
     List<OnlineTest> onlineTestsUsers(@PathVariable Long id) {
         User user = userRepository.findByID(id);
         List<OnlineTest> onlineTests = onlineTestRepository.findAllByuserID(user);
         return onlineTests;
     }
 
-    @GetMapping("/onlineTestGSPECDocument/{id}")
+    @GetMapping("/onlineTestsGSPECDocument/{id}")
     ResponseEntity onlineTestGSPECDocument(@PathVariable Long id) {
         GSPECDocument gspecDocument = gspecDocumentRepository.findByID(id);
         OnlineTest onlineTest = onlineTestRepository.findBygspecDocumentID(gspecDocument);
