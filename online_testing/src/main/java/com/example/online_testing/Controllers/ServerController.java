@@ -76,7 +76,7 @@ public class ServerController {
         }
         if(!postoji) serverRepository.save(server);
         else return new ResponseEntity("Server already exists!", HttpStatus.CONFLICT);
-        return new ResponseEntity(server, HttpStatus.OK);
+        return new ResponseEntity(server, HttpStatus.CREATED);
     }
 
     @PutMapping("/updateServer/{id}")
@@ -95,7 +95,7 @@ public class ServerController {
             if(!server.getStatus().isEmpty()) {
                 oldServer.setStatus(server.getStatus());
             }
-            List<Server> servers = serverRepository.findAll();
+            /*List<Server> servers = serverRepository.findAll();
             boolean postoji = false;
             for (Server s: servers) {
                 if(s.getUrl().equals(oldServer.getUrl()) && s.getPort() == oldServer.getPort() && s.getStatus().equals(oldServer.getStatus()))  {
@@ -103,7 +103,8 @@ public class ServerController {
                 }
             }
             if(!postoji) serverRepository.save(oldServer);
-            else return new ResponseEntity("Server already exists!", HttpStatus.CONFLICT);
+            else return new ResponseEntity("Server already exists!", HttpStatus.CONFLICT);*/
+            serverRepository.save(oldServer);
         }
         return new ResponseEntity(oldServer, HttpStatus.OK);
     }

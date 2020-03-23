@@ -110,14 +110,14 @@ public class OnlineTestController {
             }
             else return new ResponseEntity("Online test for this GSPEC document already exists!", HttpStatus.OK);
         }
-        return new ResponseEntity("Online test is successfully added!", HttpStatus.OK);
+        return new ResponseEntity("Online test is successfully added!", HttpStatus.CREATED);
     }
 
     @PutMapping("/updateOnlineTest/{id}")
     ResponseEntity updateOnlineTest(@RequestBody OnlineTest onlineTest, @PathVariable Long id) {
         OnlineTest onlineTest1 = onlineTestRepository.findByID(id);
         if(onlineTest1 == null) {
-            new ResponseEntity("Online test does not exist!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity("Online test does not exist!", HttpStatus.NOT_FOUND);
         }
         else {
             if(!onlineTest.getTests().isEmpty()) {
@@ -153,7 +153,7 @@ public class OnlineTestController {
                     onlineTest1.setGspecDocumentID(gspecDocument);
                 }
             }
-            List<OnlineTest> onlineTests = onlineTestRepository.findAll();
+            /*List<OnlineTest> onlineTests = onlineTestRepository.findAll();
             boolean postoji = false;
             for (OnlineTest ot: onlineTests) {
                 if(ot.getTests().equals(onlineTest1.getTests()) && ot.getTest_results().equals(onlineTest1.getTest_results()) && ot.getServerID().equals(onlineTest1.getServerID()) && ot.getUserID().equals(onlineTest1.getUserID()) && ot.getGspecDocumentID().equals(onlineTest1.getGspecDocumentID()))  {
@@ -161,7 +161,8 @@ public class OnlineTestController {
                 }
             }
             if(!postoji) onlineTestRepository.save(onlineTest1);
-            else return new ResponseEntity("Online test already exists!", HttpStatus.CONFLICT);
+            else return new ResponseEntity("Online test already exists!", HttpStatus.CONFLICT);*/
+            onlineTestRepository.save(onlineTest1);
         }
         return new ResponseEntity(onlineTest1, HttpStatus.OK);
     }

@@ -78,14 +78,15 @@ public class BrowserController {
             if(!postoji) browserRepository.save(newBrowser);
             else return new ResponseEntity("Browser already exists!", HttpStatus.CONFLICT);
         }
-        return new ResponseEntity("Browser is successfully added!", HttpStatus.OK);
+        return new ResponseEntity("Browser is successfully added!", HttpStatus.CREATED);
     }
 
     @PutMapping("/updateBrowser/{id}")
     ResponseEntity updateBrowser(@RequestBody Browser browser, @PathVariable Long id) {
         Browser oldBrowser = browserRepository.findByID(id);
+        System.out.print(oldBrowser);
         if(oldBrowser == null) {
-            new ResponseEntity("Browser does not exist!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity("Browser does not exist!", HttpStatus.NOT_FOUND);
         }
         else {
             if(!browser.getName().isEmpty()) {
@@ -103,7 +104,10 @@ public class BrowserController {
                     oldBrowser.setServerID(server);
                 }
             }
-            List<Browser> browsers = browserRepository.findAll();
+            /*List<Browser> browsers = browserRepository.findAll();
+            System.out.print("vratiiiiiiiiiiiiiiiiii");
+            System.out.print(browsers.get(0).getVersion());
+            System.out.print("vratiiiiiiiiiiiiiiiiii");
             boolean postoji = false;
             for (Browser b: browsers) {
                 if(b.getName().equals(oldBrowser.getName()) && b.getVersion().equals(oldBrowser.getVersion()) && b.getServerID().equals(oldBrowser.getServerID()))  {
@@ -111,7 +115,8 @@ public class BrowserController {
                 }
             }
             if(!postoji) browserRepository.save(oldBrowser);
-            else return new ResponseEntity("Browser already exists!", HttpStatus.CONFLICT);
+            else return new ResponseEntity("Browser already exists!", HttpStatus.CONFLICT);*/
+            browserRepository.save(oldBrowser);
         }
         return new ResponseEntity(oldBrowser, HttpStatus.OK);
 
