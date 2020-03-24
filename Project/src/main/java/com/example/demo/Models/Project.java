@@ -1,6 +1,10 @@
-package com.example.demo;
+package com.example.demo.Models;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
@@ -62,15 +66,20 @@ public class Project {
     private Long ID;
 
     @Column(name = "Name")
+    @NotEmpty(message = "Document name should not be empty!")
+    @Size(min = 1, max = 255, message = "Number of characters should be less than 255")
     private String name;
 
     @Column(name = "Date_created")
+    @PastOrPresent(message = "The date should be in the past or present date!")
     private Date date_created;
 
     @Column(name = "Date_modified")
+    @PastOrPresent(message = "The date should be in the past or present date!")
     private Date date_modified;
 
     @Column(name = "Priority")
+    @NotNull
     private Integer priority;
 
 }
