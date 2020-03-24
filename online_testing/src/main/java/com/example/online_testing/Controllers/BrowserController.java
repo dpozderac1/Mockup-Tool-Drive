@@ -84,16 +84,16 @@ public class BrowserController {
     @PutMapping("/updateBrowser/{id}")
     ResponseEntity updateBrowser(@RequestBody Browser browser, @PathVariable Long id) {
         Browser oldBrowser = browserRepository.findByID(id);
-        System.out.print(oldBrowser);
         if(oldBrowser == null) {
             return new ResponseEntity("Browser does not exist!", HttpStatus.NOT_FOUND);
         }
         else {
+            Browser newBrowser = new Browser(oldBrowser.getName(), oldBrowser.getServerID(), oldBrowser.getVersion());
             if(!browser.getName().isEmpty()) {
-                oldBrowser.setName(browser.getName());
+                newBrowser.setName(browser.getName());
             }
             if(!browser.getVersion().isEmpty()) {
-                oldBrowser.setVersion(browser.getVersion());
+                newBrowser.setVersion(browser.getVersion());
             }
             if(!Integer.toString(browser.getIdServer()).equals(Integer.toString(0))) {
                 Server server = serverRepository.findByID(Long.valueOf(browser.getIdServer()));
@@ -101,22 +101,23 @@ public class BrowserController {
                     return new ResponseEntity("Server does not exist!", HttpStatus.NOT_FOUND);
                 }
                 else {
-                    oldBrowser.setServerID(server);
+                    newBrowser.setServerID(server);
                 }
             }
-            /*List<Browser> browsers = browserRepository.findAll();
-            System.out.print("vratiiiiiiiiiiiiiiiiii");
-            System.out.print(browsers.get(0).getVersion());
-            System.out.print("vratiiiiiiiiiiiiiiiiii");
+            List<Browser> browsers = browserRepository.findAll();
             boolean postoji = false;
             for (Browser b: browsers) {
-                if(b.getName().equals(oldBrowser.getName()) && b.getVersion().equals(oldBrowser.getVersion()) && b.getServerID().equals(oldBrowser.getServerID()))  {
+                if(b.getName().equals(newBrowser.getName()) && b.getVersion().equals(newBrowser.getVersion()) && b.getServerID().equals(newBrowser.getServerID()))  {
                     postoji = true;
                 }
             }
-            if(!postoji) browserRepository.save(oldBrowser);
-            else return new ResponseEntity("Browser already exists!", HttpStatus.CONFLICT);*/
-            browserRepository.save(oldBrowser);
+            if(!postoji) {
+                oldBrowser.setName(newBrowser.getName());
+                oldBrowser.setServerID(newBrowser.getServerID());
+                oldBrowser.setVersion(newBrowser.getVersion());
+                browserRepository.save(oldBrowser);
+            }
+            else return new ResponseEntity("Browser already exists!", HttpStatus.CONFLICT);
         }
         return new ResponseEntity(oldBrowser, HttpStatus.OK);
 

@@ -116,15 +116,17 @@ public class OnlineTestController {
     @PutMapping("/updateOnlineTest/{id}")
     ResponseEntity updateOnlineTest(@RequestBody OnlineTest onlineTest, @PathVariable Long id) {
         OnlineTest onlineTest1 = onlineTestRepository.findByID(id);
+
         if(onlineTest1 == null) {
             return new ResponseEntity("Online test does not exist!", HttpStatus.NOT_FOUND);
         }
         else {
+            OnlineTest newOnlineTest = new OnlineTest(onlineTest1.getTests(), onlineTest1.getTest_results(), onlineTest1.getServerID(), onlineTest1.getUserID(), onlineTest1.getGspecDocumentID());
             if(!onlineTest.getTests().isEmpty()) {
-                onlineTest1.setTests(onlineTest.getTests());
+                newOnlineTest.setTests(onlineTest.getTests());
             }
             if(onlineTest.getTest_results() != null) {
-                onlineTest1.setTest_results(onlineTest.getTest_results());
+                newOnlineTest.setTest_results(onlineTest.getTest_results());
             }
             if(!Integer.toString(onlineTest.getIdServer()).equals(Integer.toString(0))) {
                 Server server = serverRepository.findByID(Long.valueOf(onlineTest.getIdServer()));
@@ -132,7 +134,7 @@ public class OnlineTestController {
                     return new ResponseEntity("Server does not exist!", HttpStatus.NOT_FOUND);
                 }
                 else {
-                    onlineTest1.setServerID(server);
+                    newOnlineTest.setServerID(server);
                 }
             }
             if(!Integer.toString(onlineTest.getIdUser()).equals(Integer.toString(0))) {
@@ -141,7 +143,7 @@ public class OnlineTestController {
                     return new ResponseEntity("User does not exist!", HttpStatus.NOT_FOUND);
                 }
                 else {
-                    onlineTest1.setUserID(user);
+                    newOnlineTest.setUserID(user);
                 }
             }
             if(!Integer.toString(onlineTest.getIdGspecDocument()).equals(Integer.toString(0))) {
@@ -150,19 +152,25 @@ public class OnlineTestController {
                     return new ResponseEntity("GSPEC Document does not exist!", HttpStatus.NOT_FOUND);
                 }
                 else {
-                    onlineTest1.setGspecDocumentID(gspecDocument);
+                    newOnlineTest.setGspecDocumentID(gspecDocument);
                 }
             }
-            /*List<OnlineTest> onlineTests = onlineTestRepository.findAll();
+            List<OnlineTest> onlineTests = onlineTestRepository.findAll();
             boolean postoji = false;
             for (OnlineTest ot: onlineTests) {
-                if(ot.getTests().equals(onlineTest1.getTests()) && ot.getTest_results().equals(onlineTest1.getTest_results()) && ot.getServerID().equals(onlineTest1.getServerID()) && ot.getUserID().equals(onlineTest1.getUserID()) && ot.getGspecDocumentID().equals(onlineTest1.getGspecDocumentID()))  {
+                if(ot.getTests().equals(newOnlineTest.getTests()) && ot.getServerID().equals(newOnlineTest.getServerID()) && ot.getUserID().equals(newOnlineTest.getUserID()) && ot.getGspecDocumentID().equals(newOnlineTest.getGspecDocumentID()))  {
                     postoji = true;
                 }
             }
-            if(!postoji) onlineTestRepository.save(onlineTest1);
-            else return new ResponseEntity("Online test already exists!", HttpStatus.CONFLICT);*/
-            onlineTestRepository.save(onlineTest1);
+            if(!postoji) {
+                onlineTest1.setTests(newOnlineTest.getTests());
+                onlineTest1.setTest_results(newOnlineTest.getTest_results());
+                onlineTest1.setServerID(newOnlineTest.getServerID());
+                onlineTest1.setUserID(newOnlineTest.getUserID());
+                onlineTest1.setGspecDocumentID(newOnlineTest.getGspecDocumentID());
+                onlineTestRepository.save(onlineTest1);
+            }
+            else return new ResponseEntity("Online test already exists!", HttpStatus.CONFLICT);
         }
         return new ResponseEntity(onlineTest1, HttpStatus.OK);
     }

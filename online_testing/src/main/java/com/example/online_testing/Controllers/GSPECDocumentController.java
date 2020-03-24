@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin
-@RestController
+//@CrossOrigin
+//@RestController
 public class GSPECDocumentController {
 
     private GSPECDocumentRepository gspecDocumentRepository;

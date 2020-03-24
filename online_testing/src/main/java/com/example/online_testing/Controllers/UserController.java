@@ -9,8 +9,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-@CrossOrigin
-@RestController
+//@CrossOrigin
+//@RestController
 public class UserController {
 
     private UserRepository userRepository;

@@ -86,25 +86,31 @@ public class ServerController {
             return new ResponseEntity("The server you want to update does not exist!", HttpStatus.NOT_FOUND);
         }
         else{
+            Server newServer = new Server(oldServer.getUrl(), oldServer.getPort(), oldServer.getStatus(), oldServer.getUserID());
             if(!server.getUrl().isEmpty()) {
-                oldServer.setUrl(server.getUrl());
+                newServer.setUrl(server.getUrl());
             }
             if(!Integer.toString(server.getPort()).equals(Integer.toString(0))) {
-                oldServer.setPort(server.getPort());
+                newServer.setPort(server.getPort());
             }
             if(!server.getStatus().isEmpty()) {
-                oldServer.setStatus(server.getStatus());
+                newServer.setStatus(server.getStatus());
             }
-            /*List<Server> servers = serverRepository.findAll();
+            List<Server> servers = serverRepository.findAll();
             boolean postoji = false;
             for (Server s: servers) {
-                if(s.getUrl().equals(oldServer.getUrl()) && s.getPort() == oldServer.getPort() && s.getStatus().equals(oldServer.getStatus()))  {
+                if(s.getUrl().equals(newServer.getUrl()) && s.getPort() == newServer.getPort() && s.getStatus().equals(newServer.getStatus()))  {
                     postoji = true;
                 }
             }
-            if(!postoji) serverRepository.save(oldServer);
-            else return new ResponseEntity("Server already exists!", HttpStatus.CONFLICT);*/
-            serverRepository.save(oldServer);
+            if(!postoji) {
+                oldServer.setUrl(newServer.getUrl());
+                oldServer.setPort(newServer.getPort());
+                oldServer.setStatus(newServer.getStatus());
+                serverRepository.save(oldServer);
+            }
+            else return new ResponseEntity("Server already exists!", HttpStatus.CONFLICT);
+
         }
         return new ResponseEntity(oldServer, HttpStatus.OK);
     }
