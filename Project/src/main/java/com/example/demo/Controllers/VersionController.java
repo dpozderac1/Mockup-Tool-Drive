@@ -52,7 +52,7 @@ public class VersionController {
     @GetMapping("/versions/project/{id}")
     List<Version> allVersions(@PathVariable Long id){
         Project project = projectRepository.findByID(id);
-        return versionRepository.findAllByprojectID(project);
+        return versionRepository.findAllByprojectId(project);
     }
 
     @DeleteMapping("/delete/version/{id}")

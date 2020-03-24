@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface VersionRepository extends JpaRepository<Version,Long> {
     Version findByID(Long Id);
-    List<Version> findAllByprojectID(Project project);
+    List<Version> findAllByprojectId(Project project);
 }

@@ -139,7 +139,7 @@ public class VersionTest {
         Version version = new Version(project, VersionNames.DESKTOP);
         version.setID(Long.valueOf(1));
         List<Version> verzije = Arrays.asList(version);
-        given(versionRepository.findAllByprojectID(project)).willReturn(verzije);
+        given(versionRepository.findAllByprojectId(project)).willReturn(verzije);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/versions/project/{id}", 1)
