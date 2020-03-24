@@ -19,10 +19,12 @@ import java.util.List;
 @RestController
 public class UserController {
     private UserRepository userRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
-    public UserController(UserRepository userRepository){
+    public UserController(UserRepository userRepository,RoleRepository roleRepository){
         this.userRepository=userRepository;
+        this.roleRepository=roleRepository;
     }
 
     @GetMapping("/users")
@@ -32,12 +34,15 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     User getId(@PathVariable Long id){
-        return userRepository.findByid(id);
+        return userRepository.findByID(id);
     }
 
     @GetMapping("/users/role/{id}")
     List<User> getByRoleId(@PathVariable Long id){
-        List<User> korisnici=userRepository.findAll();
+        Role uloga = roleRepository.findByID(id);
+        List<User> korisnici = userRepository.findByroleID(uloga);
+        return korisnici;
+        /*List<User> korisnici=userRepository.findAll();
         List<User> korisniciPoUlogama=new ArrayList<User>();
         for(int i=0;i<korisnici.size();i++){
             User korisnik= korisnici.get(i);
@@ -45,12 +50,13 @@ public class UserController {
                 korisniciPoUlogama.add(korisnik);
             }
         }
-        return korisniciPoUlogama;
+        return korisniciPoUlogama;*/
     }
 
-    @GetMapping("/users/project/{id}")
+    @GetMapping("/users/projects/{id}")
     List<Project> getByProjectId(@PathVariable Long id){
-        User korisnik=userRepository.findByid(id);
+        User korisnik=userRepository.findByID(id);
+        System.out.println("ISPIS"+korisnik.getID());
         List<Project> projekti=korisnik.getProjects();
         return projekti;
     }
@@ -62,12 +68,12 @@ public class UserController {
 
     @DeleteMapping("/deleteUser/{id}")
     void deleteUser(@PathVariable Long id) {
-        userRepository.deleteById(id);
+        userRepository.findByID(id);
     }
 
     @PutMapping("/updateUser/{id}")
     ResponseEntity updateUser(@PathVariable Long id, @RequestBody User user){
-        User korisnik=userRepository.findByid(id);
+        User korisnik=userRepository.findByID(id);
         if(korisnik==null){
             return new ResponseEntity("The user you want to update does not exist!", HttpStatus.NOT_FOUND);
         }

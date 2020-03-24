@@ -27,7 +27,7 @@ public class RoleController {
 
     @GetMapping("/roles/{id}")
     Role id(@PathVariable Long id){
-        return roleRepository.findByid(id);
+        return roleRepository.findByID(id);
     }
 
     @PostMapping("/role")
@@ -37,12 +37,12 @@ public class RoleController {
 
     @DeleteMapping("/deleteRole/{id}")
     void deleteRole(@PathVariable Long id) {
-        roleRepository.deleteById(id);
+        roleRepository.findByID(id);
     }
 
     @PutMapping("/updateRole/{id}")
     ResponseEntity updateRole(@PathVariable Long id, @RequestBody Role role){
-        Role uloga=roleRepository.findByid(id);
+        Role uloga=roleRepository.findByID(id);
         if(uloga==null){
             return new ResponseEntity("The role you want to update does not exist!", HttpStatus.NOT_FOUND);
         }

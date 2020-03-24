@@ -41,20 +41,20 @@ public class Seeder {
         if(!userRepository.existsByUsername(korisnik.getUsername()))
             userRepository.save(korisnik);
 
-        Role uloga1=roleRepository.findByroleName(RoleNames.USER);
+        /*Role uloga1=roleRepository.findByroleName(RoleNames.USER);
         User korisnik1=new User(uloga1,"Edina","Kovac","ekovac2","Sifra22+","ekovac2@etf.unsa.ba");
         if(!userRepository.existsByUsername(korisnik1.getUsername()))
             userRepository.save(korisnik1);
-
-        /*Role uloga2=roleRepository.findByroleName(RoleNames.USER);
+*/
+        Role uloga2=roleRepository.findByroleName(RoleNames.USER);
         User korisnik2=new User(uloga2,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
-        if(!userRepository.existsByUsername(korisnik2.getUsername()))
+        /*if(!userRepository.existsByUsername(korisnik2.getUsername()))
             userRepository.save(korisnik2);*/
 
 
 
-        Role uloga3=roleRepository.findByroleName(RoleNames.USER);
-        User korisnik3=new User(uloga3,"Admir","Pozderac","apozderac1","Nesto!!25","apozderac1@gmail.com");
+        /*Role uloga3=roleRepository.findByroleName(RoleNames.USER);
+        User korisnik3=new User(uloga3,"Admir","Pozderac","apozderac1","Nesto!!25","apozderac1@gmail.com");*/
 
         Project projekat=new Project();
         Project projekat1=new Project();
@@ -62,12 +62,12 @@ public class Seeder {
         projectRepository.save(projekat);
         projectRepository.save(projekat1);
 
-        korisnik3.getProjects().add(projekat);
-        korisnik3.getProjects().add(projekat1);
+        korisnik2.getProjects().add(projekat);
+        korisnik2.getProjects().add(projekat1);
 
-        projekat.getUsers().add(korisnik3);
-        projekat1.getUsers().add(korisnik3);
+        projekat.getUsers().add(korisnik2);
+        projekat1.getUsers().add(korisnik2);
 
-        userRepository.save(korisnik3);
+        userRepository.save(korisnik2);
     }
 }

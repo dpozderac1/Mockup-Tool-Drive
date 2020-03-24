@@ -16,6 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -34,12 +37,12 @@ public class RoleTest {
     @MockBean
     private RoleRepository roleRepository;
 
+    //GET /roles
     @Test
-    public void testGetRole()
+    public void testGetRoles()
             throws Exception {
 
         Role uloga=new Role(RoleNames.USER);
-
 
         List<Role> uloge = Arrays.asList(uloga);
 
@@ -48,10 +51,42 @@ public class RoleTest {
         mvc.perform(get("/roles")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$[0].role_name").value(uloga.getRole_name().toString()))
-                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", hasSize(1)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].role_name").value(uloga.getRole_name().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(1)));
     }
 
+    //GET /roles/{id} DOBAR
+    @Test
+    public void testGetRoleByIdExists()
+            throws Exception {
+
+        Role uloga=new Role(RoleNames.USER);
+        uloga.setID(Long.valueOf(1));
+
+        given(roleRepository.existsByID(Long.valueOf(1))).willReturn(true);
+        given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/roles/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.role_name").value(uloga.getRole_name().toString()));
+    }
+
+    //GET /roles/{id} LOS
+    @Test
+    public void testGetRoleByIdDoesNotExist()
+            throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/users/{id}","nesto")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+    }
+
+    //POST //role/{id}
     @Test
     public void testPostRole()
             throws Exception {
@@ -62,6 +97,57 @@ public class RoleTest {
                 .content(asJsonString(uloga))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    //PUT /updateRole/{id} DOBAR
+    @Test
+    public void testPutRoleExists()
+            throws Exception {
+
+        Role uloga=new Role(RoleNames.ADMIN);
+        uloga.setID(Long.valueOf(1));
+        given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
+
+        mvc.perform(put("/updateRole/{id}",1)
+                .content(asJsonString(new Role(RoleNames.USER)))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.role_name").value(uloga.getRole_name().toString()));
+    }
+
+    //PUT /updateRole/{id} LOS
+    @Test
+    public void testPutRoleDoesNotExists()
+            throws Exception {
+        mvc.perform(put("/updateRole/{id}",1)
+                .content(asJsonString(new Role(RoleNames.USER)))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    //DELETE /deleteRole/{id} DOBAR
+    @Test
+    public void testDeleteRoleExists()
+            throws Exception {
+
+        Role uloga=new Role(RoleNames.ADMIN);
+        uloga.setID(Long.valueOf(1));
+        given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
+
+        mvc.perform(delete("/deleteRole/{id}",1)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    //DELETE /deleteRole/{id} LOS
+    @Test
+    public void testDeleteRoleDoesNotExists()
+            throws Exception {
+        mvc.perform(delete("/deleteRole/{id}","nesto")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
     }
 
     public static String asJsonString(final Object obj) {

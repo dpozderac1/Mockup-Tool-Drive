@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface RoleRepository extends JpaRepository<Role,Long> {
     Role findByroleName(RoleNames Role_name);
-    Role findByid(Long id);
+    Role findByID(Long id);
     boolean existsByroleName(RoleNames Role_name);
+    boolean existsByID(Long id);
 }

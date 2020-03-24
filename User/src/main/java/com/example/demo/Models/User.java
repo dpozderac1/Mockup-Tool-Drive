@@ -27,12 +27,12 @@ public class User {
     @Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long ID;
 
     @ManyToOne()
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn (name="Role_id")
-    private Role role_id;
+    @JoinColumn (name="Role_ID")
+    private Role roleID;
 
     @Column(name="Name")
     @NotEmpty(message = "Name cannot be empty!")
@@ -76,9 +76,28 @@ public class User {
     @Email
     private String email;
 
+    @Transient
+    private int idRole;
 
-    public User(Role role_id, String name, String surname, String username, String password, String email) {
-        this.role_id = role_id;
+    public int getIdRole() {
+        return idRole;
+    }
+
+    public void setIdRole(int idRole) {
+        this.idRole = idRole;
+    }
+
+    public User(Role roleID, String name, String surname, String username, String password, String email) {
+        this.roleID = roleID;
+        this.name = name;
+        this.surname = surname;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+
+    public User(String name, String surname, String username, String password, String email,int idRole) {
+        this.idRole = idRole;
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -98,20 +117,20 @@ public class User {
     //@JsonManagedReference
     private List<Project> projects=new ArrayList<Project>();
 
-    public Long getId() {
-        return id;
+    public Long getID() {
+        return ID;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
-    public Role getRole_id() {
-        return role_id;
+    public Role getRoleID() {
+        return roleID;
     }
 
-    public void setRole_id(Role role_id) {
-        this.role_id = role_id;
+    public void setRoleID(Role role_id) {
+        this.roleID = role_id;
     }
 
     public String getName() {
