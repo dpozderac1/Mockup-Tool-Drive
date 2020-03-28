@@ -5,6 +5,8 @@ import com.example.online_testing.Controllers.ServerController;
 import com.example.online_testing.Models.Browser;
 import com.example.online_testing.Models.Server;
 import com.example.online_testing.Repositories.*;
+import com.example.online_testing.Services.BrowserService;
+import com.example.online_testing.Services.BrowserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,9 @@ public class BrowserControllerTests {
 
     @MockBean
     private ServerRepository serverRepository;
+
+    @MockBean
+    private BrowserService browserService;
 
     @MockBean
     private GSPECDocumentRepository gspecDocumentRepository;

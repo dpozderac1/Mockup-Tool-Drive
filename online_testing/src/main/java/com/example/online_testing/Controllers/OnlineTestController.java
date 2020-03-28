@@ -5,6 +5,7 @@ import com.example.online_testing.Repositories.GSPECDocumentRepository;
 import com.example.online_testing.Repositories.OnlineTestRepository;
 import com.example.online_testing.Repositories.ServerRepository;
 import com.example.online_testing.Repositories.UserRepository;
+import com.example.online_testing.Services.OnlineTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,160 +19,46 @@ import java.util.List;
 @RestController
 public class OnlineTestController {
 
-    private OnlineTestRepository onlineTestRepository;
-    private ServerRepository serverRepository;
-    private UserRepository userRepository;
-    private GSPECDocumentRepository gspecDocumentRepository;
-
     @Autowired
-    public OnlineTestController(OnlineTestRepository onlineTestRepository, ServerRepository serverRepository, UserRepository userRepository, GSPECDocumentRepository gspecDocumentRepository) {
-        this.onlineTestRepository = onlineTestRepository;
-        this.serverRepository = serverRepository;
-        this.userRepository = userRepository;
-        this.gspecDocumentRepository = gspecDocumentRepository;
-    }
+    private OnlineTestService onlineTestService;
 
     @GetMapping("/onlineTests")
     List<OnlineTest> all(){
-        return onlineTestRepository.findAll();
+        return onlineTestService.getAllOnlineTests();
     }
 
     @GetMapping("/onlineTest/{id}")
     ResponseEntity oneId(@PathVariable Long id) {
-        if(onlineTestRepository.existsByID(id)) {
-            OnlineTest onlineTest = onlineTestRepository.findByID(id);
-            return new ResponseEntity(onlineTest, HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity("Online test does not exist!", HttpStatus.NOT_FOUND);
-        }
+        return onlineTestService.getOnlineTestByID(id);
     }
 
     @DeleteMapping("/onlineTest/{id}")
     ResponseEntity deleteOnlineTest(@PathVariable Long id) {
-        if(onlineTestRepository.existsByID(id)) {
-            onlineTestRepository.deleteById(id);
-            return new ResponseEntity("Online test is successfully deleted!", HttpStatus.OK);
-        }
-        return new ResponseEntity("Online test does not exist!", HttpStatus.NOT_FOUND);
+        return onlineTestService.deleteOnlineTestByID(id);
     }
 
     @GetMapping("/onlineTestsServer/{id}")
     List<OnlineTest> onlineTestsServers(@PathVariable Long id) {
-        Server server = serverRepository.findByID(id);
-        List<OnlineTest> onlineTests = onlineTestRepository.findAllByserverID(server);
-        return onlineTests;
+        return onlineTestService.getOnlineTestsServers(id);
     }
 
     @GetMapping("/onlineTestsUser/{id}")
     List<OnlineTest> onlineTestsUsers(@PathVariable Long id) {
-        User user = userRepository.findByID(id);
-        List<OnlineTest> onlineTests = onlineTestRepository.findAllByuserID(user);
-        return onlineTests;
+        return onlineTestService.getOnlineTestsUsers(id);
     }
 
     @GetMapping("/onlineTestsGSPECDocument/{id}")
     ResponseEntity onlineTestGSPECDocument(@PathVariable Long id) {
-        GSPECDocument gspecDocument = gspecDocumentRepository.findByID(id);
-        OnlineTest onlineTest = onlineTestRepository.findBygspecDocumentID(gspecDocument);
-        if(onlineTest == null) {
-            return new ResponseEntity("Online test does not exist!", HttpStatus.NOT_FOUND);
-        }
-        else return new ResponseEntity(onlineTest, HttpStatus.OK);
+        return onlineTestService.getOnlineTestGSPECDocument(id);
     }
 
     @PostMapping("/addOnlineTest")
     ResponseEntity addOnlineTest(@RequestBody OnlineTest onlineTest) {
-        Server server = serverRepository.findByID(Long.valueOf(onlineTest.getIdServer()));
-        User user = userRepository.findByID(Long.valueOf(onlineTest.getIdUser()));
-        GSPECDocument gspecDocument = gspecDocumentRepository.findByID(Long.valueOf(onlineTest.getIdGspecDocument()));
-        if(server == null) {
-            return new ResponseEntity("Server does not exist!", HttpStatus.NOT_FOUND);
-        }
-        else if(user == null) {
-            return new ResponseEntity("User does not exist!", HttpStatus.NOT_FOUND);
-        }
-        else if(gspecDocument == null) {
-            return new ResponseEntity("GSPEC Document does not exist!", HttpStatus.NOT_FOUND);
-        }
-        else {
-            OnlineTest onlineTest11 = onlineTestRepository.findBygspecDocumentID(gspecDocument);
-            if(onlineTest11 == null){
-                OnlineTest onlineTest1 = new OnlineTest(onlineTest.getTests(), onlineTest.getTest_results(), server, user, gspecDocument);
-                List<OnlineTest> onlineTests = onlineTestRepository.findAll();
-                boolean postoji = false;
-                for (OnlineTest ot: onlineTests) {
-                    if(ot.getTests().equals(onlineTest1.getTests()) && ot.getTest_results().equals(onlineTest1.getTest_results()) && ot.getServerID().equals(onlineTest1.getServerID()) && ot.getUserID().equals(onlineTest1.getUserID()) && ot.getGspecDocumentID().equals(onlineTest1.getGspecDocumentID()))  {
-                        postoji = true;
-                    }
-                }
-                if(!postoji) onlineTestRepository.save(onlineTest1);
-                else return new ResponseEntity("Online test already exists!", HttpStatus.CONFLICT);
-            }
-            else return new ResponseEntity("Online test for this GSPEC document already exists!", HttpStatus.OK);
-        }
-        return new ResponseEntity("Online test is successfully added!", HttpStatus.CREATED);
+        return onlineTestService.saveOnlineTest(onlineTest);
     }
 
     @PutMapping("/updateOnlineTest/{id}")
     ResponseEntity updateOnlineTest(@RequestBody OnlineTest onlineTest, @PathVariable Long id) {
-        OnlineTest onlineTest1 = onlineTestRepository.findByID(id);
-
-        if(onlineTest1 == null) {
-            return new ResponseEntity("Online test does not exist!", HttpStatus.NOT_FOUND);
-        }
-        else {
-            OnlineTest newOnlineTest = new OnlineTest(onlineTest1.getTests(), onlineTest1.getTest_results(), onlineTest1.getServerID(), onlineTest1.getUserID(), onlineTest1.getGspecDocumentID());
-            if(!onlineTest.getTests().isEmpty()) {
-                newOnlineTest.setTests(onlineTest.getTests());
-            }
-            if(onlineTest.getTest_results() != null) {
-                newOnlineTest.setTest_results(onlineTest.getTest_results());
-            }
-            if(!Integer.toString(onlineTest.getIdServer()).equals(Integer.toString(0))) {
-                Server server = serverRepository.findByID(Long.valueOf(onlineTest.getIdServer()));
-                if (server == null) {
-                    return new ResponseEntity("Server does not exist!", HttpStatus.NOT_FOUND);
-                }
-                else {
-                    newOnlineTest.setServerID(server);
-                }
-            }
-            if(!Integer.toString(onlineTest.getIdUser()).equals(Integer.toString(0))) {
-                User user = userRepository.findByID(Long.valueOf(onlineTest.getIdUser()));
-                if (user == null) {
-                    return new ResponseEntity("User does not exist!", HttpStatus.NOT_FOUND);
-                }
-                else {
-                    newOnlineTest.setUserID(user);
-                }
-            }
-            if(!Integer.toString(onlineTest.getIdGspecDocument()).equals(Integer.toString(0))) {
-                GSPECDocument gspecDocument = gspecDocumentRepository.findByID(Long.valueOf(onlineTest.getIdGspecDocument()));
-                if (gspecDocument == null) {
-                    return new ResponseEntity("GSPEC Document does not exist!", HttpStatus.NOT_FOUND);
-                }
-                else {
-                    newOnlineTest.setGspecDocumentID(gspecDocument);
-                }
-            }
-            List<OnlineTest> onlineTests = onlineTestRepository.findAll();
-            boolean postoji = false;
-            for (OnlineTest ot: onlineTests) {
-                if(ot.getTests().equals(newOnlineTest.getTests()) && ot.getServerID().equals(newOnlineTest.getServerID()) && ot.getUserID().equals(newOnlineTest.getUserID()) && ot.getGspecDocumentID().equals(newOnlineTest.getGspecDocumentID()))  {
-                    postoji = true;
-                }
-            }
-            if(!postoji) {
-                onlineTest1.setTests(newOnlineTest.getTests());
-                onlineTest1.setTest_results(newOnlineTest.getTest_results());
-                onlineTest1.setServerID(newOnlineTest.getServerID());
-                onlineTest1.setUserID(newOnlineTest.getUserID());
-                onlineTest1.setGspecDocumentID(newOnlineTest.getGspecDocumentID());
-                onlineTestRepository.save(onlineTest1);
-            }
-            else return new ResponseEntity("Online test already exists!", HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity(onlineTest1, HttpStatus.OK);
+        return onlineTestService.updateOnlineTest(onlineTest, id);
     }
 }

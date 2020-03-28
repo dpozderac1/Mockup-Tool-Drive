@@ -1,6 +1,8 @@
 package com.example.online_testing.Models;
 
 import com.example.online_testing.Models.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
@@ -52,6 +54,7 @@ public class User {
     @Column(name = "Password")
     @NotEmpty(message = "Password cannot be null or empty")
     @ValidPassword
+    @JsonIgnore
     @Size(min = 8, message = "Password must have min 8 characters")
     private String password;
 
