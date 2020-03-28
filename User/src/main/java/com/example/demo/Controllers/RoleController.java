@@ -3,8 +3,10 @@ package com.example.demo.Controllers;
 import com.example.demo.Models.Role;
 import com.example.demo.Models.User;
 import com.example.demo.Repositories.RoleRepository;
+import com.example.demo.Services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,43 +15,33 @@ import java.util.List;
 @CrossOrigin
 @RestController
 public class RoleController {
-    private RoleRepository roleRepository;
 
     @Autowired
-    public void RoleRepository(RoleRepository roleRepository){
-        this.roleRepository=roleRepository;
-    }
+    private RoleService roleService;
 
-    @GetMapping("/roles")
+    @GetMapping(value="/roles",produces = MediaType.APPLICATION_JSON_VALUE)
     List<Role> all(){
-        return roleRepository.findAll();
+        return roleService.getAllRoles();
     }
 
-    @GetMapping("/roles/{id}")
-    Role id(@PathVariable Long id){
-        return roleRepository.findByID(id);
+
+    @GetMapping(value="/roles/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity id(@PathVariable Long id){
+        return roleService.getRoleById(id);
     }
 
-    @PostMapping("/role")
-    Role newRole(@RequestBody Role newRole){
-        return roleRepository.save(newRole);
+    @PostMapping(value="/role",produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity newRole(@RequestBody Role newRole){
+        return roleService.saveRole(newRole);
     }
 
-    @DeleteMapping("/deleteRole/{id}")
-    void deleteRole(@PathVariable Long id) {
-        roleRepository.findByID(id);
+    @DeleteMapping(value="/deleteRole/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity deleteRole(@PathVariable Long id) {
+        return roleService.deleteRole(id);
     }
 
-    @PutMapping("/updateRole/{id}")
+    @PutMapping(value="/updateRole/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity updateRole(@PathVariable Long id, @RequestBody Role role){
-        Role uloga=roleRepository.findByID(id);
-        if(uloga==null){
-            return new ResponseEntity("The role you want to update does not exist!", HttpStatus.NOT_FOUND);
-        }
-        else{
-            uloga.setRole_name(role.getRole_name());
-            roleRepository.save(uloga);
-        }
-        return new ResponseEntity(uloga,HttpStatus.OK);
+        return roleService.updateRole(id,role);
     }
 }

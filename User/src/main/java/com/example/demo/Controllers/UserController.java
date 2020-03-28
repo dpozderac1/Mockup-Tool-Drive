@@ -5,9 +5,11 @@ import com.example.demo.Models.Role;
 import com.example.demo.Models.User;
 import com.example.demo.Repositories.RoleRepository;
 import com.example.demo.Repositories.UserRepository;
+import com.example.demo.Services.UserService;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,84 +20,42 @@ import java.util.List;
 @CrossOrigin
 @RestController
 public class UserController {
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
 
     @Autowired
-    public UserController(UserRepository userRepository,RoleRepository roleRepository){
-        this.userRepository=userRepository;
-        this.roleRepository=roleRepository;
-    }
+    private UserService userService;
 
-    @GetMapping("/users")
+    @GetMapping(value="/users",produces = MediaType.APPLICATION_JSON_VALUE)
     List<User> all(){
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
-    @GetMapping("/users/{id}")
-    User getId(@PathVariable Long id){
-        return userRepository.findByID(id);
+    @GetMapping(value="/users/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity getId(@PathVariable Long id){
+        return userService.getUserByID(id);
     }
 
-    @GetMapping("/users/role/{id}")
+    @GetMapping(value="/users/role/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     List<User> getByRoleId(@PathVariable Long id){
-        Role uloga = roleRepository.findByID(id);
-        List<User> korisnici = userRepository.findByroleID(uloga);
-        return korisnici;
-        /*List<User> korisnici=userRepository.findAll();
-        List<User> korisniciPoUlogama=new ArrayList<User>();
-        for(int i=0;i<korisnici.size();i++){
-            User korisnik= korisnici.get(i);
-            if(korisnik.getRole_id().getId()==id){
-                korisniciPoUlogama.add(korisnik);
-            }
-        }
-        return korisniciPoUlogama;*/
+        return userService.getUsersByRoleID(id);
     }
 
-    @GetMapping("/users/projects/{id}")
+    @GetMapping(value="/users/projects/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     List<Project> getByProjectId(@PathVariable Long id){
-        User korisnik=userRepository.findByID(id);
-        System.out.println("ISPIS"+korisnik.getID());
-        List<Project> projekti=korisnik.getProjects();
-        return projekti;
+        return userService.getUserProjects(id);
     }
 
-    @PostMapping("/user")
-    User newUser(@RequestBody User newUser){
-        return userRepository.save(newUser);
+    @PostMapping(value="/user",produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity newUser(@RequestBody User newUser){
+        return userService.saveUser(newUser);
     }
 
-    @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping(value="/deleteUser/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     void deleteUser(@PathVariable Long id) {
-        userRepository.findByID(id);
+        userService.deleteUser(id);
     }
 
-    @PutMapping("/updateUser/{id}")
+    @PutMapping(value="/updateUser/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity updateUser(@PathVariable Long id, @RequestBody User user){
-        User korisnik=userRepository.findByID(id);
-        if(korisnik==null){
-            return new ResponseEntity("The user you want to update does not exist!", HttpStatus.NOT_FOUND);
-        }
-        else{
-            if(!user.getName().isEmpty()){
-                korisnik.setName(user.getName());
-            }
-            if(!user.getSurname().isEmpty()){
-                korisnik.setSurname(user.getSurname());
-            }
-            if(!user.getUsername().isEmpty()){
-                korisnik.setUsername(user.getUsername());
-            }
-            if(!user.getPassword().isEmpty()){
-                korisnik.setPassword(user.getPassword());
-            }
-            if(!user.getEmail().isEmpty()){
-                korisnik.setEmail(user.getEmail());
-            }
-
-            userRepository.save(korisnik);
-        }
-        return new ResponseEntity(korisnik,HttpStatus.OK);
+        return userService.updateUser(id,user);
     }
 }
