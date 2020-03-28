@@ -5,6 +5,8 @@ import com.example.demo.Models.Version;
 import com.example.demo.Models.VersionNames;
 import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.VersionRepository;
+import com.example.demo.Services.VersionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,64 +18,53 @@ import java.util.Optional;
 @CrossOrigin
 @RestController
 public class VersionController {
-    private VersionRepository versionRepository;
-    private ProjectRepository projectRepository;
 
-    public VersionController(VersionRepository versionRepository, ProjectRepository projectRepository) {
-        this.versionRepository = versionRepository;
-        this.projectRepository = projectRepository;
+    private VersionService versionService;
+
+    @Autowired
+    public VersionController(VersionService versionService){
+        this.versionService = versionService;
     }
 
     @PutMapping("/addOrUpdateVersion/{id}")
-    ResponseEntity<Version> addOrReplace(@RequestBody Version newVersion, @PathVariable Long id) {
-        Version version = versionRepository.findByID(id);
-            if(version != null){
-                if(!newVersion.getVersion_name().equals("")) version.setVersion_name(newVersion.getVersion_name());
-                if(newVersion.getProjectId() != null) version.setProjectId(newVersion.getProjectId());
-                versionRepository.save(version);
-            }
-            else {
-                newVersion.setID(id);
-                versionRepository.save(newVersion);
-            };
+    ResponseEntity<?> addOrReplace(@RequestBody Version newVersion, @PathVariable Long id) {
+        Version version = versionService.addOrReplace(newVersion, id);
         return new ResponseEntity<>(version, HttpStatus.OK);
     }
 
     @PutMapping("/changeVersion/{id}")
-    ResponseEntity<Version> changeVersion(@RequestBody VersionNames name, @PathVariable Long id) {
-        Version version = versionRepository.findByID(id);
-        if(!name.equals("")){
-            version.setVersion_name(name);
-            versionRepository.save(version);
-        }
+    ResponseEntity<?> changeVersion(@RequestBody VersionNames name, @PathVariable Long id) {
+        Version version = versionService.changeVersion(name, id);
         return new ResponseEntity<>(version, HttpStatus.OK);
     }
 
     @GetMapping("/versions/project/{id}")
-    List<Version> allVersions(@PathVariable Long id){
-        Project project = projectRepository.findByID(id);
-        return versionRepository.findAllByprojectId(project);
+    ResponseEntity<?> allVersionsOfProject(@PathVariable Long id){
+        List<Version> versions = versionService.allVersionsOfProject(id);
+        return new ResponseEntity<>(versions, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/version/{id}")
-    ResponseEntity<HttpStatus> deleteOne(@PathVariable Long id){
-        versionRepository.deleteById(id);
-        return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
+    ResponseEntity<?> deleteOne(@PathVariable Long id){
+        versionService.deleteOne(id);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/addVersion")
     ResponseEntity<?> newVersion(@RequestBody Version newVersion) {
-        Version version = versionRepository.save(newVersion);
+        Version version = versionService.newVersion(newVersion);
         return new ResponseEntity<>(version, HttpStatus.CREATED);
     }
 
     @GetMapping("/versions")
-    List<Version> all(){
-        return versionRepository.findAll();
+    ResponseEntity<?> getAllVersions(){
+        List<Version> versions = versionService.getAllVersions();
+        return new ResponseEntity<>(versions, HttpStatus.OK);
     }
 
     @GetMapping("/version/{id}")
-    Version one(@PathVariable Long id) {
-        return versionRepository.findByID(id);
+    ResponseEntity<?> getOneVersion(@PathVariable Long id) {
+        Version version = versionService.getOneVersion(id);
+        return new ResponseEntity<>(version, HttpStatus.OK);
     }
 }

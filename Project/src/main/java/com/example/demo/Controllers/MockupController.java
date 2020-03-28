@@ -5,6 +5,8 @@ import com.example.demo.Models.Project;
 import com.example.demo.Models.Version;
 import com.example.demo.Repositories.MockupRepository;
 import com.example.demo.Repositories.VersionRepository;
+import com.example.demo.Services.MockupService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -15,60 +17,48 @@ import java.util.List;
 @CrossOrigin
 @RestController
 public class MockupController {
-    private MockupRepository mockupRepository;
-    private VersionRepository versionRepository;
 
-    public MockupController(MockupRepository mockupRepository, VersionRepository versionRepository) {
-        this.mockupRepository = mockupRepository;
-        this.versionRepository = versionRepository;
+    private MockupService mockupService;
+
+    @Autowired
+    public MockupController(MockupService mockupService) {
+        this.mockupService = mockupService;
     }
 
     @PutMapping("/addOrUpdateMockup/{id}")
-    ResponseEntity<Mockup>  addOrReplace(@RequestBody Mockup newMockup, @PathVariable Long id) {
-        Mockup mockup = mockupRepository.findByID(id);
-        if(mockup != null) {
-            if(!newMockup.getName().equals("")) mockup.setName(newMockup.getName());
-            if(newMockup.getVersionId() != null) mockup.setVersionId(newMockup.getVersionId());
-            if(newMockup.getDate_created() != null) mockup.setDate_created(newMockup.getDate_created());
-            if(newMockup.getDate_modified() != null) mockup.setDate_modified(newMockup.getDate_modified());
-            if(newMockup.getFile() != null) mockup.setFile(newMockup.getFile());
-            if(newMockup.getAccessed_date() != null) mockup.setAccessed_date(newMockup.getAccessed_date());
-
-            mockupRepository.save(mockup);
-        }
-        else{
-            newMockup.setID(id);
-            mockupRepository.save(newMockup);
-        };
+    ResponseEntity<?>  addOrReplace(@RequestBody Mockup newMockup, @PathVariable Long id) {
+        Mockup mockup = mockupService.addOrReplace(newMockup,id);
         return new ResponseEntity<>(mockup, HttpStatus.OK);
     }
 
     @GetMapping("/mockups/version/{id}")
-    List<Mockup> allMockups(@PathVariable Long id){
-        Version version = versionRepository.findByID(id);
-        return mockupRepository.findAllByversionId(version);
+    ResponseEntity<?>  allMockupsOfVersion(@PathVariable Long id){
+        List<Mockup> mockups = mockupService.allMockupsOfVersion(id);
+        return new ResponseEntity<>(mockups, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/mockup/{id}")
-    ResponseEntity<HttpStatus>  deleteOne(@PathVariable Long id){
-        mockupRepository.deleteById(id);
-        return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
+    ResponseEntity<?>  deleteOne(@PathVariable Long id){
+        mockupService.deleteOne(id);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/addMockup")
     ResponseEntity<?> newMockup(@RequestBody Mockup newMockup) {
-        Mockup mockup = mockupRepository.save(newMockup);
+        Mockup mockup = mockupService.newMockup(newMockup);
         return new ResponseEntity<>(mockup, HttpStatus.CREATED);
     }
 
     @GetMapping("/mockups")
-    List<Mockup> all(){
-        return mockupRepository.findAll();
+    ResponseEntity<?> getAllMockups(){
+        List<Mockup> mockups = mockupService.getAllMockups();
+        return new ResponseEntity<>(mockups, HttpStatus.OK);
     }
 
     @GetMapping("/mockup/{id}")
-    Mockup one(@PathVariable Long id) {
-        return mockupRepository.findByID(id);
+    ResponseEntity<?>  getOneMockup(@PathVariable Long id) {
+        Mockup mockup = mockupService.getOneMockup(id);
+        return new ResponseEntity<>(mockup, HttpStatus.OK);
     }
 
 }

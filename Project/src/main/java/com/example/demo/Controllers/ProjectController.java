@@ -2,6 +2,7 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Models.Project;
 import com.example.demo.Repositories.ProjectRepository;
+import com.example.demo.Services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,62 +17,50 @@ import java.util.Optional;
 @CrossOrigin
 @RestController
 public class ProjectController {
-    private ProjectRepository projectRepository;
+
+    private ProjectService projectService;
 
     @Autowired
-    public ProjectController(ProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService;
     }
 
     @PutMapping("/addOrUpdateProject/{id}")
     ResponseEntity<?> addOrReplace(@RequestBody Project newProject, @PathVariable Long id) {
-        Project project = projectRepository.findByID(id);
-        if (project != null){
-            if(!newProject.getName().isEmpty()) project.setName(newProject.getName());
-            if(newProject.getDate_created() != null) project.setDate_created(newProject.getDate_created());
-            if(newProject.getDate_modified() != null) project.setDate_modified(newProject.getDate_modified());
-            if(!newProject.getPriority().equals("")) project.setPriority(newProject.getPriority());
-            projectRepository.save(project);
-        }
-        else {
-            newProject.setID(id);
-            projectRepository.save(newProject);
-        }
-        return new ResponseEntity<>(project, HttpStatus.OK);
+        Project project = projectService.addOrReplace(newProject, id);
+        if(project != null) return new ResponseEntity<>(project, HttpStatus.OK);
+        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/renameProject/{id}")
-    ResponseEntity<Project> renameProject(@RequestBody String name, @PathVariable Long id) {
-        Project p =  projectRepository.findByID(id);
-
-        if(name != ""){
-            p.setName(name);
-            projectRepository.save(p);
-        }
-
-        return new ResponseEntity<Project>(p, HttpStatus.OK);
+    ResponseEntity<?> renameProject(@RequestBody String name, @PathVariable Long id) {
+        Project project =  projectService.renameProject(name, id);
+        if(project != null) return new ResponseEntity<>(project, HttpStatus.OK);
+        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/delete/project/{id}")
-    ResponseEntity<HttpStatus> deleteOne(@PathVariable Long id){
-        projectRepository.deleteById(id);
-        return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
+    ResponseEntity<?> deleteOne(@PathVariable Long id){
+        projectService.deleteOne(id);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/addProject")
     ResponseEntity<?> newProject(@RequestBody Project newProject) throws URISyntaxException {
-        Project project = projectRepository.save(newProject);
+        Project project = projectService.newProject(newProject);
         return new ResponseEntity<>(project, HttpStatus.CREATED);
     }
 
     @GetMapping("/projects")
-    List<Project> all(){
-        return projectRepository.findAll();
+    ResponseEntity<?> getAllProjects(){
+        List<Project> projects = projectService.getAllProjects();
+        return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 
     @GetMapping("/project/{id}")
-    Project one(@PathVariable Long id) {
-        return projectRepository.findByID(id);
+    ResponseEntity<?> getOneProject(@PathVariable Long id) {
+        Project project = projectService.getOneProject(id);
+        return new ResponseEntity<>(project, HttpStatus.OK);
     }
 
 
