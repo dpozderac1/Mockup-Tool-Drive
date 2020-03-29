@@ -7,13 +7,17 @@ import com.example.demo.Models.RoleNames;
 import com.example.demo.Models.User;
 import com.example.demo.Repositories.RoleRepository;
 import com.example.demo.Repositories.UserRepository;
+import com.example.demo.Services.RoleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -23,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -37,6 +42,9 @@ public class RoleTest {
     @MockBean
     private RoleRepository roleRepository;
 
+    @MockBean
+    private RoleService roleService;
+
     //GET /roles
     @Test
     public void testGetRoles()
@@ -46,7 +54,7 @@ public class RoleTest {
 
         List<Role> uloge = Arrays.asList(uloga);
 
-        given(roleRepository.findAll()).willReturn(uloge);
+        given(roleService.getAllRoles()).willReturn(uloge);
 
         mvc.perform(get("/roles")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -62,9 +70,8 @@ public class RoleTest {
 
         Role uloga=new Role(RoleNames.USER);
         uloga.setID(Long.valueOf(1));
-
-        given(roleRepository.existsByID(Long.valueOf(1))).willReturn(true);
-        given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
+        ResponseEntity odgovor=new ResponseEntity(uloga, HttpStatus.OK);
+        given(roleService.getRoleById(Long.valueOf(1))).willReturn(odgovor);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/roles/{id}",1)
@@ -103,24 +110,28 @@ public class RoleTest {
     @Test
     public void testPutRoleExists()
             throws Exception {
-
         Role uloga=new Role(RoleNames.ADMIN);
-        uloga.setID(Long.valueOf(1));
-        given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
+        uloga.setID(1L);
+        System.out.println("JSON je: ");
+        System.out.println(asJsonString(new Role(RoleNames.USER)));
 
-        mvc.perform(put("/updateRole/{id}",1)
-                .content(asJsonString(new Role(RoleNames.USER)))
+        JSONObject objekat=new JSONObject();
+        objekat.put("message:","Role is successfully added!");
+        Role nova=new Role(RoleNames.USER);
+        given(roleService.updateRole(1L,nova)).willReturn(new ResponseEntity(objekat,HttpStatus.OK));
+        mvc.perform(put("/updateRole/"+1)
+                .content(asJsonString(nova))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.role_name").value(uloga.getRole_name().toString()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
     }
 
     //PUT /updateRole/{id} LOS
     @Test
-    public void testPutRoleDoesNotExists()
+    public void testPutRoleDoesNotExist()
             throws Exception {
-        mvc.perform(put("/updateRole/{id}",1)
+        mvc.perform(put("/updateRole/{id}","nesto")
                 .content(asJsonString(new Role(RoleNames.USER)))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());

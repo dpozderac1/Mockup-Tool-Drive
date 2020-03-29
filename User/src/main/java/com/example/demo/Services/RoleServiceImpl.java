@@ -42,9 +42,6 @@ public class RoleServiceImpl implements RoleService{
 
     @Override
     public ResponseEntity saveRole(Role role) {
-        //pretraziti enume
-        System.out.println("Enumi su:");
-        System.out.println(RoleNames.values());
         List<Role> sveUloge=roleRepository.findAll();
         JSONObject objekat=new JSONObject();
         if(role==null){
@@ -115,7 +112,7 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public ResponseEntity updateRole(Long id, Role role) {
+    public ResponseEntity<?> updateRole(Long id, Role role) {
         JSONObject objekat=new JSONObject();
         List<Role> sveUloge=roleRepository.findAll();
         if(role==null){
@@ -136,6 +133,24 @@ public class RoleServiceImpl implements RoleService{
                 return new ResponseEntity(objekat.toString(),HttpStatus.CONFLICT);
             }
         }
+
+        boolean istina=false;
+        for(int i=0;i< RoleNames.values().length;i++){
+            if(role.getRole_name().toString()==RoleNames.values()[i].name().toString()){
+                istina=true;
+                break;
+            }
+        }
+        if(!istina){
+            try {
+                objekat.put("message","Role name does not exist!");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return new ResponseEntity(objekat.toString(),HttpStatus.NOT_FOUND);
+        }
+
+
         Role uloga=roleRepository.findByID(id);
         uloga.setRole_name(role.getRole_name());
         roleRepository.save(uloga);

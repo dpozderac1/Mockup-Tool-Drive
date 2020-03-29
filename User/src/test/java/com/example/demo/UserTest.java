@@ -8,13 +8,16 @@ import com.example.demo.Models.User;
 import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.RoleRepository;
 import com.example.demo.Repositories.UserRepository;
+import com.example.demo.Services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -44,6 +47,9 @@ public class UserTest {
     @MockBean
     private ProjectRepository projectRepository;
 
+    @MockBean
+    private UserService userService;
+
     //GET /users
     @Test
     public void testGetUsers()
@@ -55,7 +61,7 @@ public class UserTest {
 
         List<User> korisnici = Arrays.asList(korisnik);
 
-        given(userRepository.findAll()).willReturn(korisnici);
+        given(userService.getAllUsers()).willReturn(korisnici);
 
         mvc.perform(get("/users")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -76,8 +82,8 @@ public class UserTest {
 
         korisnik.setID(Long.valueOf(1));
 
-        given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
-        given(userRepository.findByID(Long.valueOf(1))).willReturn(korisnik);
+        ResponseEntity odgovor=new ResponseEntity(korisnik, HttpStatus.OK);
+        given(userService.getUserByID(Long.valueOf(1))).willReturn(odgovor);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/users/{id}",1)
@@ -114,8 +120,8 @@ public class UserTest {
 
         List<User> korisnici = Arrays.asList(korisnik);
 
-        given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
-        given(userRepository.findByroleID(uloga)).willReturn(korisnici);
+        //given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
+        given(userService.getUsersByRoleID(1L)).willReturn(korisnici);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/users/role/{id}",1)
@@ -156,8 +162,9 @@ public class UserTest {
 
         User korisnik=new User(uloga,"Edina","Kovac","ekovac2","Sifra22+","ekovac2@etf.unsa.ba");
         korisnik.setID(Long.valueOf(1));
-        given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
-        given(userRepository.findByID(Long.valueOf(1))).willReturn(korisnik);
+        //given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
+        ResponseEntity odgovor=new ResponseEntity(korisnik, HttpStatus.OK);
+        given(userService.getUserByID(Long.valueOf(1))).willReturn(odgovor);
 
         List<Project> projekti = Arrays.asList(projekat);
         korisnik.setProjects(projekti);
@@ -168,8 +175,8 @@ public class UserTest {
         projekti = Arrays.asList(projekat);
         korisnik.setProjects(projekti);
 
-        given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
-        given(userRepository.findByroleID(uloga)).willReturn(korisnici);
+        //given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
+        given(userService.getUsersByRoleID(Long.valueOf(1))).willReturn(korisnici);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/users/projects/{id}",1)
@@ -229,9 +236,9 @@ public class UserTest {
 
     //PUT /updateUser/{id} LOS
     @Test
-    public void testPutUserDoesNotExists()
+    public void testPutUserDoesNotExist()
             throws Exception {
-        mvc.perform(put("/updateUser/{id}",1)
+        mvc.perform(put("/updateUser/{id}","nesto")
                 .content(asJsonString(new User(null,"","","noviUsername","","")))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
@@ -257,9 +264,9 @@ public class UserTest {
 
     //DELETE /deleteUser/{id} LOS
     @Test
-    public void testDeleteUserDoesNotExists()
+    public void testDeleteUserDoesNotExist()
             throws Exception {
-        mvc.perform(delete("/deleteRole/{id}",1)
+        mvc.perform(delete("/deleteRole/{id}","nesto")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
