@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sun.rmi.runtime.Log;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,12 +46,12 @@ public class ServerController {
     }
 
     @PostMapping("/addServer")
-    ResponseEntity addServer(@RequestBody Server server) {
+    ResponseEntity addServer(@Valid @RequestBody Server server) {
         return serverService.saveServer(server);
     }
 
     @PutMapping("/updateServer/{id}")
-    ResponseEntity updateServer(@RequestBody Server server, @PathVariable Long id) {
+    ResponseEntity updateServer(@Valid @RequestBody Server server, @PathVariable Long id) {
         return serverService.updateServer(server, id);
     }
 

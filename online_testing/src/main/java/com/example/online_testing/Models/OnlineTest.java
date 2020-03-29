@@ -19,9 +19,9 @@ public class OnlineTest {
     private Long ID;
 
     @Column(name = "Tests")
-    //@NotEmpty(message = "Online test name cannot be null or empty")
+    @NotEmpty(message = "Online test name cannot be null or empty!")
     @NotNull
-    @Size(min = 5, max = 30, message = "Online test name must be between 5 and 30 characters")
+    @Size(min = 5, max = 30, message = "Online test name must be between 5 and 30 characters!")
     private String tests;
 
     @Column(name = "Test_results")

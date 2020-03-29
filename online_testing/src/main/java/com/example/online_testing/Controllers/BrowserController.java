@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +50,12 @@ public class BrowserController {
     }
 
     @PostMapping("/addBrowser")
-    ResponseEntity addBrowser(@RequestBody Browser browser) {
+    ResponseEntity addBrowser(@Valid @RequestBody Browser browser) {
         return browserService.saveBrowser(browser);
     }
 
     @PutMapping("/updateBrowser/{id}")
-    ResponseEntity updateBrowser(@RequestBody Browser browser, @PathVariable Long id) {
+    ResponseEntity updateBrowser(@Valid @RequestBody Browser browser, @PathVariable Long id) {
         return browserService.updateBrowser(browser, id);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.online_testing;
 
 import com.example.online_testing.Controllers.ServerController;
+import com.example.online_testing.ErrorHandling.ApiError;
 import com.example.online_testing.Models.*;
 import com.example.online_testing.Repositories.*;
 import com.example.online_testing.Services.ServerService;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -74,16 +76,17 @@ public class ServerControllerTests {
     @Test
     public void getServerByIdDoesNotExist() throws Exception
     {
-        JSONObject jo = new JSONObject();
-        jo.put("message", "Server does not exist!");
-        given(serverService.getServerByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+        List<String> errors = new ArrayList<>();
+        errors.add("Server does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(serverService.getServerByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/server/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Server does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Server does not exist!"));
     }
 
     @Test
@@ -101,13 +104,14 @@ public class ServerControllerTests {
     @Test
     public void deleteServerDoesNotExist() throws Exception
     {
-        JSONObject jo = new JSONObject();
-        jo.put("message", "Server does not exist!");
-        given(serverService.deleteServerByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+        List<String> errors = new ArrayList<>();
+        errors.add("Server does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(serverService.deleteServerByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
 
         mvc.perform(MockMvcRequestBuilders.delete("/server/{id}", 1) )
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Server does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Server does not exist!"));
     }
 
     @Test
@@ -200,9 +204,10 @@ public class ServerControllerTests {
     @Test
     public void updateServerDoesNotExist() throws Exception
     {
-        JSONObject jo = new JSONObject();
-        jo.put("message", "The server you want to update does not exist!");
-        given(this.serverService.updateServer(ArgumentMatchers.any(Server.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+        List<String> errors = new ArrayList<>();
+        errors.add("The server you want to update does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(this.serverService.updateServer(ArgumentMatchers.any(Server.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
 
         mvc.perform(MockMvcRequestBuilders
                 .put("/updateServer/{id}", 1)
@@ -210,6 +215,63 @@ public class ServerControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("The server you want to update does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The server you want to update does not exist!"));
+    }
+
+    @Test
+    public void handleMethodArgumentNotValid() throws Exception {
+
+        Server server = new Server("http", 3306, "1", null);
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/updateServer/{id}", 1)
+                .content(asJsonString(server))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("must be a valid URL"));
+    }
+
+    @Test
+    public void handleMethodArgumentTypeMismatch() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/server/{id}", "id")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("id should be of type java.lang.Long"));
+    }
+
+    @Test
+    public void handleHttpRequestMethodNotSupported() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .patch("/server/{id}", "id")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("PATCH method is not supported for this request. Supported methods are GET DELETE "));
+
+    }
+
+    @Test
+    public void handleAlreadyExistsException() throws Exception {
+        Server server = new Server("http://nekiserver1.com", 3306, "1", null);
+        server.setID(Long.valueOf(1));
+
+        Server server1 = new Server("http://nekiserver1.com", 3306, "1", null);
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Server already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Record Already Exists", errors);
+
+        given(this.serverService.updateServer(ArgumentMatchers.any(Server.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/updateServer/{id}", 1)
+                .content(asJsonString(server1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Server already exists!"));
     }
 }

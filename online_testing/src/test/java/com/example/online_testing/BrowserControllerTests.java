@@ -2,12 +2,14 @@ package com.example.online_testing;
 
 import com.example.online_testing.Controllers.BrowserController;
 import com.example.online_testing.Controllers.ServerController;
+import com.example.online_testing.ErrorHandling.ApiError;
 import com.example.online_testing.Models.Browser;
 import com.example.online_testing.Models.Server;
 import com.example.online_testing.Repositories.*;
 import com.example.online_testing.Services.BrowserService;
 import com.example.online_testing.Services.BrowserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apiguardian.api.API;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,6 +54,9 @@ public class BrowserControllerTests {
 
     @MockBean
     private ServerRepository serverRepository;
+
+    @MockBean
+    private BrowserRepository browserRepository;
 
 
     public static String asJsonString(final Object obj) {
@@ -92,15 +98,16 @@ public class BrowserControllerTests {
     @Test
     public void getBrowserByIdDoNotExist() throws Exception
     {
-        JSONObject jo = new JSONObject();
-        jo.put("message", "Browser does not exist!");
-        given(browserService.getBrowserByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+        List<String> errors = new ArrayList<>();
+        errors.add("Browser does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(browserService.getBrowserByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
         mvc.perform(MockMvcRequestBuilders
                 .get("/browser/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Browser does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Browser does not exist!"));
     }
 
     @Test
@@ -118,12 +125,13 @@ public class BrowserControllerTests {
     @Test
     public void deleteBrowserDoesNotExist() throws Exception
     {
-        JSONObject jo = new JSONObject();
-        jo.put("message", "Browser does not exist!");
-        given(browserService.deleteBrowserByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+        List<String> errors = new ArrayList<>();
+        errors.add("Browser does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(browserService.deleteBrowserByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
         mvc.perform(MockMvcRequestBuilders.delete("/browser/{id}", 1) )
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Browser does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Browser does not exist!"));
     }
 
     @Test
@@ -184,11 +192,12 @@ public class BrowserControllerTests {
     @Test
     public void createBrowserServerDoesNotExist() throws Exception
     {
-        JSONObject jo = new JSONObject();
-        jo.put("message", "Server does not exist!");
+        List<String> errors = new ArrayList<>();
+        errors.add("Server does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
         Browser browser = new Browser("Mozila Firefox", null, "Mobile");
 
-        given(this.browserService.saveBrowser(ArgumentMatchers.any(Browser.class))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+        given(this.browserService.saveBrowser(ArgumentMatchers.any(Browser.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/addBrowser")
@@ -196,7 +205,7 @@ public class BrowserControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Server does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Server does not exist!"));
     }
 
     @Test
@@ -226,10 +235,11 @@ public class BrowserControllerTests {
     @Test
     public void updateBrowserDoesNotExist() throws Exception
     {
-        JSONObject jo = new JSONObject();
-        jo.put("message", "Browser does not exist!");
+        List<String> errors = new ArrayList<>();
+        errors.add("The browser you want to update does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
         Browser browser = new Browser("Mozila Firefox", null, "Mobile");
-        given(this.browserService.updateBrowser(ArgumentMatchers.any(Browser.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+        given(this.browserService.updateBrowser(ArgumentMatchers.any(Browser.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
 
         mvc.perform(MockMvcRequestBuilders
                 .put("/updateBrowser/{id}", 1)
@@ -237,6 +247,67 @@ public class BrowserControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Browser does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The browser you want to update does not exist!"));
+    }
+
+    @Test
+    public void handleMethodArgumentNotValid() throws Exception {
+
+        Browser browser1 = new Browser("", 1, "Tablet");
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/updateBrowser/{id}", 1)
+                .content(asJsonString(browser1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Browser name must be between 5 and 20 characters!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[1]").value("Browser name cannot be null or empty!"));
+    }
+
+    @Test
+    public void handleMethodArgumentTypeMismatch() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/browser/{id}", "id")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("id should be of type java.lang.Long"));
+    }
+
+    @Test
+    public void handleHttpRequestMethodNotSupported() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .patch("/browser/{id}", "id")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("PATCH method is not supported for this request. Supported methods are GET DELETE "));
+
+    }
+
+    @Test
+    public void handleAlreadyExistsException() throws Exception {
+        Server server = new Server("http://nekiserver1.com", 3306, "1", null);
+        server.setID(Long.valueOf(1));
+
+        Browser browser = new Browser("Mozila Firefox", 1, "Mobile");
+        browser.setID(Long.valueOf(1));
+
+        Browser browser1 = new Browser("Mozila Firefox", 1, "Mobile");
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Browser already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Record Already Exists", errors);
+
+        given(this.browserService.updateBrowser(ArgumentMatchers.any(Browser.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/updateBrowser/{id}", 1)
+                .content(asJsonString(browser1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Browser already exists!"));
     }
 }

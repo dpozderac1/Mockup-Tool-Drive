@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -21,16 +22,18 @@ public class Server {
     private Long ID;
 
     @Column(name = "URL")
-    //@NotEmpty(message = "URL cannot be null or empty")
+    @NotEmpty(message = "URL cannot be null or empty!")
     @NotNull
     @URL
     private String url;
 
     @Column(name = "Port")
+    @Min(value = 1, message = "Port cannot be 0!")
     @NotNull
     private int port;
 
     @Column(name = "Status")
+    @NotEmpty(message = "Status cannot be null or empty!")
     @NotNull
     private String status;
 

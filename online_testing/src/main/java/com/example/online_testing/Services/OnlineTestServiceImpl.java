@@ -1,5 +1,7 @@
 package com.example.online_testing.Services;
 
+import com.example.online_testing.ErrorHandling.AlreadyExistsException;
+import com.example.online_testing.ErrorHandling.RecordNotFoundException;
 import com.example.online_testing.Models.GSPECDocument;
 import com.example.online_testing.Models.OnlineTest;
 import com.example.online_testing.Models.Server;
@@ -38,14 +40,12 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 
     @Override
     public ResponseEntity getOnlineTestByID(Long id) {
-        JSONObject jo = new JSONObject();
         if(onlineTestRepository.existsByID(id)) {
             OnlineTest onlineTest = onlineTestRepository.findByID(id);
             return new ResponseEntity(onlineTest, HttpStatus.OK);
         }
         else {
-            jo.put("message", "Online test does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Online test does not exist!");
         }
     }
 
@@ -57,8 +57,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
             jo.put("message", "Online test is successfully deleted!");
             return new ResponseEntity(jo.toString(), HttpStatus.OK);
         }
-        jo.put("message", "Online test does not exist!");
-        return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+        throw new RecordNotFoundException("Online test does not exist!");
     }
 
     @Override
@@ -78,11 +77,9 @@ public class OnlineTestServiceImpl implements OnlineTestService{
     @Override
     public ResponseEntity getOnlineTestGSPECDocument(Long id) {
         GSPECDocument gspecDocument = gspecDocumentRepository.findByID(id);
-        JSONObject jo = new JSONObject();
         OnlineTest onlineTest = onlineTestRepository.findBygspecDocumentID(gspecDocument);
         if(onlineTest == null) {
-            jo.put("message", "Online test does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Online test does not exist!");
         }
         else return new ResponseEntity(onlineTest, HttpStatus.OK);
     }
@@ -94,16 +91,13 @@ public class OnlineTestServiceImpl implements OnlineTestService{
         User user = userRepository.findByID(Long.valueOf(onlineTest.getIdUser()));
         GSPECDocument gspecDocument = gspecDocumentRepository.findByID(Long.valueOf(onlineTest.getIdGspecDocument()));
         if(server == null) {
-            jo.put("message", "Server does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Server does not exist!");
         }
         else if(user == null) {
-            jo.put("message", "User does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("User does not exist!");
         }
         else if(gspecDocument == null) {
-            jo.put("message", "GSPEC Document does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("GSPEC Document does not exist!");
         }
         else {
             OnlineTest onlineTest11 = onlineTestRepository.findBygspecDocumentID(gspecDocument);
@@ -118,13 +112,11 @@ public class OnlineTestServiceImpl implements OnlineTestService{
                 }
                 if(!postoji) onlineTestRepository.save(onlineTest1);
                 else {
-                    jo.put("message", "Online test already exists!");
-                    return new ResponseEntity(jo.toString(), HttpStatus.CONFLICT);
+                    throw new AlreadyExistsException("Online test already exists!");
                 }
             }
             else {
-                jo.put("message", "Online test for this GSPEC document already exists!");
-                return new ResponseEntity(jo.toString(), HttpStatus.OK);
+                throw new AlreadyExistsException("Online test for this GSPEC document already exists!");
             }
         }
         jo.put("message", "Online test is successfully added!");
@@ -136,8 +128,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
         OnlineTest onlineTest1 = onlineTestRepository.findByID(id);
         JSONObject jo = new JSONObject();
         if(onlineTest1 == null) {
-            jo.put("message", "Online test does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("The online test you want to update does not exist!");
         }
         else {
             OnlineTest newOnlineTest = new OnlineTest(onlineTest1.getTests(), onlineTest1.getTest_results(), onlineTest1.getServerID(), onlineTest1.getUserID(), onlineTest1.getGspecDocumentID());
@@ -150,8 +141,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
             if(!Integer.toString(onlineTest.getIdServer()).equals(Integer.toString(0))) {
                 Server server = serverRepository.findByID(Long.valueOf(onlineTest.getIdServer()));
                 if (server == null) {
-                    jo.put("message", "Server does not exist!");
-                    return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+                    throw new RecordNotFoundException("Server does not exist!");
                 }
                 else {
                     newOnlineTest.setServerID(server);
@@ -160,8 +150,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
             if(!Integer.toString(onlineTest.getIdUser()).equals(Integer.toString(0))) {
                 User user = userRepository.findByID(Long.valueOf(onlineTest.getIdUser()));
                 if (user == null) {
-                    jo.put("message", "User does not exist!");
-                    return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+                    throw new RecordNotFoundException("User does not exist!");
                 }
                 else {
                     newOnlineTest.setUserID(user);
@@ -170,8 +159,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
             if(!Integer.toString(onlineTest.getIdGspecDocument()).equals(Integer.toString(0))) {
                 GSPECDocument gspecDocument = gspecDocumentRepository.findByID(Long.valueOf(onlineTest.getIdGspecDocument()));
                 if (gspecDocument == null) {
-                    jo.put("message", "GSPEC Document does not exist!");
-                    return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+                    throw new RecordNotFoundException("GSPEC Document does not exist!");
                 }
                 else {
                     newOnlineTest.setGspecDocumentID(gspecDocument);
@@ -193,8 +181,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
                 onlineTestRepository.save(onlineTest1);
             }
             else {
-                jo.put("message", "Online test already exists!");
-                return new ResponseEntity(jo.toString(), HttpStatus.CONFLICT);
+                throw new AlreadyExistsException("Online test already exists!");
             }
         }
         return new ResponseEntity(onlineTest1, HttpStatus.OK);

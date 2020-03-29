@@ -1,5 +1,7 @@
 package com.example.online_testing.Services;
 
+import com.example.online_testing.ErrorHandling.AlreadyExistsException;
+import com.example.online_testing.ErrorHandling.RecordNotFoundException;
 import com.example.online_testing.Models.Role;
 import com.example.online_testing.Models.RoleNames;
 import com.example.online_testing.Models.Server;
@@ -35,14 +37,12 @@ public class ServerServiceImpl implements ServerService {
 
     @Override
     public ResponseEntity getServerByID(Long id) {
-        JSONObject jo = new JSONObject();
         if(serverRepository.existsByID(id)) {
             Server server = serverRepository.findByID(id);
             return new ResponseEntity(server, HttpStatus.OK);
         }
         else {
-            jo.put("message", "Server does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Server does not exist!");
         }
     }
 
@@ -54,8 +54,7 @@ public class ServerServiceImpl implements ServerService {
             jo.put("message", "Server is successfully deleted!");
             return new ResponseEntity(jo.toString(), HttpStatus.OK);
         }
-        jo.put("message", "Server does not exist!");
-        return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+        throw new RecordNotFoundException("Server does not exist!");
     }
 
     @Override
@@ -70,7 +69,6 @@ public class ServerServiceImpl implements ServerService {
         Role admin = roleRepository.findByroleName(RoleNames.ADMIN);
         User user = userRepository.findByroleID(admin);
         server.setUserID(user);
-        JSONObject jo = new JSONObject();
         List<Server> servers = serverRepository.findAll();
         boolean postoji = false;
         for (Server s: servers) {
@@ -80,8 +78,7 @@ public class ServerServiceImpl implements ServerService {
         }
         if(!postoji) serverRepository.save(server);
         else {
-            jo.put("message", "Server already exists!");
-            return new ResponseEntity(jo.toString(), HttpStatus.CONFLICT);
+            throw new AlreadyExistsException("Server already exists!");
         }
         return new ResponseEntity(server, HttpStatus.CREATED);
     }
@@ -89,10 +86,8 @@ public class ServerServiceImpl implements ServerService {
     @Override
     public ResponseEntity updateServer(Server server, Long id) {
         Server oldServer = serverRepository.findByID(id);
-        JSONObject jo = new JSONObject();
         if(oldServer == null) {
-            jo.put("message", "The server you want to update does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("The server you want to update does not exist!");
         }
         else{
             Server newServer = new Server(oldServer.getUrl(), oldServer.getPort(), oldServer.getStatus(), oldServer.getUserID());
@@ -119,8 +114,7 @@ public class ServerServiceImpl implements ServerService {
                 serverRepository.save(oldServer);
             }
             else {
-                jo.put("message", "Server already exists!");
-                return new ResponseEntity(jo.toString(), HttpStatus.CONFLICT);
+                throw new AlreadyExistsException("Server already exists!");
             }
 
         }

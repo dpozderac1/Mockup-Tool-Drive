@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,12 +54,12 @@ public class OnlineTestController {
     }
 
     @PostMapping("/addOnlineTest")
-    ResponseEntity addOnlineTest(@RequestBody OnlineTest onlineTest) {
+    ResponseEntity addOnlineTest(@Valid @RequestBody OnlineTest onlineTest) {
         return onlineTestService.saveOnlineTest(onlineTest);
     }
 
     @PutMapping("/updateOnlineTest/{id}")
-    ResponseEntity updateOnlineTest(@RequestBody OnlineTest onlineTest, @PathVariable Long id) {
+    ResponseEntity updateOnlineTest(@Valid @RequestBody OnlineTest onlineTest, @PathVariable Long id) {
         return onlineTestService.updateOnlineTest(onlineTest, id);
     }
 }

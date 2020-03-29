@@ -19,15 +19,15 @@ public class Browser {
     private Long ID;
 
     @Column(name = "Name")
-    //@NotEmpty(message = "Browser name cannot be null or empty")
+    @NotEmpty(message = "Browser name cannot be null or empty!")
     @NotNull
-    @Size(min = 5, max = 20, message = "Browser name must be between 5 and 20 characters")
+    @Size(min = 5, max = 20, message = "Browser name must be between 5 and 20 characters!")
     private String name;
 
     @Column(name = "Version")
-    //@NotEmpty(message = "Version cannot be null or empty")
+    @NotEmpty(message = "Version cannot be null or empty!")
     @NotNull
-    @Size(min = 4, max = 15, message = "Version must be between 4 and 15 characters")
+    @Size(min = 4, max = 15, message = "Version must be between 4 and 15 characters!")
     private String version;
 
     @ManyToOne()

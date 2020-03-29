@@ -1,5 +1,7 @@
 package com.example.online_testing.Services;
 
+import com.example.online_testing.ErrorHandling.AlreadyExistsException;
+import com.example.online_testing.ErrorHandling.RecordNotFoundException;
 import com.example.online_testing.Models.Browser;
 import com.example.online_testing.Models.Server;
 import com.example.online_testing.Repositories.BrowserRepository;
@@ -29,14 +31,12 @@ public class BrowserServiceImpl implements BrowserService {
 
     @Override
     public ResponseEntity getBrowserByID(Long id) {
-        JSONObject jo = new JSONObject();
         if(browserRepository.existsByID(id)) {
             Browser browser = browserRepository.findByID(id);
             return new ResponseEntity(browser, HttpStatus.OK);
         }
         else {
-            jo.put("message", "Browser does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Browser does not exist!");
         }
     }
 
@@ -48,8 +48,7 @@ public class BrowserServiceImpl implements BrowserService {
             jo.put("message", "Browser is successfully deleted!");
             return new ResponseEntity(jo.toString(), HttpStatus.OK);
         }
-        jo.put("message", "Browser does not exist!");
-        return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+        throw new RecordNotFoundException("Browser does not exist!");
     }
 
     @Override
@@ -64,8 +63,7 @@ public class BrowserServiceImpl implements BrowserService {
         Server server = serverRepository.findByID(Long.valueOf(browser.getIdServer()));
         JSONObject jo = new JSONObject();
         if(server == null) {
-            jo.put("message", "Server does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Server does not exist!");
         }
         else {
             Browser newBrowser = new Browser(browser.getName(), server, browser.getVersion());
@@ -78,8 +76,7 @@ public class BrowserServiceImpl implements BrowserService {
             }
             if(!postoji) browserRepository.save(newBrowser);
             else {
-                jo.put("message", "Browser already exists!");
-                return new ResponseEntity(jo.toString(), HttpStatus.CONFLICT);
+                throw new AlreadyExistsException("Browser already exists!");
             }
         }
         jo.put("message", "Browser is successfully added!");
@@ -91,8 +88,7 @@ public class BrowserServiceImpl implements BrowserService {
         Browser oldBrowser = browserRepository.findByID(id);
         JSONObject jo = new JSONObject();
         if(oldBrowser == null) {
-            jo.put("message", "Browser does not exist!");
-            return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("The browser you want to update does not exist!");
         }
         else {
             Browser newBrowser = new Browser(oldBrowser.getName(), oldBrowser.getServerID(), oldBrowser.getVersion());
@@ -105,8 +101,7 @@ public class BrowserServiceImpl implements BrowserService {
             if(!Integer.toString(browser.getIdServer()).equals(Integer.toString(0))) {
                 Server server = serverRepository.findByID(Long.valueOf(browser.getIdServer()));
                 if (server == null) {
-                    jo.put("message", "Server does not exist!");
-                    return new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+                    throw new RecordNotFoundException("Server does not exist!");
                 }
                 else {
                     newBrowser.setServerID(server);
@@ -126,8 +121,7 @@ public class BrowserServiceImpl implements BrowserService {
                 browserRepository.save(oldBrowser);
             }
             else {
-                jo.put("message", "Browser already exists!");
-                return new ResponseEntity(jo.toString(), HttpStatus.CONFLICT);
+                throw new AlreadyExistsException("Browser already exists!");
             }
         }
         return new ResponseEntity(oldBrowser, HttpStatus.OK);
