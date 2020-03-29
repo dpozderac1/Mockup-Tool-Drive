@@ -28,8 +28,9 @@ public class ProjectController {
     @PutMapping("/addOrUpdateProject/{id}")
     ResponseEntity<?> addOrReplace(@RequestBody Project newProject, @PathVariable Long id) {
         Project project = projectService.addOrReplace(newProject, id);
-        if(project != null) return new ResponseEntity<>(project, HttpStatus.OK);
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        //if(project != null)
+            return new ResponseEntity<>(project, HttpStatus.OK);
+        //else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/renameProject/{id}")
@@ -46,9 +47,9 @@ public class ProjectController {
     }
 
     @PostMapping("/addProject")
-    ResponseEntity<?> newProject(@RequestBody Project newProject) throws URISyntaxException {
+    ResponseEntity<Project> newProject(@RequestBody Project newProject) throws URISyntaxException {
         Project project = projectService.newProject(newProject);
-        return new ResponseEntity<>(project, HttpStatus.CREATED);
+        return new ResponseEntity<Project>(project, HttpStatus.CREATED);
     }
 
     @GetMapping("/projects")

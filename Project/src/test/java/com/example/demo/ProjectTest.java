@@ -4,9 +4,12 @@ import com.example.demo.Controllers.ProjectController;
 import com.example.demo.Models.Project;
 import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.VersionRepository;
+import com.example.demo.Services.ProjectService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -37,13 +40,16 @@ public class ProjectTest {
     @MockBean
     private ProjectRepository projectRepository;
 
+    @MockBean
+    private ProjectService projectService;
+
     @Test
     public void testGetProjects() throws Exception{
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
 
         List<Project> projekti = Arrays.asList(project);
-        given(projectRepository.findAll()).willReturn(projekti);
+        given(projectService.getAllProjects()).willReturn(projekti);
 
         mvc.perform(get("/projects")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -58,7 +64,7 @@ public class ProjectTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
 
-        given(projectRepository.findByID(Long.valueOf(1))).willReturn(project);
+        given(projectService.getOneProject(Long.valueOf(1))).willReturn(project);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/project/{id}", 1)
@@ -69,17 +75,26 @@ public class ProjectTest {
     }
 
     @Test
+    public void deleteProject() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.delete("/delete/project/{id}", 1))
+                .andExpect(status().isAccepted());
+    }
+
+    @Test
     public void testPostProject() throws Exception {
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+
+        given(projectService.newProject(ArgumentMatchers.any(Project.class))).willReturn(project);
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/addProject")
                 .content(asJsonString(project))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(project.getName()));
     }
 
     public static String asJsonString(final Object obj) {
@@ -91,18 +106,12 @@ public class ProjectTest {
     }
 
     @Test
-    public void deleteProject() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.delete("/delete/project/{id}", 1))
-                    .andExpect(status().isAccepted());
-    }
-
-    @Test
     public void updateProject() throws Exception
     {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", null, null, 1);
-
-        given(projectRepository.findByID(Long.valueOf(1))).willReturn(project);
+        Project project = new Project("Mockup tool", format.parse("2020-3-17" ), format.parse("2020-3-17") , 1);
+        project.setID(1L);
+        given(projectService.addOrReplace(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(project);
         project.setID(Long.valueOf(1));
 
         mvc.perform( MockMvcRequestBuilders
@@ -112,8 +121,8 @@ public class ProjectTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(project.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.date_created").value(project.getDate_created()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.date_modified").value(project.getDate_modified()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.date_created").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.date_modified").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.priority").value(project.getPriority()));
     }
 
@@ -123,7 +132,7 @@ public class ProjectTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
 
-        given(projectRepository.findByID(Long.valueOf(1))).willReturn(project);
+        given(projectService.renameProject(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong())).willReturn(project);
 
         project.setID(Long.valueOf(1));
 

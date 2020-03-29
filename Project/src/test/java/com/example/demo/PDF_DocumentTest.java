@@ -10,9 +10,12 @@ import com.example.demo.Repositories.MockupRepository;
 import com.example.demo.Repositories.PDF_DocumentRepository;
 import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.VersionRepository;
+import com.example.demo.Services.MockupService;
+import com.example.demo.Services.PDF_DocumentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -45,13 +48,16 @@ public class PDF_DocumentTest {
     @MockBean
     private MockupRepository mockupRepository;
 
+    @MockBean
+    private PDF_DocumentService pdf_documentService;
+
     @Test
     public void testGetPDFs() throws Exception{
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         PDF_Document pdf = new PDF_Document(null, "PDF", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
         List<PDF_Document> pdfs = Arrays.asList(pdf);
-        given(pdf_documentRepository.findAll()).willReturn(pdfs);
+        given(pdf_documentService.getAllPDFs()).willReturn(pdfs);
 
         mvc.perform(get("/pdf_documents")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -66,7 +72,7 @@ public class PDF_DocumentTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         PDF_Document pdf = new PDF_Document(null, "PDF", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(pdf_documentRepository.findByID(Long.valueOf(1))).willReturn(pdf);
+        given(pdf_documentService.getOnePDF(1L)).willReturn(pdf);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/pdf_document/{id}", 1)
@@ -77,16 +83,52 @@ public class PDF_DocumentTest {
     }
 
     @Test
+    public void testGetPDFsOfMockup() throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Mockup mockup = new Mockup(null, "Mockup", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+        mockup.setID(Long.valueOf(1));
+
+        PDF_Document pdf_document = new PDF_Document(mockup, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+        pdf_document.setID(Long.valueOf(2));
+
+        List<PDF_Document> pdf_documents = Arrays.asList(pdf_document);
+        given(pdf_documentService.allPDFsOfMockup(1L)).willReturn(pdf_documents);
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/PDF_Documents/mockup/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(pdf_document.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].file").value(pdf_document.getFile()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date_created").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date_modified").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].accessed_date").isNotEmpty());
+    }
+
+    @Test
+    public void deletePDF() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.delete("/delete/pdf_document/{id}", 1))
+                .andExpect(status().isAccepted());
+    }
+
+    @Test
     public void testPostPDF() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         PDF_Document pdf = new PDF_Document(null, "PDF", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
+        given(pdf_documentService.newPDF(ArgumentMatchers.any(PDF_Document.class))).willReturn(pdf);
         mvc.perform(MockMvcRequestBuilders
                 .post("/addPDF_Document")
                 .content(asJsonString(pdf))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(pdf.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].file").value(pdf.getFile()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date_created").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date_modified").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].accessed_date").isNotEmpty());;
     }
 
     public static String asJsonString(final Object obj) {
@@ -98,17 +140,11 @@ public class PDF_DocumentTest {
     }
 
     @Test
-    public void deletePDF() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.delete("/delete/pdf_document/{id}", 1))
-                .andExpect(status().isAccepted());
-    }
-
-    @Test
     public void updatePDF() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         PDF_Document pdf_document = new PDF_Document(null, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(pdf_documentRepository.findByID(Long.valueOf(1))).willReturn(pdf_document);
+        given(pdf_documentService.addOrReplacePDF(ArgumentMatchers.any(PDF_Document.class), ArgumentMatchers.anyLong())).willReturn(pdf_document);
         pdf_document.setID(Long.valueOf(1));
 
         mvc.perform( MockMvcRequestBuilders
@@ -125,28 +161,5 @@ public class PDF_DocumentTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.accessed_date").isNotEmpty());
     }
 
-    @Test
-    public void testGetPDFsOfMockup() throws Exception{
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Mockup mockup = new Mockup(null, "Mockup", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
-        mockup.setID(Long.valueOf(2));
-        given(mockupRepository.findByID(Long.valueOf(1))).willReturn(mockup);
 
-        PDF_Document pdf_document = new PDF_Document(mockup, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
-        pdf_document.setID(Long.valueOf(2));
-
-        List<PDF_Document> pdf_documents = Arrays.asList(pdf_document);
-        given(pdf_documentRepository.findAllBymockupID(mockup)).willReturn(pdf_documents);
-
-        mvc.perform(MockMvcRequestBuilders
-                .get("/PDF_Documents/mockup/{id}", 1)
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(pdf_document.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].file").value(pdf_document.getFile()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date_created").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date_modified").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].accessed_date").isNotEmpty());
-    }
 }
