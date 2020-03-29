@@ -9,9 +9,11 @@ import com.example.demo.Repositories.RoleRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.Services.RoleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.bytebuddy.asm.Advice;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -100,10 +102,17 @@ public class RoleTest {
 
         Role uloga=new Role(RoleNames.USER);
 
-        mvc.perform(post("/role")
+        JSONObject objekat = new JSONObject();
+        objekat.put("message", "Role is successfully added!");
+        given(this.roleService.saveRole(ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(objekat.toString(), HttpStatus.CREATED));
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/role")
                 .content(asJsonString(uloga))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Role is successfully added!"));
     }
 
     //PUT /updateRole/{id} DOBAR
@@ -112,19 +121,16 @@ public class RoleTest {
             throws Exception {
         Role uloga=new Role(RoleNames.ADMIN);
         uloga.setID(1L);
-        System.out.println("JSON je: ");
-        System.out.println(asJsonString(new Role(RoleNames.USER)));
 
-        JSONObject objekat=new JSONObject();
-        objekat.put("message:","Role is successfully added!");
         Role nova=new Role(RoleNames.USER);
-        given(roleService.updateRole(1L,nova)).willReturn(new ResponseEntity(objekat,HttpStatus.OK));
-        mvc.perform(put("/updateRole/"+1)
+        nova.setID(1L);
+        given(this.roleService.updateRole(ArgumentMatchers.anyLong(),ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(nova,HttpStatus.OK));
+        mvc.perform(put("/updateRole/{id}",1)
                 .content(asJsonString(nova))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(""));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.role_name").value(nova.getRole_name().toString()));
     }
 
     //PUT /updateRole/{id} LOS

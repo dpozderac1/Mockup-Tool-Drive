@@ -86,7 +86,7 @@ public class RoleServiceImpl implements RoleService{
             e.printStackTrace();
         }
 
-        return new ResponseEntity(objekat.toString(),HttpStatus.OK);
+        return new ResponseEntity(objekat.toString(),HttpStatus.CREATED);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public ResponseEntity<?> updateRole(Long id, Role role) {
+    public ResponseEntity updateRole(Long id, Role role) {
         JSONObject objekat=new JSONObject();
         List<Role> sveUloge=roleRepository.findAll();
         if(role==null){
@@ -154,11 +154,7 @@ public class RoleServiceImpl implements RoleService{
         Role uloga=roleRepository.findByID(id);
         uloga.setRole_name(role.getRole_name());
         roleRepository.save(uloga);
-        try {
-            objekat.put ("message","Role is successfully updated!");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity(objekat.toString(),HttpStatus.OK);
+
+        return new ResponseEntity(uloga,HttpStatus.OK);
     }
 }

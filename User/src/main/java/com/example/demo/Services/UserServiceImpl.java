@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return new ResponseEntity(objekat.toString(),HttpStatus.OK);
+        return new ResponseEntity(objekat.toString(),HttpStatus.CREATED);
     }
 
     @Override
@@ -164,12 +164,8 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(korisnik);
-        try {
-            objekat.put("message","User is successfully updated!");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity(objekat.toString(), HttpStatus.OK);
+
+        return new ResponseEntity(korisnik, HttpStatus.OK);
     }
 
     @Override

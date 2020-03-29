@@ -10,8 +10,10 @@ import com.example.demo.Repositories.RoleRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.Services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -164,7 +166,7 @@ public class UserTest {
         korisnik.setID(Long.valueOf(1));
         //given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
         ResponseEntity odgovor=new ResponseEntity(korisnik, HttpStatus.OK);
-        given(userService.getUserByID(Long.valueOf(1))).willReturn(odgovor);
+        given(userService.getUserByID(ArgumentMatchers.anyLong())).willReturn(odgovor);
 
         List<Project> projekti = Arrays.asList(projekat);
         korisnik.setProjects(projekti);
@@ -176,7 +178,8 @@ public class UserTest {
         korisnik.setProjects(projekti);
 
         //given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
-        given(userService.getUsersByRoleID(Long.valueOf(1))).willReturn(korisnici);
+        //given(userService.getUsersByRoleID(ArgumentMatchers.anyLong())).willReturn(korisnici);
+        given(userService.getUserProjects(ArgumentMatchers.anyLong())).willReturn(projekti);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/users/projects/{id}",1)
@@ -186,7 +189,7 @@ public class UserTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(projekat.getID()));
     }
 
-    //GET /users/role/{id} LOS
+    //GET /users/projects/{id} LOS
     @Test
     public void testGetProjectsOfUserDoesNotExists()
             throws Exception {
@@ -206,12 +209,21 @@ public class UserTest {
 
         Role uloga=new Role(RoleNames.ADMIN);
         uloga.setID(Long.valueOf(1));
+        given(roleRepository.findByID(1l)).willReturn(uloga);
         User korisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        korisnik.setID(1L);
+        JSONObject objekat = new JSONObject();
+        objekat.put("message", "User is successfully added!");
+        given(this.userService.saveUser(ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(objekat.toString(), HttpStatus.CREATED));
 
-        mvc.perform(post("/user")
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/user")
                 .content(asJsonString(korisnik))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("User is successfully added!"));
     }
 
     //PUT /updateUser/{id} DOBAR
@@ -224,14 +236,16 @@ public class UserTest {
         given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
         User korisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
         korisnik.setID(Long.valueOf(1));
-        given(userRepository.findByID(Long.valueOf(1))).willReturn(korisnik);
+
+        User noviKorisnik=new User(uloga,"","","noviUsername","","");
+        given(this.userService.updateUser(ArgumentMatchers.anyLong(),ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(noviKorisnik,HttpStatus.OK));
 
         mvc.perform(put("/updateUser/{id}",1)
-                .content(asJsonString(new User(uloga,"","","noviUsername","","")))
+                .content(asJsonString(noviKorisnik))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(korisnik.getUsername()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(noviKorisnik.getUsername()));
     }
 
     //PUT /updateUser/{id} LOS
