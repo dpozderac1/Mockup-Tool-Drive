@@ -29,8 +29,8 @@ public class BrowserController {
     private BrowserService browserService;
 
     @GetMapping("/browsers")
-    ResponseEntity all(){
-        return new ResponseEntity(browserService.getAllBrowsers(), HttpStatus.OK);
+    List<Browser> all(){
+        return browserService.getAllBrowsers();
     }
 
     @GetMapping("/browser/{id}")

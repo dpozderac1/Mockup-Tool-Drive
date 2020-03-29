@@ -3,12 +3,17 @@ package com.example.online_testing;
 import com.example.online_testing.Controllers.ServerController;
 import com.example.online_testing.Models.*;
 import com.example.online_testing.Repositories.*;
+import com.example.online_testing.Services.ServerService;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -18,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.example.online_testing.BrowserControllerTests.asJsonString;
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,25 +38,16 @@ public class ServerControllerTests {
     private MockMvc mvc;
 
     @MockBean
-    private OnlineTestRepository onlineTestRepository;
-
-    @MockBean
-    private ServerRepository serverRepository;
-
-    @MockBean
-    private GSPECDocumentRepository gspecDocumentRepository;
+    private ServerService serverService;
 
     @MockBean
     private UserRepository userRepository;
-
-    @MockBean
-    private RoleRepository roleRepository;
 
     @Test
     public void testGetServers() throws Exception {
         Server server = new Server("http://nekiserver1.com", 3306, "1", null);
         List<Server> servers = Arrays.asList(server);
-        given(serverRepository.findAll()).willReturn(servers);
+        given(serverService.getAllServers()).willReturn(servers);
 
         mvc.perform(get("/servers")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -64,8 +61,7 @@ public class ServerControllerTests {
     {
         Server server = new Server("http://nekiserver1.com", 3306, "1", null);
         server.setID(Long.valueOf(1));
-        given(serverRepository.findByID(Long.valueOf(1))).willReturn(server);
-        given(serverRepository.existsByID(Long.valueOf(1))).willReturn(true);
+        given(serverService.getServerByID(Long.valueOf(1))).willReturn(new ResponseEntity(server, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/server/{id}", 1)
@@ -78,33 +74,40 @@ public class ServerControllerTests {
     @Test
     public void getServerByIdDoesNotExist() throws Exception
     {
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Server does not exist!");
+        given(serverService.getServerByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+
         mvc.perform(MockMvcRequestBuilders
                 .get("/server/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Server does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Server does not exist!"));
     }
 
     @Test
     public void deleteServerDoesExist() throws Exception
     {
-        Server server = new Server("http://nekiserver1.com", 3306, "1", null);
-        server.setID(Long.valueOf(1));
-        given(serverRepository.findByID(Long.valueOf(1))).willReturn(server);
-        given(serverRepository.existsByID(Long.valueOf(1))).willReturn(true);
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Server is successfully deleted!");
+        given(serverService.deleteServerByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders.delete("/server/{id}", 1) )
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Server is successfully deleted!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Server is successfully deleted!"));
     }
 
     @Test
     public void deleteServerDoesNotExist() throws Exception
     {
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Server does not exist!");
+        given(serverService.deleteServerByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+
         mvc.perform(MockMvcRequestBuilders.delete("/server/{id}", 1) )
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Server does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Server does not exist!"));
     }
 
     @Test
@@ -113,10 +116,11 @@ public class ServerControllerTests {
         User user = new User(null, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
         user.setID(Long.valueOf(1));
         given(userRepository.findByID(Long.valueOf(1))).willReturn(user);
-        Server server = new Server("http://nekiserver1.com", 3306, "1", null);
+
+        Server server = new Server("http://nekiserver1.com", 3306, "1", user);
         server.setID(Long.valueOf(1));
         List<Server> servers = Arrays.asList(server);
-        given(serverRepository.findAllByuserID(user)).willReturn(servers);
+        given(serverService.getUserServers(user.getID())).willReturn(servers);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/userServers/{id}", 1)
@@ -129,6 +133,9 @@ public class ServerControllerTests {
     @Test
     public void getUserServersDoesNotExist() throws Exception
     {
+        List<Server> servers = Arrays.asList();
+        given(serverService.getUserServers(Long.valueOf(1))).willReturn(servers);
+
         mvc.perform(MockMvcRequestBuilders
                 .get("/userServers/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
@@ -142,13 +149,16 @@ public class ServerControllerTests {
     {
         Role admin = new Role();
         admin.setRole_name(RoleNames.ADMIN);
-        given(roleRepository.findByroleName(RoleNames.ADMIN)).willReturn(admin);
+
         User user = new User(admin, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
         given(userRepository.findByroleID(admin)).willReturn(user);
 
+        Server server = new Server("http://nekiserver1.com", 3306, "1", user);
+        given(this.serverService.saveServer(ArgumentMatchers.any(Server.class))).willReturn(new ResponseEntity(server, HttpStatus.CREATED));
+
         mvc.perform(MockMvcRequestBuilders
                 .post("/addServer")
-                .content(asJsonString(new Server("http://nekiserver1.com", 3306, "1", user)))
+                .content(asJsonString(server))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -158,6 +168,9 @@ public class ServerControllerTests {
     @Test
     public void createServerDoesNotExist() throws Exception
     {
+        Server server = new Server("http://nekiserver1.com", 3306, "1", null);
+        given(this.serverService.saveServer(ArgumentMatchers.any(Server.class))).willReturn(new ResponseEntity(server, HttpStatus.CREATED));
+
         mvc.perform(MockMvcRequestBuilders
                 .post("/addServer")
                 .content(asJsonString(new Server("http://nekiserver1.com", 3306, "1", null)))
@@ -172,11 +185,12 @@ public class ServerControllerTests {
     {
         Server server = new Server("http://nekiserver1.com", 3306, "1", null);
         server.setID(Long.valueOf(1));
-        given(serverRepository.findByID(Long.valueOf(1))).willReturn(server);
+        Server server1 = new Server("http://nekiserver2.com", 3306, "1", null);
+        given(this.serverService.updateServer(ArgumentMatchers.any(Server.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(server1, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .put("/updateServer/{id}", 1)
-                .content(asJsonString(new Server("http://nekiserver2.com", 3306, "1", null)))
+                .content(asJsonString(server1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -186,12 +200,16 @@ public class ServerControllerTests {
     @Test
     public void updateServerDoesNotExist() throws Exception
     {
+        JSONObject jo = new JSONObject();
+        jo.put("message", "The server you want to update does not exist!");
+        given(this.serverService.updateServer(ArgumentMatchers.any(Server.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+
         mvc.perform(MockMvcRequestBuilders
                 .put("/updateServer/{id}", 1)
                 .content(asJsonString(new Server("http://nekiserver1.com", 3306, "1", null)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("The server you want to update does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("The server you want to update does not exist!"));
     }
 }

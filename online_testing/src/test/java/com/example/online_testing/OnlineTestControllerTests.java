@@ -4,16 +4,21 @@ import com.example.online_testing.Controllers.OnlineTestController;
 import com.example.online_testing.Controllers.UserController;
 import com.example.online_testing.Models.*;
 import com.example.online_testing.Repositories.*;
+import com.example.online_testing.Services.OnlineTestService;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.event.internal.OnLockVisitor;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +37,7 @@ import static com.example.online_testing.BrowserControllerTests.asJsonString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,25 +50,14 @@ public class OnlineTestControllerTests {
     private MockMvc mvc;
 
     @MockBean
-    private OnlineTestRepository onlineTestRepository;
+    private OnlineTestService onlineTestService;
 
-    @MockBean
-    private ServerRepository serverRepository;
-
-    @MockBean
-    private GSPECDocumentRepository gspecDocumentRepository;
-
-    @MockBean
-    private UserRepository userRepository;
-
-    @MockBean
-    private RoleRepository roleRepository;
 
     @Test
     public void testGetOnlineTests() throws Exception {
         OnlineTest onlineTest = new OnlineTest("Test1", null, null, null, null);
         List<OnlineTest> onlineTests = Arrays.asList(onlineTest);
-        given(onlineTestRepository.findAll()).willReturn(onlineTests);
+        given(onlineTestService.getAllOnlineTests()).willReturn(onlineTests);
 
         mvc.perform(get("/onlineTests")
                     .contentType(MediaType.APPLICATION_JSON))
@@ -76,8 +71,8 @@ public class OnlineTestControllerTests {
     {
         OnlineTest onlineTest = new OnlineTest("Test1", null, null, null, null);
         onlineTest.setID(Long.valueOf(1));
-        given(onlineTestRepository.existsByID(Long.valueOf(1))).willReturn(true);
-        given(onlineTestRepository.findByID(Long.valueOf(1))).willReturn(onlineTest);
+
+        given(onlineTestService.getOnlineTestByID(Long.valueOf(1))).willReturn(new ResponseEntity(onlineTest, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/onlineTest/{id}", 1)
@@ -90,33 +85,40 @@ public class OnlineTestControllerTests {
     @Test
     public void getOnlineTestByIdDoNotExist() throws Exception
     {
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Online test does not exist!");
+        given(onlineTestService.getOnlineTestByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+
         mvc.perform(MockMvcRequestBuilders
                 .get("/onlineTest/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Online test does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Online test does not exist!"));
     }
 
     @Test
     public void deleteOnlineTestDoesExist() throws Exception
     {
-        OnlineTest onlineTest = new OnlineTest("Test1", null, null, null, null);
-        onlineTest.setID(Long.valueOf(1));
-        given(onlineTestRepository.existsByID(Long.valueOf(1))).willReturn(true);
-        given(onlineTestRepository.findByID(Long.valueOf(1))).willReturn(onlineTest);
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Online test is successfully deleted!");
+        given(onlineTestService.deleteOnlineTestByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders.delete("/onlineTest/{id}", 1) )
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Online test is successfully deleted!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Online test is successfully deleted!"));
     }
 
     @Test
     public void deleteOnlineTestDoesNotExist() throws Exception
     {
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Online test does not exist!");
+        given(onlineTestService.deleteOnlineTestByID(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+
         mvc.perform(MockMvcRequestBuilders.delete("/onlineTest/{id}", 1) )
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Online test does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Online test does not exist!"));
     }
 
     @Test
@@ -124,11 +126,11 @@ public class OnlineTestControllerTests {
     {
         Server server = new Server("http://nekiserver1.com", 3306, "1", null);
         server.setID(Long.valueOf(1));
-        given(serverRepository.findByID(Long.valueOf(1))).willReturn(server);
-        OnlineTest onlineTest = new OnlineTest("Test1", null, null, null, null);
+
+        OnlineTest onlineTest = new OnlineTest("Test1", null, server, null, null);
         onlineTest.setID(Long.valueOf(1));
         List<OnlineTest> onlineTests = Arrays.asList(onlineTest);
-        given(onlineTestRepository.findAllByserverID(server)).willReturn(onlineTests);
+        given(onlineTestService.getOnlineTestsServers(server.getID())).willReturn(onlineTests);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/onlineTestsServer/{id}", 1)
@@ -141,6 +143,9 @@ public class OnlineTestControllerTests {
     @Test
     public void getOnlineTestsServerDoesNotExist() throws Exception
     {
+        List<OnlineTest> onlineTests = Arrays.asList();
+        given(onlineTestService.getOnlineTestsServers(Long.valueOf(1))).willReturn(onlineTests);
+
         mvc.perform(MockMvcRequestBuilders
                 .get("/onlineTestsServer/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
@@ -154,11 +159,11 @@ public class OnlineTestControllerTests {
     {
         User user = new User(null, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
         user.setID(Long.valueOf(1));
-        given(userRepository.findByID(Long.valueOf(1))).willReturn(user);
+
         OnlineTest onlineTest = new OnlineTest("Test1", null, null, user, null);
         onlineTest.setID(Long.valueOf(1));
         List<OnlineTest> onlineTests = Arrays.asList(onlineTest);
-        given(onlineTestRepository.findAllByuserID(user)).willReturn(onlineTests);
+        given(onlineTestService.getOnlineTestsUsers(user.getID())).willReturn(onlineTests);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/onlineTestsUser/{id}", 1)
@@ -171,6 +176,10 @@ public class OnlineTestControllerTests {
     @Test
     public void getOnlineTestsUsersDoesNotExist() throws Exception
     {
+
+        List<OnlineTest> onlineTests = Arrays.asList();
+        given(onlineTestService.getOnlineTestsUsers(Long.valueOf(1))).willReturn(onlineTests);
+
         mvc.perform(MockMvcRequestBuilders
                 .get("/onlineTestsUser/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
@@ -184,10 +193,10 @@ public class OnlineTestControllerTests {
     {
         GSPECDocument document = new GSPECDocument("Document1", null);
         document.setID(Long.valueOf(1));
-        given(gspecDocumentRepository.findByID(Long.valueOf(1))).willReturn(document);
+
         OnlineTest onlineTest = new OnlineTest("Test1", null, null, null, document);
         onlineTest.setID(Long.valueOf(1));
-        given(onlineTestRepository.findBygspecDocumentID(document)).willReturn(onlineTest);
+        given(onlineTestService.getOnlineTestGSPECDocument(document.getID())).willReturn(new ResponseEntity(onlineTest, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/onlineTestsGSPECDocument/{id}", 1)
@@ -200,12 +209,16 @@ public class OnlineTestControllerTests {
     @Test
     public void getOnlineTestGSPECDocumentDoesNotExist() throws Exception
     {
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Online test does not exist!");
+        given(onlineTestService.getOnlineTestGSPECDocument(Long.valueOf(1))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+
         mvc.perform(MockMvcRequestBuilders
                 .get("/onlineTestsGSPECDocument/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Online test does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Online test does not exist!"));
     }
 
     @Test
@@ -213,34 +226,42 @@ public class OnlineTestControllerTests {
     {
         GSPECDocument document = new GSPECDocument("Document1", null);
         document.setID(Long.valueOf(1));
-        given(gspecDocumentRepository.findByID(Long.valueOf(1))).willReturn(document);
+
         User user = new User(null, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
         user.setID(Long.valueOf(1));
-        given(userRepository.findByID(Long.valueOf(1))).willReturn(user);
+
         Server server = new Server("http://nekiserver1.com", 3306, "1", null);
         server.setID(Long.valueOf(1));
-        given(serverRepository.findByID(Long.valueOf(1))).willReturn(server);
-        given(onlineTestRepository.findBygspecDocumentID(document)).willReturn(null);
+
+        OnlineTest onlineTest = new OnlineTest("Test1", null, 1, 1, 1);
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Online test is successfully added!");
+        given(this.onlineTestService.saveOnlineTest(ArgumentMatchers.any(OnlineTest.class))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.CREATED));
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/addOnlineTest")
-                .content(asJsonString(new OnlineTest("Test1", null, 1, 1, 1)))
                 .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(onlineTest))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Online test is successfully added!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Online test is successfully added!"));
     }
 
     @Test
     public void createOnlineTestServerDoesNotExist() throws Exception
     {
+        OnlineTest onlineTest = new OnlineTest("Test1", null, null, null, null);
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Server does not exist!");
+        given(this.onlineTestService.saveOnlineTest(ArgumentMatchers.any(OnlineTest.class))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+
         mvc.perform(MockMvcRequestBuilders
                 .post("/addOnlineTest")
-                .content(asJsonString(new OnlineTest("Test1", null, null, null, null)))
+                .content(asJsonString(onlineTest))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Server does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Server does not exist!"));
     }
 
     @Test
@@ -248,20 +269,23 @@ public class OnlineTestControllerTests {
     {
         OnlineTest onlineTest = new OnlineTest("Test1", null, 1, 1, 1);
         onlineTest.setID(Long.valueOf(1));
-        given(onlineTestRepository.findByID(Long.valueOf(1))).willReturn(onlineTest);
+
         Server server = new Server("http://nekiserver1.com", 3306, "1", null);
         server.setID(Long.valueOf(1));
-        given(serverRepository.findByID(Long.valueOf(1))).willReturn(server);
+
         GSPECDocument document = new GSPECDocument("Document1", null);
         document.setID(Long.valueOf(1));
-        given(gspecDocumentRepository.findByID(Long.valueOf(1))).willReturn(document);
+
         User user = new User(null, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
         user.setID(Long.valueOf(1));
-        given(userRepository.findByID(Long.valueOf(1))).willReturn(user);
+
+        OnlineTest onlineTest1 = new OnlineTest("Test2", null, 1, 1, 1);
+
+        given(this.onlineTestService.updateOnlineTest(ArgumentMatchers.any(OnlineTest.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(onlineTest1, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .put("/updateOnlineTest/{id}", 1)
-                .content(asJsonString(new OnlineTest("Test2", null, 1, 1, 1)))
+                .content(asJsonString(onlineTest1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -271,13 +295,18 @@ public class OnlineTestControllerTests {
     @Test
     public void updateOnlineTestDoesNotExist() throws Exception
     {
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Online test does not exist!");
+        OnlineTest onlineTest = new OnlineTest("Test1", null, null, null, null);
+        given(this.onlineTestService.updateOnlineTest(ArgumentMatchers.any(OnlineTest.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND));
+
         mvc.perform(MockMvcRequestBuilders
                 .put("/updateOnlineTest/{id}", 2)
-                .content(asJsonString(new OnlineTest("Test1", null, null, null, null)))
+                .content(asJsonString(onlineTest))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value("Online test does not exist!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Online test does not exist!"));
     }
 
 }
