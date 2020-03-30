@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.Controllers.RoleController;
 import com.example.demo.Controllers.UserController;
+import com.example.demo.ErrorHandling.ApiError;
 import com.example.demo.Models.Role;
 import com.example.demo.Models.RoleNames;
 import com.example.demo.Models.User;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -73,7 +75,7 @@ public class RoleTest {
         Role uloga=new Role(RoleNames.USER);
         uloga.setID(Long.valueOf(1));
         ResponseEntity odgovor=new ResponseEntity(uloga, HttpStatus.OK);
-        given(roleService.getRoleById(Long.valueOf(1))).willReturn(odgovor);
+        given(roleService.getRoleByID(Long.valueOf(1))).willReturn(odgovor);
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/roles/{id}",1)
@@ -89,7 +91,7 @@ public class RoleTest {
             throws Exception {
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/users/{id}","nesto")
+                .get("/roles/{id}","nesto")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
@@ -160,7 +162,7 @@ public class RoleTest {
 
     //DELETE /deleteRole/{id} LOS
     @Test
-    public void testDeleteRoleDoesNotExists()
+    public void testDeleteRoleDoesNotExist()
             throws Exception {
         mvc.perform(delete("/deleteRole/{id}","nesto")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -176,4 +178,113 @@ public class RoleTest {
             throw new RuntimeException(e);
         }
     }
+
+
+
+
+
+
+
+    //Error handling
+    //Error GET /roles/{id} LOS
+    @Test
+    public void testGetRoleByIdDoesNotExistErrorHandler()
+            throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("Role does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(roleService.getRoleByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/roles/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Role does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Not Found"));
+    }
+
+    //Error PUT /updateRole/{id} LOS
+    @Test
+    public void testPutRoleDoesNotExistErrorHandler()
+            throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("Role does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        Role nova=new Role(RoleNames.USER);
+        nova.setID(1L);
+        given(this.roleService.updateRole(ArgumentMatchers.anyLong(),ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(put("/updateRole/{id}",1)
+                .content(asJsonString(nova))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Role does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Not Found"));
+    }
+
+    //Error DELETE /deleteRole/{id} LOS
+    @Test
+    public void testDeleteRoleDoesNotExistErrorHandler()
+            throws Exception {
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Role does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(roleService.deleteRole(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .delete("/deleteRole/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Role does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Not Found"));
+    }
+
+
+    @Test
+    public void testHttpRequestMethodNotSupported()
+            throws Exception {
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Role does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(roleService.getRoleByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/deleteRole/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("GET method is not supported for this request. Supported methods are DELETE "))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Request method 'GET' not supported"));
+    }
+
+    @Test
+    public void testMethodArgumentTypeMismatch()
+            throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/roles/{id}","nesto")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("id should be of type java.lang.Long"));
+    }
+
+    @Test
+    public void testHandleAlreadyExistsException()
+            throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("Role already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Record Already Exists", errors);
+        Role uloga=new Role(RoleNames.USER);
+        uloga.setID(1L);
+        Role nova=new Role(RoleNames.USER);
+
+        given(this.roleService.updateRole(ArgumentMatchers.anyLong(),ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(put("/updateRole/{id}",1)
+                .content(asJsonString(nova))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Role already exists!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Already Exists"));
+    }
+
 }

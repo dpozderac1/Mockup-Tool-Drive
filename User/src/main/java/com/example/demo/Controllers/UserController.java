@@ -50,8 +50,8 @@ public class UserController {
     }
 
     @DeleteMapping(value="/deleteUser/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    ResponseEntity deleteUser(@PathVariable Long id) {
+        return userService.deleteUser(id);
     }
 
     @PutMapping(value="/updateUser/{id}",produces = MediaType.APPLICATION_JSON_VALUE)

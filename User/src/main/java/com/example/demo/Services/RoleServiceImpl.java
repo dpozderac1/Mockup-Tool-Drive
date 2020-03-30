@@ -1,9 +1,11 @@
 package com.example.demo.Services;
 
+import com.example.demo.ErrorHandling.AlreadyExistsException;
+import com.example.demo.ErrorHandling.RecordNotFoundException;
 import com.example.demo.Models.Role;
 import com.example.demo.Models.RoleNames;
 import com.example.demo.Repositories.RoleRepository;
-import org.apache.catalina.mbeans.RoleMBean;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +27,12 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public ResponseEntity getRoleById(Long id) {
-        JSONObject objekat=new JSONObject();
+    public ResponseEntity getRoleByID(Long id) {
         if(roleRepository.existsByID(id)){
             return new ResponseEntity(roleRepository.findByID(id), HttpStatus.OK);
         }
         else{
-            try {
-                objekat.put("message","Role does not exist!");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return new ResponseEntity(objekat.toString(),HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Role does not exist!");
         }
     }
 
@@ -45,21 +41,11 @@ public class RoleServiceImpl implements RoleService{
         List<Role> sveUloge=roleRepository.findAll();
         JSONObject objekat=new JSONObject();
         if(role==null){
-            try {
-                objekat.put("message","Role is empty!");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return new ResponseEntity(objekat.toString(),HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Role does not exist!");
         }
         for(int i=0;i<sveUloge.size();i++){
             if(role.getRole_name()==sveUloge.get(i).getRole_name()){
-                try {
-                    objekat.put("message","Role with same role name already exists!");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                return new ResponseEntity(objekat.toString(),HttpStatus.CONFLICT);
+                throw new AlreadyExistsException("Role already exists!");
             }
         }
 
@@ -71,12 +57,7 @@ public class RoleServiceImpl implements RoleService{
             }
         }
         if(!istina){
-            try {
-                objekat.put("message","Role name does not exist!");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return new ResponseEntity(objekat.toString(),HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Role does not exist!");
         }
 
         roleRepository.save(role);
@@ -102,12 +83,7 @@ public class RoleServiceImpl implements RoleService{
             return new ResponseEntity(objekat.toString(),HttpStatus.OK);
         }
         else {
-            try {
-                objekat.put("message", "Role does not exist!");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return new ResponseEntity(objekat.toString(),HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Role does not exist!");
         }
     }
 
@@ -116,21 +92,11 @@ public class RoleServiceImpl implements RoleService{
         JSONObject objekat=new JSONObject();
         List<Role> sveUloge=roleRepository.findAll();
         if(role==null){
-            try {
-                objekat.put("message","Role is empty!");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return new ResponseEntity(objekat.toString(),HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Role does not exist!");
         }
         for(int i=0;i<sveUloge.size();i++){
             if(role.getRole_name()==sveUloge.get(i).getRole_name()){
-                try {
-                    objekat.put("message","Role with same role name already exists!");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                return new ResponseEntity(objekat.toString(),HttpStatus.CONFLICT);
+                throw new AlreadyExistsException("Role already exists!");
             }
         }
 
@@ -142,12 +108,7 @@ public class RoleServiceImpl implements RoleService{
             }
         }
         if(!istina){
-            try {
-                objekat.put("message","Role name does not exist!");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return new ResponseEntity(objekat.toString(),HttpStatus.NOT_FOUND);
+            throw new RecordNotFoundException("Role does not exist!");
         }
 
 

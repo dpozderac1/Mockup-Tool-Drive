@@ -27,7 +27,7 @@ public class RoleController {
 
     @GetMapping(value="/roles/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity id(@PathVariable Long id){
-        return roleService.getRoleById(id);
+        return roleService.getRoleByID(id);
     }
 
     @PostMapping(value="/role",produces = MediaType.APPLICATION_JSON_VALUE)

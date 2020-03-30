@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.Controllers.UserController;
+import com.example.demo.ErrorHandling.ApiError;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.Role;
 import com.example.demo.Models.RoleNames;
@@ -10,6 +11,7 @@ import com.example.demo.Repositories.RoleRepository;
 import com.example.demo.Repositories.UserRepository;
 import com.example.demo.Services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,9 +24,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -191,7 +195,7 @@ public class UserTest {
 
     //GET /users/projects/{id} LOS
     @Test
-    public void testGetProjectsOfUserDoesNotExists()
+    public void testGetProjectsOfUserDoesNotExist()
             throws Exception {
 
         mvc.perform(MockMvcRequestBuilders
@@ -280,7 +284,7 @@ public class UserTest {
     @Test
     public void testDeleteUserDoesNotExist()
             throws Exception {
-        mvc.perform(delete("/deleteRole/{id}","nesto")
+        mvc.perform(delete("/deleteUser/{id}","nesto")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
@@ -293,6 +297,119 @@ public class UserTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+
+
+
+
+    //Error handling
+    //Error GET /users/{id} LOS
+    @Test
+    public void testGetUserByIdDoesNotExistErrorHandling()
+            throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("User does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(userService.getUserByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/users/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Not Found"));
+    }
+
+    //Error PUT /updateUser/{id} LOS
+    @Test
+    public void testPutUserDoesNotExistErrorHandling()
+            throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("User does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        Role nova=new Role(RoleNames.USER);
+        nova.setID(1L);
+        User korisnik=new User(null,"","","noviUsername","","");
+        given(this.userService.updateUser(ArgumentMatchers.anyLong(),ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(put("/updateUser/{id}",1)
+                .content(asJsonString(korisnik))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Not Found"));
+    }
+
+    //Error /deleteUser/{id}
+    @Test
+    public void testDeleteUserDoesNotExistErrorHandling()
+            throws Exception {
+
+        List<String> errors = new ArrayList<>();
+        errors.add("User does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(userService.deleteUser(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .delete("/deleteUser/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Not Found"));
+    }
+
+
+
+
+    @Test
+    public void testHttpRequestMethodNotSupported()
+            throws Exception {
+
+        List<String> errors = new ArrayList<>();
+        errors.add("User does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
+        given(userService.getUserByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/deleteUser/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("GET method is not supported for this request. Supported methods are DELETE "))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Request method 'GET' not supported"));
+    }
+
+    @Test
+    public void testMethodArgumentTypeMismatch()
+            throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/users/{id}","nesto")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("id should be of type java.lang.Long"));
+    }
+
+    @Test
+    public void testHandleAlreadyExistsException()
+            throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("User already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Record Already Exists", errors);
+        Role uloga=new Role(RoleNames.USER);
+        uloga.setID(1L);
+        User korisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        korisnik.setID(Long.valueOf(1));
+
+        User noviKorisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+
+        given(this.userService.updateUser(ArgumentMatchers.anyLong(),ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(put("/updateUser/{id}",1)
+                .content(asJsonString(noviKorisnik))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User already exists!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Already Exists"));
     }
 }
 
