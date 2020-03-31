@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.Controllers.ProjectController;
+import com.example.demo.ErrorMessageHandling.ApiError;
 import com.example.demo.Models.Project;
 import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.VersionRepository;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -145,6 +147,80 @@ public class ProjectTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(project.getName()));
+    }
+
+    @Test
+    public void handleMethodArgumentNotValid() throws Exception {
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse( "2020-5-17" ), format.parse( "2020-3-17" ), 1);
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/addOrUpdateProject/{id}", 1)
+                .content(asJsonString(project))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The date should be in the past or present date!"));
+    }
+
+    @Test
+    public void handleMethodArgumentTypeMismatch() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/project/{id}", "id")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("id should be of type java.lang.Long"));
+    }
+
+    @Test
+    public void handleHttpRequestMethodNotSupported() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .patch("/project/{id}", "id")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("PATCH method is not supported for this request. Supported methods are GET "));
+
+    }
+
+    @Test
+    public void handleObjectAlreadyExistsException() throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        project.setID(Long.valueOf(1));
+
+        Project project1 = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        project1.setID(Long.valueOf(1));
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Project with id 1 already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Object Already Exists", errors);
+
+        given(this.projectService.newProject(ArgumentMatchers.any(Project.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/addProject")
+                .content(asJsonString(project1))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Project with id 1 already exists!"));
+    }
+
+    @Test
+    public void handleObjectNotFoundException() throws Exception {
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Project with id 11 does not exit!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(this.projectService.deleteOne(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .delete("/delete/project/{id}", 11))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Project with id 11 does not exit!"));
     }
 
 }

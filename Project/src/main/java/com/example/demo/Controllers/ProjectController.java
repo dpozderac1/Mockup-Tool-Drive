@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.parser.Entity;
+import javax.validation.Valid;
 import javax.xml.ws.Response;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -27,12 +28,12 @@ public class ProjectController {
     }
 
     @PutMapping("/addOrUpdateProject/{id}")
-    ResponseEntity<?> addOrReplace(@RequestBody Project newProject, @PathVariable Long id) {
+    ResponseEntity<?> addOrReplace(@Valid @RequestBody Project newProject, @PathVariable Long id) {
         return projectService.addOrReplace(newProject, id);
     }
 
     @PutMapping("/renameProject/{id}")
-    ResponseEntity<?> renameProject(@RequestBody String name, @PathVariable Long id) {
+    ResponseEntity<?> renameProject(@Valid @RequestBody String name, @PathVariable Long id) {
         return projectService.renameProject(name, id);
     }
 
@@ -42,7 +43,7 @@ public class ProjectController {
     }
 
     @PostMapping("/addProject")
-    ResponseEntity<Project> newProject(@RequestBody Project newProject) throws URISyntaxException {
+    ResponseEntity<Project> newProject(@Valid @RequestBody Project newProject) throws URISyntaxException {
         return projectService.newProject(newProject);
     }
 

@@ -26,17 +26,12 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        List<String> errors = new ArrayList<String>();
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.add(error.getField() + ": " + error.getDefaultMessage());
+        List<String> details = new ArrayList<>();
+        for(ObjectError error : ex.getBindingResult().getAllErrors()) {
+            details.add(error.getDefaultMessage());
         }
-        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-        }
-
-        ApiError apiError =
-                new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
-        return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Validation Failed", details);
+        return new ResponseEntity(apiError,apiError.getStatus());
     }
 
     @Override
@@ -106,6 +101,22 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getLocalizedMessage(), builder.substring(0, builder.length() - 2));
         return new ResponseEntity<Object>(
                 apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler(ObjectNotFoundException.class)
+    public final ResponseEntity<Object> handleObjectNotFoundException(ObjectNotFoundException ex, WebRequest request) {
+        List<String> error = new ArrayList<>();
+        error.add(ex.getLocalizedMessage());
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", error);
+        return new ResponseEntity(apiError, apiError.getStatus());
+    }
+
+    @ExceptionHandler(ObjectAlreadyExistsException.class)
+    public final ResponseEntity<Object> handleObjectAlreadyExistsException(ObjectAlreadyExistsException ex, WebRequest request) {
+        List<String> error = new ArrayList<>();
+        error.add(ex.getLocalizedMessage());
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Object Already Exists", error);
+        return new ResponseEntity(apiError, apiError.getStatus());
     }
 
     @ExceptionHandler({ Exception.class })
