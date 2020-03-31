@@ -171,9 +171,6 @@ public class MockupTest {
     }
 
 
-
-
-
     //Error handling
     //Error GET /mockup/{id} LOS
     @Test
@@ -228,8 +225,6 @@ public class MockupTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Mockup with id 1 does not exist!"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Object Not Found"));
     }
-
-
 
     @Test
     public void testHttpRequestMethodNotSupported()

@@ -16,7 +16,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.xml.ws.Response;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -34,9 +36,8 @@ public class PDF_DocumentController {
     }
 
     @PutMapping("/addOrUpdatePDF_Document/{id}")
-    ResponseEntity<PDF_Document> addOrReplacePDF(@RequestBody PDF_Document newPdf, @PathVariable Long id) {
+    ResponseEntity<PDF_Document> addOrReplacePDF(@Valid @RequestBody PDF_Document newPdf, @PathVariable Long id) {
         return pdf_documentService.addOrReplacePDF(newPdf, id);
-
     }
 
     @GetMapping("/PDF_Documents/mockup/{id}")
@@ -50,7 +51,7 @@ public class PDF_DocumentController {
     }
 
     @PostMapping("/addPDF_Document")
-    ResponseEntity<?> newPDF(@RequestBody PDF_Document newPDF) {
+    ResponseEntity<?> newPDF(@Valid @RequestBody PDF_Document newPDF){
         return pdf_documentService.newPDF(newPDF);
     }
 

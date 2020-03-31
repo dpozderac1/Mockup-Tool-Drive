@@ -162,7 +162,6 @@ public class VersionTest {
     }
 
 
-
     //Error handling
     //Error GET /version/{id} LOS
     @Test
@@ -198,8 +197,6 @@ public class VersionTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Version with id 1 does not exist!"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Object Not Found"));
     }
-
-
 
     @Test
     public void testHttpRequestMethodNotSupported()

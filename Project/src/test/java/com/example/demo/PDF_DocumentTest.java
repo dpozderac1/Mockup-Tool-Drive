@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.Controllers.PDF_DocumentController;
 import com.example.demo.Controllers.ProjectController;
+import com.example.demo.ErrorMessageHandling.ApiError;
 import com.example.demo.Models.GSPEC_Document;
 import com.example.demo.Models.Mockup;
 import com.example.demo.Models.PDF_Document;
@@ -29,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -163,5 +165,82 @@ public class PDF_DocumentTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.accessed_date").isNotEmpty());
     }
 
+    //Error handling
+
+    @Test
+    public void testGetPDFByIDDoNotExist() throws Exception{
+        List<String> errors = new ArrayList<>();
+        errors.add("PDF document with id " + '1' + " does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(pdf_documentService.getOnePDF(1L)).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/pdf_document/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("PDF document with id " + '1' + " does not exist!"));
+    }
+
+    @Test
+    public void testGetPDFsOfMockupDoNotExist() throws Exception{
+        List<String> errors = new ArrayList<>();
+        errors.add("Mockup with id " + '1' + " does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(pdf_documentService.allPDFsOfMockup(1L)).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/PDF_Documents/mockup/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Mockup with id " + '1' + " does not exist!"));
+
+    }
+
+    @Test
+    public void handleMethodArgumentNotValid() throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        PDF_Document pdf_document = new PDF_Document(null, "PDF", null, format.parse( "2020-6-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/addOrUpdatePDF_Document/{id}", 1)
+                .content(asJsonString(pdf_document))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The date should be in the past or present date!"));
+
+    }
+
+    @Test
+    public void handleHttpRequestMethodNotSupported() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .put("/delete/pdf_document/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("PUT method is not supported for this request. Supported methods are DELETE "));
+
+    }
+
+    @Test
+    public void handleObjectAlreadyExistsException() throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        PDF_Document pdf = new PDF_Document(null, "PDF", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+        pdf.setID(1L);
+
+        List<String> errors = new ArrayList<>();
+        errors.add("PDF document with id 1 already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Object Already Exists", errors);
+
+        given(pdf_documentService.newPDF(ArgumentMatchers.any(PDF_Document.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/addPDF_Document")
+                .content(asJsonString(pdf))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("PDF document with id 1 already exists!"));
+    }
 
 }

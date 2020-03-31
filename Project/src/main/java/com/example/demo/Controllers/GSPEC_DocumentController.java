@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin
@@ -26,7 +27,7 @@ public class GSPEC_DocumentController {
     }
 
     @PutMapping("/addOrUpdateGSPEC_Document/{id}")
-    ResponseEntity<?> addOrReplaceGSPEC(@RequestBody GSPEC_Document newGspec, @PathVariable Long id) {
+    ResponseEntity<?> addOrReplaceGSPEC(@Valid @RequestBody GSPEC_Document newGspec, @PathVariable Long id) {
         return gspec_documentService.addOrReplaceGSPEC(newGspec, id);
     }
 

@@ -3,6 +3,7 @@ package com.example.demo;
 
 import com.example.demo.Controllers.GSPEC_DocumentController;
 import com.example.demo.Controllers.ProjectController;
+import com.example.demo.ErrorMessageHandling.ApiError;
 import com.example.demo.Models.*;
 import com.example.demo.Repositories.GSPEC_DocumentRepository;
 import com.example.demo.Repositories.MockupRepository;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -157,6 +159,84 @@ public class GSPEC_DocumentTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.date_created").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.date_modified").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.accessed_date").isNotEmpty());
+    }
+
+    //Error handling
+
+    @Test
+    public void testGetGSPECByIDDoNotExist() throws Exception{
+        List<String> errors = new ArrayList<>();
+        errors.add("GSPEC document with id " + '1' + " does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(gspec_documentService.getOneGSPEC(1L)).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/gspec_document/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("GSPEC document with id " + '1' + " does not exist!"));
+    }
+
+    @Test
+    public void testGetGSPECsOfMockupDoNotExist() throws Exception{
+        List<String> errors = new ArrayList<>();
+        errors.add("Mockup with id " + '1' + " does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(gspec_documentService.allGSPECsOfMockup(1L)).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/GSPEC_Documents/mockup/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Mockup with id " + '1' + " does not exist!"));
+
+    }
+
+    @Test
+    public void handleMethodArgumentNotValid() throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        GSPEC_Document gspec_document = new GSPEC_Document(null, "PDF", null, format.parse( "2020-6-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/addOrUpdateGSPEC_Document/{id}", 1)
+                .content(asJsonString(gspec_document))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The date should be in the past or present date!"));
+
+    }
+
+    @Test
+    public void handleHttpRequestMethodNotSupported() throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .put("/delete/gspec_document/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("PUT method is not supported for this request. Supported methods are DELETE "));
+
+    }
+
+    @Test
+    public void handleObjectAlreadyExistsException() throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        GSPEC_Document gspec_document = new GSPEC_Document(null, "PDF", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+        gspec_document.setID(1L);
+
+        List<String> errors = new ArrayList<>();
+        errors.add("GSPEC document with id 1 already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Object Already Exists", errors);
+
+        given(gspec_documentService.newGSPEC(ArgumentMatchers.any(GSPEC_Document.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/addGSPEC_Document")
+                .content(asJsonString(gspec_document))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("GSPEC document with id 1 already exists!"));
     }
 
 }
