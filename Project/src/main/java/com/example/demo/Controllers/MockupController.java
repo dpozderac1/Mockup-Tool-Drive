@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin
@@ -27,7 +28,7 @@ public class MockupController {
     }
 
     @PutMapping("/addOrUpdateMockup/{id}")
-    ResponseEntity<?>  addOrReplace(@RequestBody Mockup newMockup, @PathVariable Long id) {
+    ResponseEntity<?>  addOrReplace(@Valid @RequestBody Mockup newMockup, @PathVariable Long id) {
         return mockupService.addOrReplace(newMockup,id);
     }
 
@@ -42,7 +43,7 @@ public class MockupController {
     }
 
     @PostMapping("/addMockup")
-    ResponseEntity<?> newMockup(@RequestBody Mockup newMockup) {
+    ResponseEntity<?> newMockup(@Valid @RequestBody Mockup newMockup) {
         return mockupService.newMockup(newMockup);
     }
 

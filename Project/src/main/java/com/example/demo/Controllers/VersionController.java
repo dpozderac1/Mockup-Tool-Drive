@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +29,12 @@ public class VersionController {
     }
 
     @PutMapping("/addOrUpdateVersion/{id}")
-    ResponseEntity<?> addOrReplace(@RequestBody Version newVersion, @PathVariable Long id) {
+    ResponseEntity<?> addOrReplace(@Valid @RequestBody Version newVersion, @PathVariable Long id) {
         return versionService.addOrReplace(newVersion, id);
     }
 
     @PutMapping("/changeVersion/{id}")
-    ResponseEntity<?> changeVersion(@RequestBody VersionNames name, @PathVariable Long id) {
+    ResponseEntity<?> changeVersion(@Valid @RequestBody VersionNames name, @PathVariable Long id) {
         return versionService.changeVersion(name, id);
     }
 

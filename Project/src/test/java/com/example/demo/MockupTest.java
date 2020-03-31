@@ -3,6 +3,7 @@ package com.example.demo;
 
 import com.example.demo.Controllers.MockupController;
 import com.example.demo.Controllers.ProjectController;
+import com.example.demo.ErrorMessageHandling.ApiError;
 import com.example.demo.Models.Mockup;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.Version;
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -166,6 +168,129 @@ public class MockupTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.date_created").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.date_modified").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.accessed_date").isNotEmpty());
+    }
+
+
+
+
+
+    //Error handling
+    //Error GET /mockup/{id} LOS
+    @Test
+    public void testGetMockupByIdDoesNotExistErrorHandling()
+            throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("Mockup with id 1 does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(mockupService.getOneMockup(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/mockup/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Mockup with id 1 does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Object Not Found"));
+    }
+
+    //Error PUT /addOrUpdateMockup/{id} LOS
+    @Test
+    public void testAddOrReplaceDoesNotExistErrorHandling()
+            throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("Mockup with id 1 does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Mockup mockup = new Mockup(null, "Mockup", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+        mockup.setID(1L);
+        given(this.mockupService.addOrReplace(ArgumentMatchers.any(Mockup.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(put("/addOrUpdateMockup/{id}",1)
+                .content(asJsonString(mockup))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Mockup with id 1 does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Object Not Found"));
+    }
+
+    //Error /delete/mockup/{id}
+    @Test
+    public void testDeleteMockupDoesNotExistErrorHandling()
+            throws Exception {
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Mockup with id 1 does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(mockupService.deleteOne(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .delete("/delete/mockup/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Mockup with id 1 does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Object Not Found"));
+    }
+
+
+
+    @Test
+    public void testHttpRequestMethodNotSupported()
+            throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/delete/mockup/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("GET method is not supported for this request. Supported methods are DELETE "))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Request method 'GET' not supported"));
+    }
+
+    @Test
+    public void testMethodArgumentTypeMismatch()
+            throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/mockup/{id}","nesto")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("id should be of type java.lang.Long"));
+    }
+
+    @Test
+    public void testHandleAlreadyExistsException()
+            throws Exception {
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+        Mockup mockup = new Mockup(null, "Mockup", null, format1.parse( "2020-3-17" ), format1.parse( "2020-3-17" ), format1.parse( "2020-3-17" ));
+        mockup.setID(1L);
+
+        Mockup mockup1 = new Mockup(null, "Mockup", null, format1.parse( "2020-3-17" ), format1.parse( "2020-3-17" ), format1.parse( "2020-3-17" ));
+        mockup1.setID(1L);
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Mockup with id 1 already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Object Already Exists", errors);
+
+        given(this.mockupService.newMockup(ArgumentMatchers.any(Mockup.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .post("/addMockup",1)
+                .content(asJsonString(mockup1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Mockup with id 1 already exists!"));
+    }
+
+    @Test
+    public void testHandleMethodArgumentNotValid() throws Exception {
+
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+        Mockup mockup = new Mockup(null, "Mockup", null, format1.parse( "2020-10-17" ), format1.parse( "2020-3-17" ), format1.parse( "2020-3-17" ));
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/addOrUpdateMockup/{id}", 1)
+                .content(asJsonString(mockup))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The date should be in the past or present date!"));
     }
 
 }

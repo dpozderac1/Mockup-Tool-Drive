@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.Controllers.ProjectController;
 import com.example.demo.Controllers.VersionController;
+import com.example.demo.ErrorMessageHandling.ApiError;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.Version;
 import com.example.demo.Models.VersionNames;
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -157,6 +159,107 @@ public class VersionTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.version_name").value(version.getVersion_name().toString().trim()));
+    }
+
+
+
+    //Error handling
+    //Error GET /version/{id} LOS
+    @Test
+    public void testGetVersionByIdDoesNotExistErrorHandling()
+            throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("Version with id 1 does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(versionService.getOneVersion(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .get("/version/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Version with id 1 does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Object Not Found"));
+    }
+
+    //Error /delete/mockup/{id}
+    @Test
+    public void testDeleteVersionDoesNotExistErrorHandling()
+            throws Exception {
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Version with id 1 does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(versionService.deleteOne(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .delete("/delete/version/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Version with id 1 does not exist!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Object Not Found"));
+    }
+
+
+
+    @Test
+    public void testHttpRequestMethodNotSupported()
+            throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders
+                .get("/delete/version/{id}",1)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("GET method is not supported for this request. Supported methods are DELETE "))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Request method 'GET' not supported"));
+    }
+
+    @Test
+    public void testMethodArgumentTypeMismatch()
+            throws Exception {
+        mvc.perform(MockMvcRequestBuilders
+                .get("/version/{id}","nesto")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("id should be of type java.lang.Long"));
+    }
+
+    @Test
+    public void testHandleAlreadyExistsException()
+            throws Exception {
+        Version version = new Version(null, VersionNames.DESKTOP);
+        version.setID(1L);
+
+        Version version1 = new Version(null, VersionNames.DESKTOP);
+        version1.setID(1L);
+
+        List<String> errors = new ArrayList<>();
+        errors.add("Version with id 1 already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Object Already Exists", errors);
+
+        given(this.versionService.newVersion(ArgumentMatchers.any(Version.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(MockMvcRequestBuilders
+                .post("/addVersion",1)
+                .content(asJsonString(version1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Version with id 1 already exists!"));
+    }
+
+    @Test
+    public void testHandleMethodArgumentNotValid() throws Exception {
+
+        Version version = new Version(null, null);
+        version.setID(1L);
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/addOrUpdateVersion/{id}", 1)
+                .content(asJsonString(version))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("must not be null"));
     }
 
 }
