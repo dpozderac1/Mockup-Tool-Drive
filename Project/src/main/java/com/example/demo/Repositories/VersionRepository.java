@@ -9,4 +9,6 @@ import java.util.List;
 public interface VersionRepository extends JpaRepository<Version,Long> {
     Version findByID(Long Id);
     List<Version> findAllByprojectId(Project project);
+    Boolean existsByID(Long id);
+    void deleteByID(Long id);
 }

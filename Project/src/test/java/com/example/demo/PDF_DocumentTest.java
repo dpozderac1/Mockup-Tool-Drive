@@ -20,7 +20,9 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -57,7 +59,7 @@ public class PDF_DocumentTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         PDF_Document pdf = new PDF_Document(null, "PDF", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
         List<PDF_Document> pdfs = Arrays.asList(pdf);
-        given(pdf_documentService.getAllPDFs()).willReturn(pdfs);
+        given(pdf_documentService.getAllPDFs()).willReturn(new ResponseEntity<>(pdfs, HttpStatus.OK));
 
         mvc.perform(get("/pdf_documents")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -72,7 +74,7 @@ public class PDF_DocumentTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         PDF_Document pdf = new PDF_Document(null, "PDF", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(pdf_documentService.getOnePDF(1L)).willReturn(pdf);
+        given(pdf_documentService.getOnePDF(1L)).willReturn(new ResponseEntity<>(pdf, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/pdf_document/{id}", 1)
@@ -92,7 +94,7 @@ public class PDF_DocumentTest {
         pdf_document.setID(Long.valueOf(2));
 
         List<PDF_Document> pdf_documents = Arrays.asList(pdf_document);
-        given(pdf_documentService.allPDFsOfMockup(1L)).willReturn(pdf_documents);
+        given(pdf_documentService.allPDFsOfMockup(1L)).willReturn(new ResponseEntity<>(pdf_documents, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/PDF_Documents/mockup/{id}", 1)
@@ -109,7 +111,7 @@ public class PDF_DocumentTest {
     @Test
     public void deletePDF() throws Exception {
         mvc.perform(MockMvcRequestBuilders.delete("/delete/pdf_document/{id}", 1))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -117,18 +119,18 @@ public class PDF_DocumentTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         PDF_Document pdf = new PDF_Document(null, "PDF", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(pdf_documentService.newPDF(ArgumentMatchers.any(PDF_Document.class))).willReturn(pdf);
+        given(pdf_documentService.newPDF(ArgumentMatchers.any(PDF_Document.class))).willReturn(new ResponseEntity<>(pdf, HttpStatus.CREATED));
         mvc.perform(MockMvcRequestBuilders
                 .post("/addPDF_Document")
                 .content(asJsonString(pdf))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(pdf.getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].file").value(pdf.getFile()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date_created").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date_modified").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].accessed_date").isNotEmpty());;
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(pdf.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.file").value(pdf.getFile()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.date_created").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.date_modified").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.accessed_date").isNotEmpty());
     }
 
     public static String asJsonString(final Object obj) {
@@ -144,7 +146,7 @@ public class PDF_DocumentTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         PDF_Document pdf_document = new PDF_Document(null, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(pdf_documentService.addOrReplacePDF(ArgumentMatchers.any(PDF_Document.class), ArgumentMatchers.anyLong())).willReturn(pdf_document);
+        given(pdf_documentService.addOrReplacePDF(ArgumentMatchers.any(PDF_Document.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(pdf_document, HttpStatus.OK));
         pdf_document.setID(Long.valueOf(1));
 
         mvc.perform( MockMvcRequestBuilders

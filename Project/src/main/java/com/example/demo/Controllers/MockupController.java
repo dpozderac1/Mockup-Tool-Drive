@@ -6,6 +6,7 @@ import com.example.demo.Models.Version;
 import com.example.demo.Repositories.MockupRepository;
 import com.example.demo.Repositories.VersionRepository;
 import com.example.demo.Services.MockupService;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,38 +28,32 @@ public class MockupController {
 
     @PutMapping("/addOrUpdateMockup/{id}")
     ResponseEntity<?>  addOrReplace(@RequestBody Mockup newMockup, @PathVariable Long id) {
-        Mockup mockup = mockupService.addOrReplace(newMockup,id);
-        return new ResponseEntity<>(mockup, HttpStatus.OK);
+        return mockupService.addOrReplace(newMockup,id);
     }
 
     @GetMapping("/mockups/version/{id}")
     ResponseEntity<?>  allMockupsOfVersion(@PathVariable Long id){
-        List<Mockup> mockups = mockupService.allMockupsOfVersion(id);
-        return new ResponseEntity<>(mockups, HttpStatus.OK);
+        return mockupService.allMockupsOfVersion(id);
     }
 
     @DeleteMapping("/delete/mockup/{id}")
-    ResponseEntity<?>  deleteOne(@PathVariable Long id){
-        mockupService.deleteOne(id);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    ResponseEntity<?>  deleteOne(@PathVariable Long id) throws JSONException {
+        return mockupService.deleteOne(id);
     }
 
     @PostMapping("/addMockup")
     ResponseEntity<?> newMockup(@RequestBody Mockup newMockup) {
-        Mockup mockup = mockupService.newMockup(newMockup);
-        return new ResponseEntity<>(mockup, HttpStatus.CREATED);
+        return mockupService.newMockup(newMockup);
     }
 
     @GetMapping("/mockups")
     ResponseEntity<?> getAllMockups(){
-        List<Mockup> mockups = mockupService.getAllMockups();
-        return new ResponseEntity<>(mockups, HttpStatus.OK);
+        return mockupService.getAllMockups();
     }
 
     @GetMapping("/mockup/{id}")
     ResponseEntity<?>  getOneMockup(@PathVariable Long id) {
-        Mockup mockup = mockupService.getOneMockup(id);
-        return new ResponseEntity<>(mockup, HttpStatus.OK);
+        return mockupService.getOneMockup(id);
     }
 
 }

@@ -19,6 +19,16 @@
         <spring-cloud.version>Hoxton.SR3</spring-cloud.version>
     </properties>
 
+    <servlet>
+        <servlet-name>api</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>throwExceptionIfNoHandlerFound</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </servlet>
+
     <dependencies>
 
         <dependency>
@@ -138,6 +148,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin.external.google</groupId>
+            <artifactId>android-json</artifactId>
+            <version>0.0.20131108.vaadin1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

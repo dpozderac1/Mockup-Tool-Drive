@@ -16,7 +16,9 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -53,8 +55,8 @@ public class VersionTest {
     public void testGetVersions() throws Exception{
         Version version = new Version(null, VersionNames.DESKTOP);
 
-        List<Version> verzije = Arrays.asList(version);
-        given(versionService.getAllVersions()).willReturn(verzije);
+        List<Version> versions = Arrays.asList(version);
+        given(versionService.getAllVersions()).willReturn(new ResponseEntity<>(versions, HttpStatus.OK));
 
         mvc.perform(get("/versions")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -68,7 +70,7 @@ public class VersionTest {
     public void testGetVersionByID() throws Exception {
         Version version = new Version(null, VersionNames.DESKTOP);
 
-        given(versionService.getOneVersion(1L)).willReturn(version);
+        given(versionService.getOneVersion(1L)).willReturn(new ResponseEntity<>(version, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/version/{id}", 1)
@@ -85,8 +87,8 @@ public class VersionTest {
 
         Version version = new Version(project, VersionNames.DESKTOP);
         version.setID(1L);
-        List<Version> verzije = Arrays.asList(version);
-        given(versionService.allVersionsOfProject(1L)).willReturn(verzije);
+        List<Version> versions = Arrays.asList(version);
+        given(versionService.allVersionsOfProject(1L)).willReturn(new ResponseEntity<>(versions, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/versions/project/{id}", 1)
@@ -99,14 +101,14 @@ public class VersionTest {
     @Test
     public void deleteVersion() throws Exception {
         mvc.perform(MockMvcRequestBuilders.delete("/delete/version/{id}", 1))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isOk());
     }
 
     @Test
     public void testPostVersion() throws Exception {
         Version version = new Version(null, VersionNames.DESKTOP);
 
-        given(versionService.newVersion(ArgumentMatchers.any(Version.class))).willReturn(version);
+        given(versionService.newVersion(ArgumentMatchers.any(Version.class))).willReturn(new ResponseEntity<>(version, HttpStatus.CREATED));
         mvc.perform(MockMvcRequestBuilders
                 .post("/addVersion")
                 .content(asJsonString(version))
@@ -128,7 +130,7 @@ public class VersionTest {
     public void updateVersion() throws Exception {
         Version version = new Version(null, VersionNames.DESKTOP);
 
-        given(versionService.addOrReplace(ArgumentMatchers.any(Version.class),ArgumentMatchers.anyLong())).willReturn(version);
+        given(versionService.addOrReplace(ArgumentMatchers.any(Version.class),ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(version, HttpStatus.OK));
         version.setID(Long.valueOf(1));
 
         mvc.perform( MockMvcRequestBuilders
@@ -145,7 +147,7 @@ public class VersionTest {
     public void renameVersion() throws Exception {
         Version version = new Version(null, VersionNames.DESKTOP);
 
-        given(versionService.changeVersion(ArgumentMatchers.any(VersionNames.class),ArgumentMatchers.anyLong())).willReturn(version);
+        given(versionService.changeVersion(ArgumentMatchers.any(VersionNames.class),ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(version, HttpStatus.OK));
         version.setID(Long.valueOf(1));
 
         mvc.perform( MockMvcRequestBuilders

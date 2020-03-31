@@ -18,7 +18,9 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -60,8 +62,8 @@ public class MockupTest {
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Mockup mockup = new Mockup(null, "Mockup", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
-        List<Mockup> mockupi = Arrays.asList(mockup);
-        given(mockupService.getAllMockups()).willReturn(mockupi);
+        List<Mockup> mockups = Arrays.asList(mockup);
+        given(mockupService.getAllMockups()).willReturn(new ResponseEntity<>(mockups, HttpStatus.OK));
 
         mvc.perform(get("/mockups")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -76,7 +78,7 @@ public class MockupTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Mockup mockup = new Mockup(null, "Mockup", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(mockupService.getOneMockup(1L)).willReturn(mockup);
+        given(mockupService.getOneMockup(1L)).willReturn(new ResponseEntity<>(mockup, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/mockup/{id}", 1)
@@ -96,7 +98,7 @@ public class MockupTest {
         mockup.setID(Long.valueOf(2));
 
         List<Mockup> mockups = Arrays.asList(mockup);
-        given(mockupService.allMockupsOfVersion(1L)).willReturn(mockups);
+        given(mockupService.allMockupsOfVersion(1L)).willReturn(new ResponseEntity<>(mockups, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/mockups/version/{id}", 1)
@@ -113,7 +115,7 @@ public class MockupTest {
     @Test
     public void deleteMockup() throws Exception {
         mvc.perform(MockMvcRequestBuilders.delete("/delete/mockup/{id}", 1))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -121,7 +123,7 @@ public class MockupTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Mockup mockup = new Mockup(null, "Mockup", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(mockupService.newMockup(ArgumentMatchers.any(Mockup.class))).willReturn(mockup);
+        given(mockupService.newMockup(ArgumentMatchers.any(Mockup.class))).willReturn(new ResponseEntity<>(mockup, HttpStatus.CREATED));
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/addMockup")
@@ -149,7 +151,7 @@ public class MockupTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Mockup mockup = new Mockup(null, "Mockup", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(mockupService.addOrReplace(ArgumentMatchers.any(Mockup.class), ArgumentMatchers.anyLong())).willReturn(mockup);
+        given(mockupService.addOrReplace(ArgumentMatchers.any(Mockup.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(mockup, HttpStatus.OK));
         mockup.setID(Long.valueOf(1));
 
         mvc.perform( MockMvcRequestBuilders

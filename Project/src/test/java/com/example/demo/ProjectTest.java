@@ -13,7 +13,9 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -49,7 +51,7 @@ public class ProjectTest {
         Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
 
         List<Project> projekti = Arrays.asList(project);
-        given(projectService.getAllProjects()).willReturn(projekti);
+        given(projectService.getAllProjects()).willReturn(new ResponseEntity<>(projekti, HttpStatus.OK));
 
         mvc.perform(get("/projects")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -64,7 +66,7 @@ public class ProjectTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
 
-        given(projectService.getOneProject(Long.valueOf(1))).willReturn(project);
+        given(projectService.getOneProject(Long.valueOf(1))).willReturn(new ResponseEntity<>(project, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/project/{id}", 1)
@@ -86,7 +88,7 @@ public class ProjectTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
 
-        given(projectService.newProject(ArgumentMatchers.any(Project.class))).willReturn(project);
+        given(projectService.newProject(ArgumentMatchers.any(Project.class))).willReturn(new ResponseEntity<>(project, HttpStatus.CREATED));
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/addProject")
@@ -111,7 +113,7 @@ public class ProjectTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse("2020-3-17" ), format.parse("2020-3-17") , 1);
         project.setID(1L);
-        given(projectService.addOrReplace(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(project);
+        given(projectService.addOrReplace(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(project, HttpStatus.OK));
         project.setID(Long.valueOf(1));
 
         mvc.perform( MockMvcRequestBuilders
@@ -132,7 +134,7 @@ public class ProjectTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
 
-        given(projectService.renameProject(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong())).willReturn(project);
+        given(projectService.renameProject(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(project, HttpStatus.OK));
 
         project.setID(Long.valueOf(1));
 

@@ -3,6 +3,7 @@ package com.example.demo.Controllers;
 import com.example.demo.Models.Project;
 import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Services.ProjectService;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,41 +28,33 @@ public class ProjectController {
 
     @PutMapping("/addOrUpdateProject/{id}")
     ResponseEntity<?> addOrReplace(@RequestBody Project newProject, @PathVariable Long id) {
-        Project project = projectService.addOrReplace(newProject, id);
-        //if(project != null)
-            return new ResponseEntity<>(project, HttpStatus.OK);
-        //else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return projectService.addOrReplace(newProject, id);
     }
 
     @PutMapping("/renameProject/{id}")
     ResponseEntity<?> renameProject(@RequestBody String name, @PathVariable Long id) {
-        Project project =  projectService.renameProject(name, id);
-        if(project != null) return new ResponseEntity<>(project, HttpStatus.OK);
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return projectService.renameProject(name, id);
     }
 
     @DeleteMapping("/delete/project/{id}")
-    ResponseEntity<?> deleteOne(@PathVariable Long id){
+    ResponseEntity<?> deleteOne(@PathVariable Long id) throws JSONException {
         projectService.deleteOne(id);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/addProject")
     ResponseEntity<Project> newProject(@RequestBody Project newProject) throws URISyntaxException {
-        Project project = projectService.newProject(newProject);
-        return new ResponseEntity<Project>(project, HttpStatus.CREATED);
+        return projectService.newProject(newProject);
     }
 
     @GetMapping("/projects")
     ResponseEntity<?> getAllProjects(){
-        List<Project> projects = projectService.getAllProjects();
-        return new ResponseEntity<>(projects, HttpStatus.OK);
+        return projectService.getAllProjects();
     }
 
     @GetMapping("/project/{id}")
     ResponseEntity<?> getOneProject(@PathVariable Long id) {
-        Project project = projectService.getOneProject(id);
-        return new ResponseEntity<>(project, HttpStatus.OK);
+        return projectService.getOneProject(id);
     }
 
 

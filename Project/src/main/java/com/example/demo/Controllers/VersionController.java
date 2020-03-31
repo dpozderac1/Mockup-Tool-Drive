@@ -6,6 +6,7 @@ import com.example.demo.Models.VersionNames;
 import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.VersionRepository;
 import com.example.demo.Services.VersionService;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,43 +29,36 @@ public class VersionController {
 
     @PutMapping("/addOrUpdateVersion/{id}")
     ResponseEntity<?> addOrReplace(@RequestBody Version newVersion, @PathVariable Long id) {
-        Version version = versionService.addOrReplace(newVersion, id);
-        return new ResponseEntity<>(version, HttpStatus.OK);
+        return versionService.addOrReplace(newVersion, id);
     }
 
     @PutMapping("/changeVersion/{id}")
     ResponseEntity<?> changeVersion(@RequestBody VersionNames name, @PathVariable Long id) {
-        Version version = versionService.changeVersion(name, id);
-        return new ResponseEntity<>(version, HttpStatus.OK);
+        return versionService.changeVersion(name, id);
     }
 
     @GetMapping("/versions/project/{id}")
     ResponseEntity<?> allVersionsOfProject(@PathVariable Long id){
-        List<Version> versions = versionService.allVersionsOfProject(id);
-        return new ResponseEntity<>(versions, HttpStatus.OK);
+        return versionService.allVersionsOfProject(id);
     }
 
     @DeleteMapping("/delete/version/{id}")
-    ResponseEntity<?> deleteOne(@PathVariable Long id){
-        versionService.deleteOne(id);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    ResponseEntity<?> deleteOne(@PathVariable Long id) throws JSONException{
+        return versionService.deleteOne(id);
     }
 
     @PostMapping("/addVersion")
     ResponseEntity<?> newVersion(@RequestBody Version newVersion) {
-        Version version = versionService.newVersion(newVersion);
-        return new ResponseEntity<>(version, HttpStatus.CREATED);
+        return versionService.newVersion(newVersion);
     }
 
     @GetMapping("/versions")
     ResponseEntity<?> getAllVersions(){
-        List<Version> versions = versionService.getAllVersions();
-        return new ResponseEntity<>(versions, HttpStatus.OK);
+        return versionService.getAllVersions();
     }
 
     @GetMapping("/version/{id}")
     ResponseEntity<?> getOneVersion(@PathVariable Long id) {
-        Version version = versionService.getOneVersion(id);
-        return new ResponseEntity<>(version, HttpStatus.OK);
+        return versionService.getOneVersion(id);
     }
 }
