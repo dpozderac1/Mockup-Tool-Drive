@@ -7,6 +7,7 @@ import com.example.demo.Repositories.GSPEC_DocumentRepository;
 import com.example.demo.Repositories.MockupRepository;
 import com.example.demo.Repositories.PDF_DocumentRepository;
 import com.example.demo.Services.GSPEC_DocumentService;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,38 +27,33 @@ public class GSPEC_DocumentController {
 
     @PutMapping("/addOrUpdateGSPEC_Document/{id}")
     ResponseEntity<?> addOrReplaceGSPEC(@RequestBody GSPEC_Document newGspec, @PathVariable Long id) {
-        GSPEC_Document gspec_document = gspec_documentService.addOrReplaceGSPEC(newGspec, id);
-        return new ResponseEntity<>(gspec_document, HttpStatus.OK);
+        return gspec_documentService.addOrReplaceGSPEC(newGspec, id);
     }
 
     @GetMapping("/GSPEC_Documents/mockup/{id}")
     ResponseEntity<?> allGSPECsOfMockup(@PathVariable Long id){
-        List<GSPEC_Document> gspec_documents = gspec_documentService.allGSPECsOfMockup(id);
-        return new ResponseEntity<>(gspec_documents, HttpStatus.OK);
+        return gspec_documentService.allGSPECsOfMockup(id);
     }
 
     @DeleteMapping("/delete/gspec_document/{id}")
-    ResponseEntity<?> deleteOneGSPEC(@PathVariable Long id){
-        gspec_documentService.deleteOneGSPEC(id);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    ResponseEntity<?> deleteOneGSPEC(@PathVariable Long id) throws JSONException {
+        return gspec_documentService.deleteOneGSPEC(id);
     }
 
     @PostMapping("/addGSPEC_Document")
     ResponseEntity<?> newGSPEC(@RequestBody GSPEC_Document newGspec) {
-        GSPEC_Document gspec_document = gspec_documentService.newGSPEC(newGspec);
-        return new ResponseEntity<>(gspec_document, HttpStatus.CREATED);
+        return gspec_documentService.newGSPEC(newGspec);
     }
 
     @GetMapping("/gspec_documents")
     ResponseEntity<?> getAllGSPECs(){
-        List<GSPEC_Document> gspec_documents = gspec_documentService.getAllGSPECs();
-        return new ResponseEntity<>(gspec_documents, HttpStatus.OK);
+        return gspec_documentService.getAllGSPECs();
     }
 
     @GetMapping("/gspec_document/{id}")
     ResponseEntity<?> getOneGSPEC(@PathVariable Long id) {
-        GSPEC_Document gspec_document = gspec_documentService.getOneGSPEC(id);
-        return new ResponseEntity<>(gspec_document, HttpStatus.OK);
+        return gspec_documentService.getOneGSPEC(id);
+
     }
 
 }

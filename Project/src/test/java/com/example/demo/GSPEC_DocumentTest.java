@@ -16,7 +16,9 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -53,7 +55,7 @@ public class GSPEC_DocumentTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         GSPEC_Document gspec = new GSPEC_Document(null, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
         List<GSPEC_Document> gspecs = Arrays.asList(gspec);
-        given(gspec_documentService.getAllGSPECs()).willReturn(gspecs);
+        given(gspec_documentService.getAllGSPECs()).willReturn(new ResponseEntity<>(gspecs, HttpStatus.OK));
 
         mvc.perform(get("/gspec_documents")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -68,7 +70,7 @@ public class GSPEC_DocumentTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         GSPEC_Document gspec = new GSPEC_Document(null, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(gspec_documentService.getOneGSPEC(1L)).willReturn(gspec);
+        given(gspec_documentService.getOneGSPEC(1L)).willReturn(new ResponseEntity<>(gspec, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/gspec_document/{id}", 1)
@@ -88,7 +90,7 @@ public class GSPEC_DocumentTest {
         gspec_document.setID(Long.valueOf(2));
 
         List<GSPEC_Document> gspec_documents = Arrays.asList(gspec_document);
-        given(gspec_documentService.allGSPECsOfMockup(1L)).willReturn(gspec_documents);
+        given(gspec_documentService.allGSPECsOfMockup(1L)).willReturn(new ResponseEntity<>(gspec_documents, HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .get("/GSPEC_Documents/mockup/{id}", 1)
@@ -105,7 +107,7 @@ public class GSPEC_DocumentTest {
     @Test
     public void deleteGSPEC() throws Exception {
         mvc.perform(MockMvcRequestBuilders.delete("/delete/gspec_document/{id}", 1))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -113,7 +115,7 @@ public class GSPEC_DocumentTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         GSPEC_Document gspec = new GSPEC_Document(null, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(gspec_documentService.newGSPEC(ArgumentMatchers.any(GSPEC_Document.class))).willReturn(gspec);
+        given(gspec_documentService.newGSPEC(ArgumentMatchers.any(GSPEC_Document.class))).willReturn(new ResponseEntity<>(gspec, HttpStatus.CREATED));
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/addGSPEC_Document")
@@ -141,7 +143,7 @@ public class GSPEC_DocumentTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         GSPEC_Document gspec_document = new GSPEC_Document(null, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
 
-        given(gspec_documentService.addOrReplaceGSPEC(ArgumentMatchers.any(GSPEC_Document.class), ArgumentMatchers.anyLong())).willReturn(gspec_document);
+        given(gspec_documentService.addOrReplaceGSPEC(ArgumentMatchers.any(GSPEC_Document.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(gspec_document, HttpStatus.OK));
 
         mvc.perform( MockMvcRequestBuilders
                 .put("/addOrUpdateGSPEC_Document/{id}", 1)
