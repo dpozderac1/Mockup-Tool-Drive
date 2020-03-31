@@ -38,8 +38,7 @@ public class ProjectController {
 
     @DeleteMapping("/delete/project/{id}")
     ResponseEntity<?> deleteOne(@PathVariable Long id) throws JSONException {
-        projectService.deleteOne(id);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return projectService.deleteOne(id);
     }
 
     @PostMapping("/addProject")

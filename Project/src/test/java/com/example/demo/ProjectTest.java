@@ -79,7 +79,7 @@ public class ProjectTest {
     @Test
     public void deleteProject() throws Exception {
         mvc.perform(MockMvcRequestBuilders.delete("/delete/project/{id}", 1))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isOk());
     }
 
     @Test

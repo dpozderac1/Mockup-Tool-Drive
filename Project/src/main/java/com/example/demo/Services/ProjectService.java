@@ -64,7 +64,7 @@ public class ProjectService implements ProjectServiceInterface {
             projectRepository.deleteById(id);
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("message","Project successfully deleted!");
-            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.ACCEPTED);
+            return new ResponseEntity(jsonObject.toString(), HttpStatus.OK);
         }
         else
             throw new ObjectNotFoundException("Project with id " + id + " does not exit!");
