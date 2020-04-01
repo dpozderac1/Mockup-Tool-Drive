@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin
@@ -31,7 +32,7 @@ public class RoleController {
     }
 
     @PostMapping(value="/role",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity newRole(@RequestBody Role newRole){
+    ResponseEntity newRole(@Valid @RequestBody Role newRole){
         return roleService.saveRole(newRole);
     }
 
@@ -41,7 +42,7 @@ public class RoleController {
     }
 
     @PutMapping(value="/updateRole/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity updateRole(@PathVariable Long id, @RequestBody Role role){
+    ResponseEntity updateRole(@Valid @PathVariable Long id, @RequestBody Role role){
         return roleService.updateRole(id,role);
     }
 }

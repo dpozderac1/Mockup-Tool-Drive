@@ -61,9 +61,9 @@ public class UserTest {
     public void testGetUsers()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.ADMIN);
+        Role uloga = new Role(RoleNames.ADMIN);
         uloga.setID(Long.valueOf(1));
-        User korisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
 
         List<User> korisnici = Arrays.asList(korisnik);
 
@@ -82,17 +82,17 @@ public class UserTest {
     public void testGetUserByIdExists()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.ADMIN);
+        Role uloga = new Role(RoleNames.ADMIN);
         uloga.setID(Long.valueOf(1));
-        User korisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
 
         korisnik.setID(Long.valueOf(1));
 
-        ResponseEntity odgovor=new ResponseEntity(korisnik, HttpStatus.OK);
+        ResponseEntity odgovor = new ResponseEntity(korisnik, HttpStatus.OK);
         given(userService.getUserByID(Long.valueOf(1))).willReturn(odgovor);
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/users/{id}",1)
+                .get("/users/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -105,7 +105,7 @@ public class UserTest {
             throws Exception {
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/users/{id}","nesto")
+                .get("/users/{id}", "nesto")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
@@ -116,12 +116,12 @@ public class UserTest {
     public void testGetUsersByRoleExists()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.ADMIN);
+        Role uloga = new Role(RoleNames.ADMIN);
         uloga.setID(Long.valueOf(1));
         given(roleRepository.existsByID(Long.valueOf(1))).willReturn(true);
         given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
 
-        User korisnik=new User(uloga,"Edina","Kovac","ekovac2","Sifra22+","ekovac2@etf.unsa.ba");
+        User korisnik = new User(uloga, "Edina", "Kovac", "ekovac2", "Sifra22+", "ekovac2@etf.unsa.ba");
         korisnik.setID(Long.valueOf(1));
 
         List<User> korisnici = Arrays.asList(korisnik);
@@ -130,7 +130,7 @@ public class UserTest {
         given(userService.getUsersByRoleID(1L)).willReturn(korisnici);
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/users/role/{id}",1)
+                .get("/users/role/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -143,12 +143,11 @@ public class UserTest {
             throws Exception {
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/users/role/{id}","nesto")
+                .get("/users/role/{id}", "nesto")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
     }
-
 
 
     //GET /users/project/{id} DOBAR
@@ -156,20 +155,20 @@ public class UserTest {
     public void testGetProjectsOfUserExists()
             throws Exception {
 
-        Project projekat=new Project();
+        Project projekat = new Project();
         projekat.setID(Long.valueOf(1));
         given(projectRepository.existsByID(Long.valueOf(1))).willReturn(true);
         given(projectRepository.findByID(Long.valueOf(1))).willReturn(projekat);
 
-        Role uloga=new Role(RoleNames.ADMIN);
+        Role uloga = new Role(RoleNames.ADMIN);
         uloga.setID(Long.valueOf(1));
         given(roleRepository.existsByID(Long.valueOf(1))).willReturn(true);
         given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
 
-        User korisnik=new User(uloga,"Edina","Kovac","ekovac2","Sifra22+","ekovac2@etf.unsa.ba");
+        User korisnik = new User(uloga, "Edina", "Kovac", "ekovac2", "Sifra22+", "ekovac2@etf.unsa.ba");
         korisnik.setID(Long.valueOf(1));
         //given(userRepository.existsByID(Long.valueOf(1))).willReturn(true);
-        ResponseEntity odgovor=new ResponseEntity(korisnik, HttpStatus.OK);
+        ResponseEntity odgovor = new ResponseEntity(korisnik, HttpStatus.OK);
         given(userService.getUserByID(ArgumentMatchers.anyLong())).willReturn(odgovor);
 
         List<Project> projekti = Arrays.asList(projekat);
@@ -186,7 +185,7 @@ public class UserTest {
         given(userService.getUserProjects(ArgumentMatchers.anyLong())).willReturn(projekti);
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/users/projects/{id}",1)
+                .get("/users/projects/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -199,7 +198,7 @@ public class UserTest {
             throws Exception {
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/users/projects/{id}","nesto")
+                .get("/users/projects/{id}", "nesto")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
@@ -211,10 +210,10 @@ public class UserTest {
     public void testPostUser()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.ADMIN);
+        Role uloga = new Role(RoleNames.ADMIN);
         uloga.setID(Long.valueOf(1));
         given(roleRepository.findByID(1l)).willReturn(uloga);
-        User korisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
         korisnik.setID(1L);
         JSONObject objekat = new JSONObject();
         objekat.put("message", "User is successfully added!");
@@ -235,16 +234,16 @@ public class UserTest {
     public void testPutUserExists()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.ADMIN);
+        Role uloga = new Role(RoleNames.ADMIN);
         uloga.setID(Long.valueOf(1));
         given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
-        User korisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
         korisnik.setID(Long.valueOf(1));
 
-        User noviKorisnik=new User(uloga,"","","noviUsername","","");
-        given(this.userService.updateUser(ArgumentMatchers.anyLong(),ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(noviKorisnik,HttpStatus.OK));
+        User noviKorisnik = new User(uloga, "", "", "noviUsername", "", "");
+        given(this.userService.updateUser(ArgumentMatchers.anyLong(), ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(noviKorisnik, HttpStatus.OK));
 
-        mvc.perform(put("/updateUser/{id}",1)
+        mvc.perform(put("/updateUser/{id}", 1)
                 .content(asJsonString(noviKorisnik))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -256,8 +255,8 @@ public class UserTest {
     @Test
     public void testPutUserDoesNotExist()
             throws Exception {
-        mvc.perform(put("/updateUser/{id}","nesto")
-                .content(asJsonString(new User(null,"","","noviUsername","","")))
+        mvc.perform(put("/updateUser/{id}", "nesto")
+                .content(asJsonString(new User(null, "", "", "noviUsername", "", "")))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
@@ -267,14 +266,14 @@ public class UserTest {
     public void testDeleteUserExists()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.ADMIN);
+        Role uloga = new Role(RoleNames.ADMIN);
         uloga.setID(Long.valueOf(1));
         given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
-        User korisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
         korisnik.setID(Long.valueOf(1));
         given(userRepository.findByID(Long.valueOf(1))).willReturn(korisnik);
 
-        mvc.perform(delete("/deleteUser/{id}",1)
+        mvc.perform(delete("/deleteUser/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -284,7 +283,7 @@ public class UserTest {
     @Test
     public void testDeleteUserDoesNotExist()
             throws Exception {
-        mvc.perform(delete("/deleteUser/{id}","nesto")
+        mvc.perform(delete("/deleteUser/{id}", "nesto")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
@@ -300,10 +299,6 @@ public class UserTest {
     }
 
 
-
-
-
-
     //Error handling
     //Error GET /users/{id} LOS
     @Test
@@ -314,7 +309,7 @@ public class UserTest {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
         given(userService.getUserByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
         mvc.perform(MockMvcRequestBuilders
-                .get("/users/{id}",1)
+                .get("/users/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
@@ -329,11 +324,11 @@ public class UserTest {
         List<String> errors = new ArrayList<>();
         errors.add("User does not exist!");
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
-        Role nova=new Role(RoleNames.USER);
+        Role nova = new Role(RoleNames.USER);
         nova.setID(1L);
-        User korisnik=new User(null,"","","noviUsername","","");
-        given(this.userService.updateUser(ArgumentMatchers.anyLong(),ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
-        mvc.perform(put("/updateUser/{id}",1)
+        User korisnik = new User(null, "", "", "noviUsername", "", "");
+        given(this.userService.updateUser(ArgumentMatchers.anyLong(), ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(put("/updateUser/{id}", 1)
                 .content(asJsonString(korisnik))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -351,15 +346,13 @@ public class UserTest {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
         given(userService.deleteUser(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
         mvc.perform(MockMvcRequestBuilders
-                .delete("/deleteUser/{id}",1)
+                .delete("/deleteUser/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User does not exist!"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Not Found"));
     }
-
-
 
 
     @Test
@@ -371,7 +364,7 @@ public class UserTest {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
         given(userService.getUserByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
         mvc.perform(MockMvcRequestBuilders
-                .get("/deleteUser/{id}",1)
+                .get("/deleteUser/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
@@ -383,7 +376,7 @@ public class UserTest {
     public void testMethodArgumentTypeMismatch()
             throws Exception {
         mvc.perform(MockMvcRequestBuilders
-                .get("/users/{id}","nesto")
+                .get("/users/{id}", "nesto")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
@@ -396,20 +389,36 @@ public class UserTest {
         List<String> errors = new ArrayList<>();
         errors.add("User already exists!");
         ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Record Already Exists", errors);
-        Role uloga=new Role(RoleNames.USER);
+        Role uloga = new Role(RoleNames.USER);
         uloga.setID(1L);
-        User korisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
         korisnik.setID(Long.valueOf(1));
 
-        User noviKorisnik=new User(uloga,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        User noviKorisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
 
-        given(this.userService.updateUser(ArgumentMatchers.anyLong(),ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
-        mvc.perform(put("/updateUser/{id}",1)
+        given(this.userService.updateUser(ArgumentMatchers.anyLong(), ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(put("/updateUser/{id}", 1)
                 .content(asJsonString(noviKorisnik))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User already exists!"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Already Exists"));
     }
-}
 
+    @Test
+    public void testHandleMethodArgumentNotValid() throws Exception {
+
+        Role uloga = new Role(null);
+        uloga.setID(1L);
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto", "zramic1@gmail.com");
+        korisnik.setID(1L);
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/user")
+                .content(asJsonString(korisnik))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Password must contain 1 or more digit characters.,Password must contain 1 or more special characters."));
+    }
+}

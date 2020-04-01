@@ -23,24 +23,15 @@ import java.util.List;
 
 @ControllerAdvice
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            HttpHeaders headers,
-            HttpStatus status,
-            WebRequest request) {
-        List<String> errors = new ArrayList<String>();
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.add(error.getField() + ": " + error.getDefaultMessage());
-        }
-        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
-        }
 
-        ApiError apiError =
-                new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
-        return handleExceptionInternal(
-                ex, apiError, headers, apiError.getStatus(), request);
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        for(ObjectError error : ex.getBindingResult().getAllErrors()) {
+            details.add(error.getDefaultMessage());
+        }
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Validation Failed", details);
+        return new ResponseEntity(apiError,apiError.getStatus());
     }
 
     @Override

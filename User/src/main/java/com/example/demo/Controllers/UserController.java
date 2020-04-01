@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,7 @@ public class UserController {
     }
 
     @PostMapping(value="/user",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity newUser(@RequestBody User newUser){
+    ResponseEntity newUser(@Valid @RequestBody User newUser){
         return userService.saveUser(newUser);
     }
 
@@ -55,7 +56,7 @@ public class UserController {
     }
 
     @PutMapping(value="/updateUser/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity updateUser(@PathVariable Long id, @RequestBody User user){
+    ResponseEntity updateUser(@Valid @PathVariable Long id, @RequestBody User user){
         return userService.updateUser(id,user);
     }
 }

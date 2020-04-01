@@ -54,7 +54,7 @@ public class RoleTest {
     public void testGetRoles()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.USER);
+        Role uloga = new Role(RoleNames.USER);
 
         List<Role> uloge = Arrays.asList(uloga);
 
@@ -72,13 +72,13 @@ public class RoleTest {
     public void testGetRoleByIdExists()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.USER);
+        Role uloga = new Role(RoleNames.USER);
         uloga.setID(Long.valueOf(1));
-        ResponseEntity odgovor=new ResponseEntity(uloga, HttpStatus.OK);
+        ResponseEntity odgovor = new ResponseEntity(uloga, HttpStatus.OK);
         given(roleService.getRoleByID(Long.valueOf(1))).willReturn(odgovor);
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/roles/{id}",1)
+                .get("/roles/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -91,7 +91,7 @@ public class RoleTest {
             throws Exception {
 
         mvc.perform(MockMvcRequestBuilders
-                .get("/roles/{id}","nesto")
+                .get("/roles/{id}", "nesto")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
@@ -102,7 +102,7 @@ public class RoleTest {
     public void testPostRole()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.USER);
+        Role uloga = new Role(RoleNames.USER);
 
         JSONObject objekat = new JSONObject();
         objekat.put("message", "Role is successfully added!");
@@ -121,13 +121,13 @@ public class RoleTest {
     @Test
     public void testPutRoleExists()
             throws Exception {
-        Role uloga=new Role(RoleNames.ADMIN);
+        Role uloga = new Role(RoleNames.ADMIN);
         uloga.setID(1L);
 
-        Role nova=new Role(RoleNames.USER);
+        Role nova = new Role(RoleNames.USER);
         nova.setID(1L);
-        given(this.roleService.updateRole(ArgumentMatchers.anyLong(),ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(nova,HttpStatus.OK));
-        mvc.perform(put("/updateRole/{id}",1)
+        given(this.roleService.updateRole(ArgumentMatchers.anyLong(), ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(nova, HttpStatus.OK));
+        mvc.perform(put("/updateRole/{id}", 1)
                 .content(asJsonString(nova))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -139,7 +139,7 @@ public class RoleTest {
     @Test
     public void testPutRoleDoesNotExist()
             throws Exception {
-        mvc.perform(put("/updateRole/{id}","nesto")
+        mvc.perform(put("/updateRole/{id}", "nesto")
                 .content(asJsonString(new Role(RoleNames.USER)))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
@@ -150,11 +150,11 @@ public class RoleTest {
     public void testDeleteRoleExists()
             throws Exception {
 
-        Role uloga=new Role(RoleNames.ADMIN);
+        Role uloga = new Role(RoleNames.ADMIN);
         uloga.setID(Long.valueOf(1));
         given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
 
-        mvc.perform(delete("/deleteRole/{id}",1)
+        mvc.perform(delete("/deleteRole/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -164,7 +164,7 @@ public class RoleTest {
     @Test
     public void testDeleteRoleDoesNotExist()
             throws Exception {
-        mvc.perform(delete("/deleteRole/{id}","nesto")
+        mvc.perform(delete("/deleteRole/{id}", "nesto")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
     }
@@ -180,11 +180,6 @@ public class RoleTest {
     }
 
 
-
-
-
-
-
     //Error handling
     //Error GET /roles/{id} LOS
     @Test
@@ -195,7 +190,7 @@ public class RoleTest {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
         given(roleService.getRoleByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
         mvc.perform(MockMvcRequestBuilders
-                .get("/roles/{id}",1)
+                .get("/roles/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
@@ -210,10 +205,10 @@ public class RoleTest {
         List<String> errors = new ArrayList<>();
         errors.add("Role does not exist!");
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
-        Role nova=new Role(RoleNames.USER);
+        Role nova = new Role(RoleNames.USER);
         nova.setID(1L);
-        given(this.roleService.updateRole(ArgumentMatchers.anyLong(),ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
-        mvc.perform(put("/updateRole/{id}",1)
+        given(this.roleService.updateRole(ArgumentMatchers.anyLong(), ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(put("/updateRole/{id}", 1)
                 .content(asJsonString(nova))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
@@ -231,7 +226,7 @@ public class RoleTest {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
         given(roleService.deleteRole(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
         mvc.perform(MockMvcRequestBuilders
-                .delete("/deleteRole/{id}",1)
+                .delete("/deleteRole/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
@@ -249,7 +244,7 @@ public class RoleTest {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Record Not Found", errors);
         given(roleService.getRoleByID(Long.valueOf(1))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
         mvc.perform(MockMvcRequestBuilders
-                .get("/deleteRole/{id}",1)
+                .get("/deleteRole/{id}", 1)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
@@ -261,7 +256,7 @@ public class RoleTest {
     public void testMethodArgumentTypeMismatch()
             throws Exception {
         mvc.perform(MockMvcRequestBuilders
-                .get("/roles/{id}","nesto")
+                .get("/roles/{id}", "nesto")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
@@ -274,17 +269,18 @@ public class RoleTest {
         List<String> errors = new ArrayList<>();
         errors.add("Role already exists!");
         ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Record Already Exists", errors);
-        Role uloga=new Role(RoleNames.USER);
+        Role uloga = new Role(RoleNames.USER);
         uloga.setID(1L);
-        Role nova=new Role(RoleNames.USER);
+        Role nova = new Role(RoleNames.USER);
 
-        given(this.roleService.updateRole(ArgumentMatchers.anyLong(),ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
-        mvc.perform(put("/updateRole/{id}",1)
+        given(this.roleService.updateRole(ArgumentMatchers.anyLong(), ArgumentMatchers.any(Role.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        mvc.perform(put("/updateRole/{id}", 1)
                 .content(asJsonString(nova))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Role already exists!"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Record Already Exists"));
     }
+
 
 }
