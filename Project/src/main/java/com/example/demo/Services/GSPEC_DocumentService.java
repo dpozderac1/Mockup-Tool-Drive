@@ -69,7 +69,7 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
         if(gspec_documentRepository.existsById(id)){
             gspec_documentRepository.deleteById(id);
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("message","Mockup successfully deleted!");
+            jsonObject.put("message","GSPEC document successfully deleted!");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
         }
         else

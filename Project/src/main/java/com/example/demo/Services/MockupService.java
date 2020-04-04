@@ -61,7 +61,7 @@ public class MockupService implements MockupServiceInterface{
                 throw new ObjectNotFoundException("Mockup with version with id " + id + "do not exist!");
         }
         else
-            throw new ObjectNotFoundException("Version with id " + id + "does not exist!");
+            throw new ObjectNotFoundException("Version with id " + id + " does not exist!");
     }
 
     @Override

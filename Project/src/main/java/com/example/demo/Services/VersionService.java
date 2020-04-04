@@ -48,13 +48,13 @@ public class VersionService implements VersionServiceInterface {
     @Override
     public ResponseEntity changeVersion(VersionNames name, Long id){
         Version version = versionRepository.findByID(id);
-        if(!name.equals(" ")){
+        if(version != null){
             version.setVersion_name(name);
             versionRepository.save(version);
             return new ResponseEntity<>(version, HttpStatus.OK);
         }
         else
-            throw new ObjectNotFoundException("Version name can not be empty!");
+            throw new ObjectNotFoundException("Version with id " + id + " does not exist!");
     }
 
     @Override
@@ -74,14 +74,14 @@ public class VersionService implements VersionServiceInterface {
 
     @Override
     public ResponseEntity deleteOne(Long id) throws JSONException {
-        if(versionRepository.existsByID(id)){
-            versionRepository.deleteByID(id);
+        if(versionRepository.existsById(id)){
+            versionRepository.deleteById(id);
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("message","Project successfully deleted!");
+            jsonObject.put("message","Version successfully deleted!");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
         }
         else
-            throw new ObjectNotFoundException("Version with id " + id + "does not exist!");
+            throw new ObjectNotFoundException("Version with id " + id + " does not exist!");
     }
 
     @Override

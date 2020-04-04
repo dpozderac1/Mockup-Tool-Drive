@@ -68,7 +68,7 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
         if(pdf_documentRepository.existsById(id)) {
             pdf_documentRepository.deleteById(id);
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("message","Mockup successfully deleted!");
+            jsonObject.put("message","PDF document successfully deleted!");
             return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
         }
         else

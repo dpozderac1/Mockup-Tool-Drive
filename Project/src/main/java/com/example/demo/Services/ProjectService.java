@@ -48,13 +48,13 @@ public class ProjectService implements ProjectServiceInterface {
     @Override
     public ResponseEntity renameProject(String name, Long id){
         Project project =  projectRepository.findByID(id);
-        if(!name.equals(" ")){
+        if(project != null){
             project.setName(name);
             projectRepository.save(project);
             return new ResponseEntity<>(project, HttpStatus.OK);
         }
         else{
-            throw new ObjectNotFoundException("Name can not be empty!");
+            throw new ObjectNotFoundException("Project with id " + id + " does not exist!");
         }
     }
 
