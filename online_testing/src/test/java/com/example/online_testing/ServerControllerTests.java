@@ -45,6 +45,7 @@ public class ServerControllerTests {
     @MockBean
     private UserRepository userRepository;
 
+
     @Test
     public void testGetServers() throws Exception {
         Server server = new Server("http://nekiserver1.com", 3306, "1", null);
@@ -117,7 +118,7 @@ public class ServerControllerTests {
     @Test
     public void getUserServersExist() throws Exception
     {
-        User user = new User(null, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
+        User user = new User(null, "zramic1", "zramic1@etf.unsa.ba");
         user.setID(Long.valueOf(1));
         given(userRepository.findByID(Long.valueOf(1))).willReturn(user);
 
@@ -154,7 +155,7 @@ public class ServerControllerTests {
         Role admin = new Role();
         admin.setRole_name(RoleNames.ADMIN);
 
-        User user = new User(admin, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
+        User user = new User(admin, "zramic1", "zramic1@etf.unsa.ba");
         given(userRepository.findByroleID(admin)).willReturn(user);
 
         Server server = new Server("http://nekiserver1.com", 3306, "1", user);

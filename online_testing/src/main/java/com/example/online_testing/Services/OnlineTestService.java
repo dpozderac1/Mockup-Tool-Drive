@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface OnlineTestService {
 
-    public List<OnlineTest> getAllOnlineTests();
-    public ResponseEntity getOnlineTestByID(Long id);
-    public ResponseEntity deleteOnlineTestByID(Long id);
-    public List<OnlineTest> getOnlineTestsServers(Long id);
-    public List<OnlineTest> getOnlineTestsUsers(Long id);
-    public ResponseEntity getOnlineTestGSPECDocument(Long id);
-    public ResponseEntity saveOnlineTest(OnlineTest onlineTest);
-    public ResponseEntity updateOnlineTest(OnlineTest onlineTest, Long id);
+     List<OnlineTest> getAllOnlineTests();
+     ResponseEntity getOnlineTestByID(Long id);
+     ResponseEntity deleteOnlineTestByID(Long id);
+     List<OnlineTest> getOnlineTestsServers(Long id);
+     List<OnlineTest> getOnlineTestsUsers(Long id);
+     ResponseEntity getOnlineTestGSPECDocument(Long id);
+     ResponseEntity saveOnlineTest(OnlineTest onlineTest);
+     ResponseEntity updateOnlineTest(OnlineTest onlineTest, Long id);
 
 }

@@ -161,7 +161,7 @@ public class OnlineTestControllerTests {
     @Test
     public void getOnlineTestsUsersDoesExist() throws Exception
     {
-        User user = new User(null, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
+        User user = new User(null, "zramic1", "zramic1@etf.unsa.ba");
         user.setID(Long.valueOf(1));
 
         OnlineTest onlineTest = new OnlineTest("Test1", null, null, user, null);
@@ -232,16 +232,14 @@ public class OnlineTestControllerTests {
         GSPECDocument document = new GSPECDocument("Document1", null);
         document.setID(Long.valueOf(1));
 
-        User user = new User(null, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
+        User user = new User(null, "zramic1", "zramic1@etf.unsa.ba");
         user.setID(Long.valueOf(1));
 
         Server server = new Server("http://nekiserver1.com", 3306, "1", null);
         server.setID(Long.valueOf(1));
 
         OnlineTest onlineTest = new OnlineTest("Test1", null, 1, 1, 1);
-        JSONObject jo = new JSONObject();
-        jo.put("message", "Online test is successfully added!");
-        given(this.onlineTestService.saveOnlineTest(ArgumentMatchers.any(OnlineTest.class))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.CREATED));
+        given(this.onlineTestService.saveOnlineTest(ArgumentMatchers.any(OnlineTest.class))).willReturn(new ResponseEntity(onlineTest, HttpStatus.CREATED));
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/addOnlineTest")
@@ -249,7 +247,7 @@ public class OnlineTestControllerTests {
                 .content(asJsonString(onlineTest))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Online test is successfully added!"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.tests").value(onlineTest.getTests()));
     }
 
     @Test
@@ -282,7 +280,7 @@ public class OnlineTestControllerTests {
         GSPECDocument document = new GSPECDocument("Document1", null);
         document.setID(Long.valueOf(1));
 
-        User user = new User(null, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
+        User user = new User(null, "zramic1", "zramic1@etf.unsa.ba");
         user.setID(Long.valueOf(1));
 
         OnlineTest onlineTest1 = new OnlineTest("Test2", null, 1, 1, 1);
