@@ -11,9 +11,11 @@ import com.example.demo.ServisInterfaces.GSPEC_DocumentServiceInterface;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -21,6 +23,9 @@ import java.util.List;
 public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
     private GSPEC_DocumentRepository gspec_documentRepository;
     private MockupRepository mockupRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Autowired
     public GSPEC_DocumentService(GSPEC_DocumentRepository gspec_documentRepository, MockupRepository mockupRepository) {
@@ -32,6 +37,9 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
     public ResponseEntity addOrReplaceGSPEC(GSPEC_Document newGspec, Long id){
         GSPEC_Document gspec_document = gspec_documentRepository.findByID(id);
         if(gspec_document != null) {
+            HttpEntity<GSPEC_Document> request = new HttpEntity<>(newGspec);
+            restTemplate.put("http://online-testing/updateGSPECDocument/{id}", request, id);
+
             if(!newGspec.getName().equals("")) gspec_document.setName(newGspec.getName());
             if(newGspec.getMockupId() != null) gspec_document.setMockupId(newGspec.getMockupId());
             if(newGspec.getDate_created() != null) gspec_document.setDate_created(newGspec.getDate_created());
@@ -66,6 +74,7 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
 
     @Override
     public ResponseEntity deleteOneGSPEC(Long id) throws JSONException {
+        restTemplate.delete("http://online-testing/GSPECDocument/{id}", id);
         if(gspec_documentRepository.existsById(id)){
             gspec_documentRepository.deleteById(id);
             JSONObject jsonObject = new JSONObject();
@@ -78,6 +87,9 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
 
     @Override
     public ResponseEntity newGSPEC(GSPEC_Document newGspec){
+        HttpEntity<GSPEC_Document> request = new HttpEntity<>(newGspec);
+        GSPEC_Document gspec_document11 = restTemplate.postForObject("http://online-testing/addGSPECDocument", request, GSPEC_Document.class);
+
         List<GSPEC_Document> gspec_documents  = gspec_documentRepository.findAll();
         boolean alreadyExists = false;
         for(GSPEC_Document m: gspec_documents){
