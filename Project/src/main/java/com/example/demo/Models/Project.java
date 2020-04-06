@@ -62,7 +62,7 @@ public class Project {
     }
 
     @javax.persistence.Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @Column(name = "Name")

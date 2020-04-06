@@ -16,4 +16,6 @@ public interface ProjectServiceInterface {
     public ResponseEntity newProject(Project newProject);
     public ResponseEntity getAllProjects();
     public ResponseEntity getOneProject(Long id);
+    public ResponseEntity getProjectsByFilter(String filter) throws JSONException;
+    public ResponseEntity searchProjectsByName(String name);
 }

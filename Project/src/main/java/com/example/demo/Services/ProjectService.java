@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -104,5 +107,50 @@ public class ProjectService implements ProjectServiceInterface {
         else{
             throw new ObjectNotFoundException("Project with id " + id + " does not exist!");
         }
+    }
+
+    @Override
+    public ResponseEntity getProjectsByFilter(String filter) throws JSONException {
+        List<Project> projects = projectRepository.findAll();
+        if(filter.equals("datum_kreiranja")){
+            Collections.sort(projects, new Comparator<Project>() {
+                public int compare(Project p1, Project p2) {
+                    return p1.getDate_created().compareTo(p2.getDate_created());
+                }
+            });
+            return new ResponseEntity<>(projects, HttpStatus.OK);
+        }
+        else if(filter.equals("datum_modifikovanja")){
+            Collections.sort(projects, new Comparator<Project>() {
+                public int compare(Project p1, Project p2) {
+                    return p1.getDate_modified().compareTo(p2.getDate_modified());
+                }
+            });
+            return new ResponseEntity<>(projects, HttpStatus.OK);
+        }
+        else if(filter.equals("naziv")){
+            Collections.sort(projects, new Comparator<Project>() {
+                public int compare(Project p1, Project p2) {
+                    return p1.getName().compareTo(p2.getName());
+                }
+            });
+            return new ResponseEntity<>(projects, HttpStatus.OK);
+        }
+        else{
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message","Filter is not defined!");
+            return new ResponseEntity(jsonObject.toString(), HttpStatus.OK);
+        }
+    }
+
+    @Override
+    public ResponseEntity searchProjectsByName(String name){
+        List<Project> projects = projectRepository.findAll();
+        List<Project> finalProjects = new ArrayList<>();
+        for (Project p: projects) {
+            if(p.getName().equals(name))
+                finalProjects.add(p);
+        }
+        return new ResponseEntity<>(finalProjects, HttpStatus.OK);
     }
 }
