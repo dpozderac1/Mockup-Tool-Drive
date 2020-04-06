@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.swing.text.html.parser.Entity;
 import javax.validation.Valid;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,5 +74,15 @@ public class ProjectController {
     @GetMapping(value="/searchProjectsByName/{filter}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity searchProjectsByName(@PathVariable String filter){
         return projectService.searchProjectsByName(filter);
+    }
+
+    @GetMapping(value = "/allFiles/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    HashMap<String, Object> getAllFiles(@PathVariable Long id) {
+        return projectService.getAllUserFiles(id);
+    }
+
+    @GetMapping(value = "/recentFiles/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    HashMap<String, Object> getRecentFiles(@PathVariable Long id) {
+        return projectService.getRecentUserFiles(id);
     }
 }

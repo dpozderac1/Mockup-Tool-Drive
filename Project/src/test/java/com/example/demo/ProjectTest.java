@@ -2,11 +2,12 @@ package com.example.demo;
 
 import com.example.demo.Controllers.ProjectController;
 import com.example.demo.ErrorMessageHandling.ApiError;
-import com.example.demo.Models.Project;
+import com.example.demo.Models.*;
 import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.VersionRepository;
 import com.example.demo.Services.ProjectService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
@@ -23,10 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
@@ -221,6 +219,65 @@ public class ProjectTest {
                 .delete("/delete/project/{id}", 11))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Project with id 11 does not exit!"));
+    }
+
+    //testiranje komunikacije
+    //GET /allFiles/{id}
+    @Test
+    public void testGetAllUserFiles() throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        project.setID(1L);
+        Version version = new Version(project, VersionNames.DESKTOP);
+        version.setID(1L);
+        Mockup mockup = new Mockup(version, "Mockup", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        mockup.setID(1L);
+        GSPEC_Document gspec = new GSPEC_Document(mockup, "GSPEC", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        gspec.setID(1L);
+        PDF_Document pdf = new PDF_Document(mockup, "PDF", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        pdf.setID(1L);
+
+        HashMap<String, Object> mapa = new HashMap<>();
+        mapa.put("html", mockup);
+        mapa.put("gspec", gspec);
+        mapa.put("pdf", pdf);
+        given(projectService.getAllUserFiles(1L)).willReturn(mapa);
+
+        mvc.perform(get("/allFiles/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("html")))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("gspec")))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("pdf")));
+    }
+
+    //GET /recentFiles/{id}
+    @Test
+    public void testGetRecentUserFiles() throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        project.setID(1L);
+        Version version = new Version(project, VersionNames.DESKTOP);
+        version.setID(1L);
+        Mockup mockup = new Mockup(version, "Mockup", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        mockup.setID(1L);
+        GSPEC_Document gspec = new GSPEC_Document(mockup, "GSPEC", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        gspec.setID(1L);
+        PDF_Document pdf = new PDF_Document(mockup, "PDF", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        pdf.setID(1L);
+
+        HashMap<String, Object> mapa = new HashMap<>();
+        mapa.put("html", mockup);
+        mapa.put("gspec", gspec);
+        mapa.put("pdf", pdf);
+        given(projectService.getRecentUserFiles(1L)).willReturn(mapa);
+
+        mvc.perform(get("/recentFiles/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("html")))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("gspec")))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("pdf")));
     }
 
 }

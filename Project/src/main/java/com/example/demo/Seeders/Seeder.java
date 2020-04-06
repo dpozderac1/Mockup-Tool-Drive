@@ -68,7 +68,7 @@ public class Seeder {
     }
 
     public void addMockup() throws ParseException {
-        Version verzija = versionRepository.findByID(Long.valueOf(3));
+        Version verzija = versionRepository.findByID(Long.valueOf(1));
         Blob file = null;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Mockup mockup = new Mockup(verzija, "mockup 1", file, format.parse( "2020-3-12" ), format.parse( "2020-3-16" ), format.parse( "2020-3-16" ));

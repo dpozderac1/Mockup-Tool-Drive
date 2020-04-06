@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface ProjectServiceInterface {
@@ -18,4 +19,6 @@ public interface ProjectServiceInterface {
     public ResponseEntity getOneProject(Long id);
     public ResponseEntity getProjectsByFilter(String filter) throws JSONException;
     public ResponseEntity searchProjectsByName(String name);
+    public HashMap<String,Object> getAllUserFiles(Long id);
+    public HashMap<String,Object> getRecentUserFiles(Long id);
 }
