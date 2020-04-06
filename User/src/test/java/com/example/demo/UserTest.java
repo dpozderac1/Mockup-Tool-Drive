@@ -19,6 +19,7 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -410,7 +413,7 @@ public class UserTest {
 
         Role uloga = new Role(null);
         uloga.setID(1L);
-        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto", "zramic1@gmail.com");
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto1*", "zramic1@gmail.com");
         korisnik.setID(1L);
 
         mvc.perform(MockMvcRequestBuilders
@@ -419,6 +422,21 @@ public class UserTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Password must contain 1 or more digit characters.,Password must contain 1 or more special characters."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Password must be at least 8 characters long!"));
     }
+
+
+    /*@Test
+    public void testRestProjects()
+            throws Exception {
+        TestRestTemplate testRestTemplate = new TestRestTemplate();
+        ResponseEntity<Project[]> response = testRestTemplate.getForEntity("http://localhost:8081/projects",Project[].class);
+        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+    }*/
+
+
+
+
+
+
 }

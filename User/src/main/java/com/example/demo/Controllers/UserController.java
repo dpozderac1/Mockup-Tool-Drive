@@ -56,7 +56,12 @@ public class UserController {
     }
 
     @PutMapping(value="/updateUser/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity updateUser(@Valid @PathVariable Long id, @RequestBody User user){
+    ResponseEntity updateUser(@RequestBody User user,@PathVariable Long id){
         return userService.updateUser(id,user);
     }
+
+    /*@GetMapping(value="/user/allFiles/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity getAllProjects(@PathVariable Long id) {
+        return userService.getAllProjects(id);
+    }*/
 }
