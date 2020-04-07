@@ -378,5 +378,22 @@ public class ProjectTest {
 
     }
 
+    @Test
+    public void testGetProjectsRestTemplate() throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+
+        List<Project> projekti = Arrays.asList(project);
+        restTemplate.getForEntity("http://user/users/projects/"+project.getID(), Project[].class);
+        given(projectService.getAllProjects()).willReturn(new ResponseEntity<>(projekti, HttpStatus.OK));
+
+        mvc.perform(get("/projects")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$[0].name").value(project.getName()))
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", hasSize(1)));
+
+    }
+
 
 }
