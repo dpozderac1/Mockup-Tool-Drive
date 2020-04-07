@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,6 +60,9 @@ public class UserTest {
 
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private RestTemplate restTemplate;
 
     //GET /users
     @Test
@@ -435,7 +440,51 @@ public class UserTest {
     }*/
 
 
+    @Test
+    public void testDeleteUserOnlineTestingRestTemplate()
+            throws Exception {
 
+        Role uloga = new Role(RoleNames.ADMIN);
+        uloga.setID(Long.valueOf(1));
+        given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
+        korisnik.setID(Long.valueOf(1));
+        given(userRepository.findByID(Long.valueOf(1))).willReturn(korisnik);
+        restTemplate.delete("http://online-testing/deleteUser/{id}", korisnik.getID());
+        JSONObject objekat = new JSONObject();
+        objekat.put("message", "User is successfully deleted!");
+        given(userService.deleteUser(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(objekat.toString(), HttpStatus.OK));
+        mvc.perform(delete("/deleteUser/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("User is successfully deleted!"));
+    }
+
+
+    @Test
+    public void testPutUserRestTemplate()
+            throws Exception {
+
+        Role uloga = new Role(RoleNames.ADMIN);
+        uloga.setID(Long.valueOf(1));
+        given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
+        korisnik.setID(Long.valueOf(1));
+
+        User noviKorisnik = new User(uloga, "", "", "noviUsername", "", "");
+        HttpEntity<User> request=new HttpEntity<>(noviKorisnik);
+        restTemplate.put("http://online-testing/updateUser/{id}",request,korisnik.getID());
+
+        given(this.userService.updateUser(ArgumentMatchers.anyLong(), ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(noviKorisnik, HttpStatus.OK));
+
+        mvc.perform(put("/updateUser/{id}", 1)
+                .content(asJsonString(noviKorisnik))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value(noviKorisnik.getUsername()));
+    }
 
 
 
