@@ -38,8 +38,7 @@ git clone https://github.com/dpozderac1/Mockup-Tool-Drive.git
 **Otvoriti IntelliJ IDEA:**
 
 U glavnom meniju izabrati ```
-                          File->Open 
-                          ```, te odabrati željeni projekat.
+                          File->Open```, te odabrati željeni projekat.
 
 **Pokrenuti eureka-server:**
 
