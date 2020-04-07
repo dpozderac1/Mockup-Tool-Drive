@@ -15,13 +15,12 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -44,6 +43,9 @@ public class ProjectTest {
 
     @MockBean
     private ProjectService projectService;
+
+    @MockBean
+    private RestTemplate restTemplate;
 
     @Test
     public void testGetProjects() throws Exception{
@@ -88,10 +90,10 @@ public class ProjectTest {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
 
-        given(projectService.newProject(ArgumentMatchers.any(Project.class))).willReturn(new ResponseEntity<>(project, HttpStatus.CREATED));
+        given(projectService.newProject(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(project, HttpStatus.CREATED));
 
         mvc.perform(MockMvcRequestBuilders
-                .post("/addProject")
+                .post("/addProject/{id}", 1)
                 .content(asJsonString(project))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -196,7 +198,7 @@ public class ProjectTest {
         errors.add("Project with id 1 already exists!");
         ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Object Already Exists", errors);
 
-        given(this.projectService.newProject(ArgumentMatchers.any(Project.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        given(this.projectService.newProject(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/addProject")
@@ -279,5 +281,102 @@ public class ProjectTest {
                 .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("gspec")))
                 .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("pdf")));
     }
+
+    @Test
+    public void addProjectRestTemplate() throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        Map<Long, Project> map = new HashMap<>();
+        map.put(project.getID(), project);
+        HttpEntity<Map<Long, Project>> entity = new HttpEntity<>(map, headers);
+
+        given(restTemplate.postForObject("http://user/addUserProject", entity, Project.class)).willReturn(project);
+        given(projectService.newProject(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(project, HttpStatus.CREATED));
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/addProject/{id}", 1)
+                .content(asJsonString(project))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(project.getName()));
+    }
+
+
+    @Test
+    public void deleteProjectRestTemplate() throws Exception {
+        restTemplate.delete("http://user/delete/project/{id}", 1);
+        mvc.perform(MockMvcRequestBuilders.delete("/delete/project/{id}", 1))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void filterFilesRestTemplate() throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        project.setID(1L);
+        Version version = new Version(project, VersionNames.DESKTOP);
+        version.setID(1L);
+        Mockup mockup = new Mockup(version, "Mockup", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        mockup.setID(1L);
+        Mockup mockup2 = new Mockup(version, "AMockup", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        mockup2.setID(2L);
+        List<Mockup> mockups = new ArrayList<>();
+        mockups.add(mockup2);
+        mockups.add(mockup);
+        GSPEC_Document gspec = new GSPEC_Document(mockup, "GSPEC", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        gspec.setID(1L);
+        PDF_Document pdf = new PDF_Document(mockup, "PDF", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        pdf.setID(1L);
+
+        HashMap<String, Object> mapa = new HashMap<>();
+        mapa.put("html", mockups);
+        mapa.put("gspec", gspec);
+        mapa.put("pdf", pdf);
+        given(projectService.getFilesByFilter(ArgumentMatchers.any(String.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(mapa, HttpStatus.OK));
+
+        mvc.perform(get("/filterFiles/{filter}/{id}", "name", 1L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("html")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("gspec")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("pdf")));
+
+    }
+
+    @Test
+    public void searchFilesByName() throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        project.setID(1L);
+        Version version = new Version(project, VersionNames.DESKTOP);
+        version.setID(1L);
+        Mockup mockup = new Mockup(version, "Mockup", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        mockup.setID(1L);
+        GSPEC_Document gspec = new GSPEC_Document(mockup, "GSPEC", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        gspec.setID(1L);
+        PDF_Document pdf = new PDF_Document(mockup, "PDF", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        pdf.setID(1L);
+
+        HashMap<String, Object> mapa = new HashMap<>();
+        mapa.put("html", new ArrayList<>());
+        mapa.put("gspec", new ArrayList<>());
+        mapa.put("pdf", pdf);
+        given(projectService.searchFilesByName(ArgumentMatchers.any(String.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(mapa, HttpStatus.OK));
+
+        mvc.perform(get("/searchFilesByName/{name}/{id}", "PDF", 1L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("html")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("gspec")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("pdf")));
+
+    }
+
 
 }

@@ -71,34 +71,34 @@ public class Seeder {
         Version verzija = versionRepository.findByID(Long.valueOf(1));
         Blob file = null;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Mockup mockup = new Mockup(verzija, "mockup 1", file, format.parse( "2020-3-12" ), format.parse( "2020-3-16" ), format.parse( "2020-3-16" ));
+        Mockup mockup = new Mockup(verzija, "Dmockup 1", file, format.parse( "2020-2-12" ), format.parse( "2020-3-16" ), format.parse( "2020-3-16" ));
 
         mockupRepository.save(mockup);
 
-        Mockup mockup1 = new Mockup(verzija, "mockup 2", file, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-16" ));
+        Mockup mockup1 = new Mockup(verzija, "Amockup 2", file, format.parse( "2020-1-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-16" ));
         mockupRepository.save(mockup1);
 
-        Mockup mockup3 = new Mockup(verzija, "mockup 3", file, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-16" ));
+        Mockup mockup3 = new Mockup(verzija, "Cmockup 3", file, format.parse( "2019-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-16" ));
         mockupRepository.save(mockup3);
     }
 
     public void addPDF() throws ParseException {
         Blob file = null;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Mockup mockup = mockupRepository.findByID(Long.valueOf(5));
-        PDF_Document pdf = new PDF_Document(mockup, "Pdf 1", file, format.parse( "2020-3-16" ), format.parse( "2020-3-16" ), format.parse( "2020-3-16" ));
+        Mockup mockup = mockupRepository.findByID(Long.valueOf(1));
+        PDF_Document pdf = new PDF_Document(mockup, "DPdf 1", file, format.parse( "2019-3-16" ), format.parse( "2020-3-16" ), format.parse( "2020-3-16" ));
 
         pdf_documentRepository.save(pdf);
 
-        PDF_Document pdf1 = new PDF_Document(mockup, "Pdf 2", file, format.parse( "2020-3-16" ), format.parse( "2020-3-16" ), format.parse( "2020-3-16" ));
+        PDF_Document pdf1 = new PDF_Document(mockup, "APdf 2", file, format.parse( "2020-3-16" ), format.parse( "2020-3-16" ), format.parse( "2020-3-16" ));
         pdf_documentRepository.save(pdf1);
     }
 
     public void addGSPEC() throws ParseException {
         Blob file = null;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Mockup mockup = mockupRepository.findByID(Long.valueOf(5));
-        GSPEC_Document gspec = new GSPEC_Document(mockup, "Gspec 1", file, format.parse( "2020-3-16" ), format.parse( "2020-3-16" ), format.parse( "2020-3-16" ));
+        Mockup mockup = mockupRepository.findByID(Long.valueOf(1));
+        GSPEC_Document gspec = new GSPEC_Document(mockup, "AGspec 1", file, format.parse( "2019-3-16" ), format.parse( "2020-3-16" ), format.parse( "2020-3-16" ));
 
         gspec_documentRepository.save(gspec);
 

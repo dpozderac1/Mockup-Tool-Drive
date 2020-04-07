@@ -85,7 +85,6 @@ public class GSPEC_Document {
 
     @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private Long ID;
 
     @ManyToOne()

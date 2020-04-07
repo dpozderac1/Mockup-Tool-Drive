@@ -45,14 +45,12 @@ public class ProjectController {
     @DeleteMapping("/delete/project/{id}")
     ResponseEntity<?> deleteOne(@PathVariable Long id) throws JSONException {
         ResponseEntity<?> responseEntity = projectService.deleteOne(id);
-        restTemplate.delete("http://user/delete/project/{id}", id);
         return responseEntity;
     }
 
-    @PostMapping("/addProject")
-    ResponseEntity<Project> newProject(@Valid @RequestBody Project newProject) throws URISyntaxException {
-        ResponseEntity<Project> projectResponseEntity = projectService.newProject(newProject);
-        ResponseEntity<Project> responseEntity = restTemplate.postForEntity("http://user/addUserProject", projectResponseEntity.getBody(), Project.class);
+    @PostMapping("/addProject/{id}")
+    ResponseEntity<Project> newProject(@Valid @RequestBody Project newProject, @PathVariable Long id) throws URISyntaxException {
+        ResponseEntity<Project> projectResponseEntity = projectService.newProject(newProject, id);
         return projectResponseEntity;
     }
 
@@ -66,14 +64,14 @@ public class ProjectController {
         return projectService.getOneProject(id);
     }
 
-    @GetMapping(value = "/filterProjects/{filter}")
-    public ResponseEntity filterProjects(@PathVariable String filter) throws JSONException {
-        return projectService.getProjectsByFilter(filter);
+    @GetMapping(value = "/filterFiles/{filter}/{id}")
+    public ResponseEntity filterFiles(@PathVariable String filter, @PathVariable Long id) throws JSONException {
+        return projectService.getFilesByFilter(filter, id);
     }
 
-    @GetMapping(value="/searchProjectsByName/{filter}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity searchProjectsByName(@PathVariable String filter){
-        return projectService.searchProjectsByName(filter);
+    @GetMapping(value="/searchFilesByName/{name}/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity searchFilesByName(@PathVariable String name, @PathVariable Long id){
+        return projectService.searchFilesByName(name, id);
     }
 
     @GetMapping(value = "/allFiles/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -85,4 +83,5 @@ public class ProjectController {
     HashMap<String, Object> getRecentFiles(@PathVariable Long id) {
         return projectService.getRecentUserFiles(id);
     }
+
 }

@@ -11,10 +11,13 @@ import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -73,6 +76,7 @@ public class ProjectService implements ProjectServiceInterface {
 
     @Override
     public ResponseEntity deleteOne(Long id) throws JSONException {
+        restTemplate.delete("http://user/delete/project/{id}", id);
         if(projectRepository.existsByID(id)){
             projectRepository.deleteById(id);
             JSONObject jsonObject = new JSONObject();
@@ -84,7 +88,15 @@ public class ProjectService implements ProjectServiceInterface {
     }
 
     @Override
-    public ResponseEntity newProject(Project newProject){
+    public ResponseEntity newProject(Project newProject, Long id){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        Map<Long, Project> map = new HashMap<>();
+        map.put(id, newProject);
+        HttpEntity<Map<Long, Project>> entity = new HttpEntity<>(map, headers);
+        ResponseEntity<Project> responseEntity = restTemplate.postForEntity("http://user/addUserProject", entity, Project.class);
         List<Project> projects  = projectRepository.findAll();
         boolean alreadyExists = false;
         for(Project p: projects){
@@ -120,48 +132,153 @@ public class ProjectService implements ProjectServiceInterface {
     }
 
     @Override
-    public ResponseEntity getProjectsByFilter(String filter) throws JSONException {
-        List<Project> projects = projectRepository.findAll();
-        if(filter.equals("datum_kreiranja")){
-            Collections.sort(projects, new Comparator<Project>() {
-                public int compare(Project p1, Project p2) {
-                    return p1.getDate_created().compareTo(p2.getDate_created());
+    public ResponseEntity getFilesByFilter(String filter, Long id) throws JSONException {
+        HashMap<String,Object> getAllUserFiles = getAllUserFiles(id);
+        for (Map.Entry<String,Object> entry : getAllUserFiles.entrySet()) {
+            System.out.println("Key = " + entry.getKey() +
+                    ", Value = " + entry.getValue());
+
+            if (filter.equals("date_modified")) {
+                if(entry.getKey().equals("pdf")) {
+                    List<PDF_Document> pdf_documents = (List<PDF_Document>) entry.getValue();
+                    Collections.sort(pdf_documents, new Comparator<PDF_Document>() {
+                        public int compare(PDF_Document p1, PDF_Document p2) {
+                            return p1.getDate_modified().compareTo(p2.getDate_modified());
+                        }
+                    });
+                    System.out.println("pdfovi:" + pdf_documents);
+                    getAllUserFiles.replace("pdf",pdf_documents);
                 }
-            });
-            return new ResponseEntity<>(projects, HttpStatus.OK);
-        }
-        else if(filter.equals("datum_modifikovanja")){
-            Collections.sort(projects, new Comparator<Project>() {
-                public int compare(Project p1, Project p2) {
-                    return p1.getDate_modified().compareTo(p2.getDate_modified());
+                else if (entry.getKey().equals("galen")) {
+                    List<GSPEC_Document> gspec_documents = (List<GSPEC_Document>) entry.getValue();
+                    Collections.sort(gspec_documents, new Comparator<GSPEC_Document>() {
+                        public int compare(GSPEC_Document p1, GSPEC_Document p2) {
+                            return p1.getDate_modified().compareTo(p2.getDate_modified());
+                        }
+                    });
+                    System.out.println("galenovi:" + gspec_documents);
+                    getAllUserFiles.replace("galen",gspec_documents);
                 }
-            });
-            return new ResponseEntity<>(projects, HttpStatus.OK);
-        }
-        else if(filter.equals("naziv")){
-            Collections.sort(projects, new Comparator<Project>() {
-                public int compare(Project p1, Project p2) {
-                    return p1.getName().compareTo(p2.getName());
+                else if (entry.getKey().equals("html")) {
+                    List<Mockup> mockups = (List<Mockup>) entry.getValue();
+                    Collections.sort(mockups, new Comparator<Mockup>() {
+                        public int compare(Mockup p1, Mockup p2) {
+                            return p1.getDate_modified().compareTo(p2.getDate_modified());
+                        }
+                    });
+                    System.out.println("htmlovi:" + mockups);
+                    getAllUserFiles.replace("html",mockups);
                 }
-            });
-            return new ResponseEntity<>(projects, HttpStatus.OK);
+            }
+            else if (filter.equals("date_created")) {
+                if(entry.getKey().equals("pdf")) {
+                    List<PDF_Document> pdf_documents = (List<PDF_Document>) entry.getValue();
+                    Collections.sort(pdf_documents, new Comparator<PDF_Document>() {
+                        public int compare(PDF_Document p1, PDF_Document p2) {
+                            return p1.getDate_created().compareTo(p2.getDate_created());
+                        }
+                    });
+                    System.out.println("pdfovi:" + pdf_documents);
+                    getAllUserFiles.replace("pdf", pdf_documents);
+                }
+                else if (entry.getKey().equals("galen")) {
+                    List<GSPEC_Document> gspec_documents = (List<GSPEC_Document>) entry.getValue();
+                    Collections.sort(gspec_documents, new Comparator<GSPEC_Document>() {
+                        public int compare(GSPEC_Document p1, GSPEC_Document p2) {
+                            return p1.getDate_created().compareTo(p2.getDate_created());
+                        }
+                    });
+                    System.out.println("galenovi:" + gspec_documents);
+                    getAllUserFiles.replace("galen", gspec_documents);
+                }
+                else if (entry.getKey().equals("html")) {
+                    List<Mockup> mockups = (List<Mockup>) entry.getValue();
+                    Collections.sort(mockups, new Comparator<Mockup>() {
+                        public int compare(Mockup p1, Mockup p2) {
+                            return p1.getDate_created().compareTo(p2.getDate_created());
+                        }
+                    });
+                    System.out.println("htmlovi:" + mockups);
+                    getAllUserFiles.replace("html", mockups);
+                }
+            }
+            else if (filter.equals("name")) {
+                if(entry.getKey().equals("pdf")) {
+                    List<PDF_Document> pdf_documents = (List<PDF_Document>) entry.getValue();
+                    Collections.sort(pdf_documents, new Comparator<PDF_Document>() {
+                        public int compare(PDF_Document p1, PDF_Document p2) {
+                            return p1.getName().compareTo(p2.getName());
+                        }
+                    });
+                    System.out.println("pdfovi:" + pdf_documents);
+                    getAllUserFiles.replace("pdf", pdf_documents);
+                }
+                else if (entry.getKey().equals("galen")) {
+                    List<GSPEC_Document> gspec_documents = (List<GSPEC_Document>) entry.getValue();
+                    Collections.sort(gspec_documents, new Comparator<GSPEC_Document>() {
+                        public int compare(GSPEC_Document p1, GSPEC_Document p2) {
+                            return p1.getName().compareTo(p2.getName());
+                        }
+                    });
+                    System.out.println("galenovi:" + gspec_documents);
+                    getAllUserFiles.replace("galen", gspec_documents);
+                }
+                else if (entry.getKey().equals("html")) {
+                    List<Mockup> mockups = (List<Mockup>) entry.getValue();
+                    Collections.sort(mockups, new Comparator<Mockup>() {
+                        public int compare(Mockup p1, Mockup p2) {
+                            return p1.getName().compareTo(p2.getName());
+                        }
+                    });
+                    System.out.println("htmlovi:" + mockups);
+                    getAllUserFiles.replace("html", mockups);
+                }
+            } else {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("message", "Filter is not defined!");
+                return new ResponseEntity(jsonObject.toString(), HttpStatus.OK);
+            }
         }
-        else{
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("message","Filter is not defined!");
-            return new ResponseEntity(jsonObject.toString(), HttpStatus.OK);
-        }
+        return new ResponseEntity(getAllUserFiles, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity searchProjectsByName(String name){
-        List<Project> projects = projectRepository.findAll();
-        List<Project> finalProjects = new ArrayList<>();
-        for (Project p: projects) {
-            if(p.getName().equals(name))
-                finalProjects.add(p);
+    public ResponseEntity searchFilesByName(String name, Long id){
+        HashMap<String,Object> getAllUserFiles = getAllUserFiles(id);
+        for (Map.Entry<String,Object> entry : getAllUserFiles.entrySet()) {
+            System.out.println("Key = " + entry.getKey() +
+                    ", Value = " + entry.getValue());
+
+            if(entry.getKey().equals("pdf")) {
+                List<PDF_Document> pdf_documents = (List<PDF_Document>) entry.getValue();
+                List<PDF_Document> finalPDF = new ArrayList<>();
+                for (PDF_Document p: pdf_documents) {
+                    if(p.getName().contains(name))
+                        finalPDF.add(p);
+                }
+                getAllUserFiles.replace("pdf", finalPDF);
+            }
+            else if (entry.getKey().equals("galen")) {
+                List<GSPEC_Document> gspec_documents = (List<GSPEC_Document>) entry.getValue();
+                List<GSPEC_Document> finalGSPEC = new ArrayList<>();
+                for (GSPEC_Document p: gspec_documents) {
+                    if(p.getName().contains(name))
+                        finalGSPEC.add(p);
+                }
+                getAllUserFiles.replace("galen", finalGSPEC);
+            }
+            else if (entry.getKey().equals("html")) {
+                List<Mockup> mockups = (List<Mockup>) entry.getValue();
+                List<Mockup> finalMockup = new ArrayList<>();
+                for (Mockup p: mockups) {
+                    if(p.getName().contains(name))
+                        finalMockup.add(p);
+                }
+                getAllUserFiles.replace("html",finalMockup);
+            }
+
         }
-        return new ResponseEntity<>(finalProjects, HttpStatus.OK);
+        return new ResponseEntity<>(getAllUserFiles, HttpStatus.OK);
     }
 
     @Override
@@ -179,28 +296,30 @@ public class ProjectService implements ProjectServiceInterface {
 
             List<Version> verzije = versionRepository.findAllByprojectId(projekat);
 
+            List<Mockup> trenutniMockupi=new ArrayList<>();
             for (int i = 0; i < verzije.size(); i++) {
                 List<Mockup> noviMockup = mockupRepository.findAllByversionId(verzije.get(i));
                 for (int j = 0; j < noviMockup.size(); j++) {
                     mockupi.add(noviMockup.get(j));
+                    trenutniMockupi.add(noviMockup.get(j));
                 }
             }
 
-            for (int i = 0; i < mockupi.size(); i++) {
-                List<GSPEC_Document> noviGalen = gspec_documentRepository.findAllBymockupID(mockupi.get(i));
+
+            for (int i = 0; i < trenutniMockupi.size(); i++) {
+                List<GSPEC_Document> noviGalen = gspec_documentRepository.findAllBymockupID(trenutniMockupi.get(i));
                 for (int j = 0; j < noviGalen.size(); j++) {
                     galeni.add(noviGalen.get(j));
                 }
             }
 
-            for (int i = 0; i < mockupi.size(); i++) {
-                List<PDF_Document> noviPDF = pdf_documentRepository.findAllBymockupID(mockupi.get(i));
+
+            for (int i = 0; i < trenutniMockupi.size(); i++) {
+                List<PDF_Document> noviPDF = pdf_documentRepository.findAllBymockupID(trenutniMockupi.get(i));
                 for (int j = 0; j < noviPDF.size(); j++) {
                     pdfovi.add(noviPDF.get(j));
                 }
             }
-            System.out.println("K je: ");
-            System.out.println(k);
         }
 
         HashMap<String, Object> mapa = new HashMap<>();
@@ -226,24 +345,26 @@ public class ProjectService implements ProjectServiceInterface {
 
             List<Version> verzije = versionRepository.findAllByprojectId(projekat);
 
+            List<Mockup> trenutniMockupi=new ArrayList<>();
             for (int i = 0; i < verzije.size(); i++) {
                 List<Mockup> noviMockup = mockupRepository.findAllByversionId(verzije.get(i));
                 for (int j = 0; j < noviMockup.size(); j++) {
                     mockupi.add(noviMockup.get(j));
+                    trenutniMockupi.add(noviMockup.get(j));
                 }
             }
 
 
-            for (int i = 0; i < mockupi.size(); i++) {
-                List<GSPEC_Document> noviGalen = gspec_documentRepository.findAllBymockupID(mockupi.get(i));
+            for (int i = 0; i < trenutniMockupi.size(); i++) {
+                List<GSPEC_Document> noviGalen = gspec_documentRepository.findAllBymockupID(trenutniMockupi.get(i));
                 for (int j = 0; j < noviGalen.size(); j++) {
                     galeni.add(noviGalen.get(j));
                 }
             }
 
 
-            for (int i = 0; i < mockupi.size(); i++) {
-                List<PDF_Document> noviPDF = pdf_documentRepository.findAllBymockupID(mockupi.get(i));
+            for (int i = 0; i < trenutniMockupi.size(); i++) {
+                List<PDF_Document> noviPDF = pdf_documentRepository.findAllBymockupID(trenutniMockupi.get(i));
                 for (int j = 0; j < noviPDF.size(); j++) {
                     pdfovi.add(noviPDF.get(j));
                 }

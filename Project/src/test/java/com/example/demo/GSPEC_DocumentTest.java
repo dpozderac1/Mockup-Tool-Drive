@@ -262,8 +262,6 @@ public class GSPEC_DocumentTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("GSPEC"));
-
-
     }
 
     @Test

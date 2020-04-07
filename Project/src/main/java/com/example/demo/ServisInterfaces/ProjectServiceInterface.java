@@ -14,11 +14,11 @@ public interface ProjectServiceInterface {
     public ResponseEntity addOrReplace(Project newProject, Long id);
     public ResponseEntity renameProject(String name, Long id);
     public ResponseEntity deleteOne(Long id) throws JSONException;
-    public ResponseEntity newProject(Project newProject);
+    public ResponseEntity newProject(Project newProject, Long id);
     public ResponseEntity getAllProjects();
     public ResponseEntity getOneProject(Long id);
-    public ResponseEntity getProjectsByFilter(String filter) throws JSONException;
-    public ResponseEntity searchProjectsByName(String name);
+    public ResponseEntity getFilesByFilter(String filter, Long id) throws JSONException;
+    public ResponseEntity searchFilesByName(String name, Long id);
     public HashMap<String,Object> getAllUserFiles(Long id);
     public HashMap<String,Object> getRecentUserFiles(Long id);
 }

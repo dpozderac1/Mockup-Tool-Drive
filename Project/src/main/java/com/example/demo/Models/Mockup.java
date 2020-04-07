@@ -84,8 +84,7 @@ public class Mockup {
     }
 
     @javax.persistence.Id
-    @GeneratedValue
-    @NotNull
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @ManyToOne()
