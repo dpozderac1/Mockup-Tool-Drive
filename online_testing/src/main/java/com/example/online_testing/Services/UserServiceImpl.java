@@ -89,7 +89,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity saveUser(User user) {
-        System.out.print("usaoooooooooooooo");
         JSONObject objekat=new JSONObject();
         if(!Integer.toString(user.getIdRole()).equals(Integer.toString(0))) {
             Role uloga = roleRepository.findByID(Long.valueOf(user.getIdRole()));

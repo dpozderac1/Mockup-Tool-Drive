@@ -15,7 +15,6 @@ public class OnlineTestingApplication {
         SpringApplication.run(OnlineTestingApplication.class, args);
     }
 
-    //kreirano
     @Bean
     @LoadBalanced
     RestTemplate restTemplate() {
