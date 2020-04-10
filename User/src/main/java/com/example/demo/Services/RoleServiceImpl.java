@@ -44,14 +44,14 @@ public class RoleServiceImpl implements RoleService{
             throw new RecordNotFoundException("Role does not exist!");
         }
         for(int i=0;i<sveUloge.size();i++){
-            if(role.getRole_name()==sveUloge.get(i).getRole_name()){
+            if(role.getRole_name().equals(sveUloge.get(i).getRole_name())){
                 throw new AlreadyExistsException("Role already exists!");
             }
         }
 
         boolean istina=false;
         for(int i=0;i< RoleNames.values().length;i++){
-            if(role.getRole_name().toString()==RoleNames.values()[i].name().toString()){
+            if(role.getRole_name().toString().equals(RoleNames.values()[i].name().toString())){
                 istina=true;
                 break;
             }
@@ -95,14 +95,14 @@ public class RoleServiceImpl implements RoleService{
             throw new RecordNotFoundException("Role does not exist!");
         }
         for(int i=0;i<sveUloge.size();i++){
-            if(role.getRole_name()==sveUloge.get(i).getRole_name()){
+            if(role.getRole_name().equals(sveUloge.get(i).getRole_name())){
                 throw new AlreadyExistsException("Role already exists!");
             }
         }
 
         boolean istina=false;
         for(int i=0;i< RoleNames.values().length;i++){
-            if(role.getRole_name().toString()==RoleNames.values()[i].name().toString()){
+            if(role.getRole_name().toString().equals(RoleNames.values()[i].name().toString())){
                 istina=true;
                 break;
             }

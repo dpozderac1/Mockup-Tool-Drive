@@ -539,5 +539,29 @@ public class UserTest {
     }
 
 
+    @Test
+    public void testaddUserRestTemplateAlreadyExists() throws Exception {
 
+        Role uloga = new Role(null);
+        uloga.setID(1L);
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Password1!", "zramic1@gmail.com");
+        korisnik.setID(1L);
+
+        List<String> errors = new ArrayList<>();
+        errors.add("User with same username already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Record Already Exists", errors);
+
+        HttpEntity<User> request = new HttpEntity<>(korisnik);
+        given(restTemplate.postForObject("http://online-testing/user", request, User.class)).willReturn(korisnik);
+        given(userService.saveUser(ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/user")
+                .content(asJsonString(korisnik))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User with same username already exists!"));
+    }
 }
+

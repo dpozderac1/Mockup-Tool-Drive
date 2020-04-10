@@ -102,10 +102,10 @@ public class UserServiceImpl implements UserService {
         List<User> sviKorisnici=userRepository.findAll();
         for(int i=0;i<sviKorisnici.size();i++){
             User korisnik=sviKorisnici.get(i);
-            if(korisnik.getUsername()==user.getUsername()){
+            if(korisnik.getUsername().equals(user.getUsername())){
                 throw new AlreadyExistsException("User with same username already exists!");
             }
-            if(korisnik.getEmail()==user.getEmail()){
+            if(korisnik.getEmail().equals(user.getEmail())){
                 throw new AlreadyExistsException("User with same e-mail address already exists!");
             }
         }
@@ -129,10 +129,10 @@ public class UserServiceImpl implements UserService {
         List<User> sviKorisnici = userRepository.findAll();
         for (int i = 0; i < sviKorisnici.size(); i++) {
             User korisnik1 = sviKorisnici.get(i);
-            if (korisnik1.getUsername() == user.getUsername()) {
+            if (korisnik1.getUsername().equals(user.getUsername())) {
                 throw new AlreadyExistsException("User with same username already exists!");
             }
-            if (korisnik1.getEmail() == user.getEmail()) {
+            if (korisnik1.getEmail().equals(user.getEmail())) {
                 throw new AlreadyExistsException("User with same e-mail address already exists!");
             }
         }
