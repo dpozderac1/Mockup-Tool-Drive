@@ -36,10 +36,9 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
     @Override
     public ResponseEntity addOrReplaceGSPEC(GSPEC_Document newGspec, Long id){
         GSPEC_Document gspec_document = gspec_documentRepository.findByID(id);
+        HttpEntity<GSPEC_Document> request = new HttpEntity<>(newGspec);
+        restTemplate.put("http://online-testing/updateGSPECDocument/{id}", request, id);
         if(gspec_document != null) {
-            HttpEntity<GSPEC_Document> request = new HttpEntity<>(newGspec);
-            restTemplate.put("http://online-testing/updateGSPECDocument/{id}", request, id);
-
             if(!newGspec.getName().equals("")) gspec_document.setName(newGspec.getName());
             if(newGspec.getMockupId() != null) gspec_document.setMockupId(newGspec.getMockupId());
             if(newGspec.getDate_created() != null) gspec_document.setDate_created(newGspec.getDate_created());

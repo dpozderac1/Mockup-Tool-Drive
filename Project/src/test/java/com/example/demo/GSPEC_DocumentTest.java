@@ -312,4 +312,80 @@ public class GSPEC_DocumentTest {
 
     }
 
+    @Test
+    public void addGSPECDocumentRestTemplateAlreadyExists() throws Exception {
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        GSPEC_Document gspec = new GSPEC_Document(null, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+
+        List<String> errors = new ArrayList<>();
+        errors.add("GSPEC Document already exists!");
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Object Already Exists", errors);
+
+        HttpEntity<GSPEC_Document> request = new HttpEntity<>(gspec);
+        given(restTemplate.postForObject("http://online-testing/addGSPECDocument", request, GSPEC_Document.class)).willReturn(gspec);
+        given(gspec_documentService.newGSPEC(ArgumentMatchers.any(GSPEC_Document.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/addGSPEC_Document")
+                .content(asJsonString(gspec))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("GSPEC Document already exists!"));
+
+
+    }
+
+    @Test
+    public void deleteGSPECDocumentRestTemplateDoesNotExist() throws Exception {
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        GSPEC_Document gspec = new GSPEC_Document(null, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+        gspec.setID(1L);
+
+        restTemplate.delete("http://online-testing/GSPECDocument/{id}", gspec.getID());
+        List<String> errors = new ArrayList<>();
+        errors.add("GSPEC Document does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(gspec_documentService.deleteOneGSPEC(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .delete("/delete/gspec_document/{id}", 1)
+                .content(asJsonString(gspec))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("GSPEC Document does not exist!"));
+
+
+    }
+
+    @Test
+    public void updateGSPECDocumentRestTemplateDoesNotExist() throws Exception {
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        GSPEC_Document gspec = new GSPEC_Document(null, "GSPEC", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+        gspec.setID(1L);
+
+        GSPEC_Document gspec_new = new GSPEC_Document(null, "GSPEC_new", null, format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), format.parse( "2020-3-17" ));
+
+        HttpEntity<GSPEC_Document> request = new HttpEntity<>(gspec_new);
+        restTemplate.put("http://online-testing/updateGSPECDocument/{id}", request, gspec.getID());
+        List<String> errors = new ArrayList<>();
+        errors.add("The GSPEC Document you want to update does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(gspec_documentService.addOrReplaceGSPEC(ArgumentMatchers.any(GSPEC_Document.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .put("/addOrUpdateGSPEC_Document/{id}", 1)
+                .content(asJsonString(gspec))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("The GSPEC Document you want to update does not exist!"));
+
+
+    }
+
 }
