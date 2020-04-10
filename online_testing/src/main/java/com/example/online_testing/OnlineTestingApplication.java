@@ -1,5 +1,6 @@
 package com.example.online_testing;
 
+import com.example.online_testing.ErrorHandling.RestTemplateResponseErrorHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -18,7 +19,9 @@ public class OnlineTestingApplication {
     @Bean
     @LoadBalanced
     RestTemplate restTemplate() {
-        return new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler());
+        return restTemplate;
     }
 
 }
