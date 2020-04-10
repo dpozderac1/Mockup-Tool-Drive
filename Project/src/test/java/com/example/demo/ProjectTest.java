@@ -395,5 +395,23 @@ public class ProjectTest {
 
     }
 
+    //testiranje Error handlinga kod komunikacije
+    @Test
+    public void testGetUserProjectsErrorHandling() throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        project.setID(1L);
+        restTemplate.getForEntity("http://user/users/projects/"+project.getID(), Project[].class);
+        List<String> errors=new ArrayList<>();
+        errors.add("User does not exist!");
+        ApiError apiError=new ApiError(HttpStatus.NOT_FOUND,"Object not found",errors);
+        given(projectService.getAllProjects()).willReturn(new ResponseEntity(apiError,apiError.getStatus()));
+
+        mvc.perform(get("/projects")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath("$.errors[0]").value("User does not exist!"));
+    }
+
 
 }
