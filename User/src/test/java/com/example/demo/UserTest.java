@@ -487,5 +487,57 @@ public class UserTest {
     }
 
 
+    @Test
+    public void testDeleteUserOnlineTestingRestTemplateErrorHandling()
+            throws Exception {
+
+        Role uloga = new Role(RoleNames.ADMIN);
+        uloga.setID(Long.valueOf(1));
+        given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
+        korisnik.setID(Long.valueOf(1));
+        given(userRepository.findByID(Long.valueOf(1))).willReturn(korisnik);
+        restTemplate.delete("http://online-testing/deleteUser/{id}", korisnik.getID());
+        List<String> errors=new ArrayList<>();
+        errors.add("User does not exist!");
+        ApiError apiError=new ApiError(HttpStatus.NOT_FOUND,"Object not found",errors);
+        given(userService.deleteUser(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError,apiError.getStatus()));
+        mvc.perform(delete("/deleteUser/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User does not exist!"));
+    }
+
+
+    @Test
+    public void testPutUserRestTemplateErrorHandling()
+            throws Exception {
+
+        Role uloga = new Role(RoleNames.ADMIN);
+        uloga.setID(Long.valueOf(1));
+        given(roleRepository.findByID(Long.valueOf(1))).willReturn(uloga);
+        User korisnik = new User(uloga, "Zerina", "Ramic", "zramic1", "Nesto!!25", "zramic1@gmail.com");
+        korisnik.setID(Long.valueOf(1));
+
+        User noviKorisnik = new User(uloga, "", "", "noviUsername", "", "");
+        HttpEntity<User> request=new HttpEntity<>(noviKorisnik);
+        restTemplate.put("http://online-testing/updateUser/{id}",request,korisnik.getID());
+
+        List<String> errors=new ArrayList<>();
+        errors.add("User does not exist!");
+        ApiError apiError=new ApiError(HttpStatus.NOT_FOUND,"Object not found",errors);
+
+        given(this.userService.updateUser(ArgumentMatchers.anyLong(), ArgumentMatchers.any(User.class))).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(put("/updateUser/{id}", 1)
+                .content(asJsonString(noviKorisnik))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User does not exist!"));
+    }
+
+
 
 }

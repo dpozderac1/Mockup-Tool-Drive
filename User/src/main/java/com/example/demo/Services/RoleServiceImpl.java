@@ -91,7 +91,7 @@ public class RoleServiceImpl implements RoleService{
     public ResponseEntity updateRole(Long id, Role role) {
         JSONObject objekat=new JSONObject();
         List<Role> sveUloge=roleRepository.findAll();
-        if(role==null){
+        if(role==null || !roleRepository.existsByID(id)){
             throw new RecordNotFoundException("Role does not exist!");
         }
         for(int i=0;i<sveUloge.size();i++){

@@ -60,16 +60,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getUsersByRoleID(Long id) {
-        Role uloga = roleRepository.findByID(id);
-        List<User> korisnici = userRepository.findByroleID(uloga);
-        return korisnici;
+        if(roleRepository.existsByID(id)){
+            Role uloga = roleRepository.findByID(id);
+            List<User> korisnici = userRepository.findByroleID(uloga);
+            return korisnici;
+        }
+        else{
+            throw new RecordNotFoundException("User does not exist!");
+        }
     }
 
     @Override
     public List<Project> getUserProjects(Long id) {
-        User korisnik=userRepository.findByID(id);
-        List<Project> projekti=korisnik.getProjects();
-        return projekti;
+        if(userRepository.existsByID(id)){
+            User korisnik=userRepository.findByID(id);
+            List<Project> projekti=korisnik.getProjects();
+            return projekti;
+        }
+        else {
+            throw new RecordNotFoundException("User does not exist!");
+        }
     }
 
     @Override
@@ -112,7 +122,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity updateUser(Long id, User user) {
         User korisnik = userRepository.findByID(id);
         JSONObject objekat = new JSONObject();
-        if (korisnik == null) {
+        if (korisnik == null || !userRepository.existsByID(id)) {
             throw new RecordNotFoundException("User does not exist!");
         }
 
@@ -196,14 +206,4 @@ public class UserServiceImpl implements UserService {
             throw new RecordNotFoundException("User does not exist!");
         }
     }
-
-    /*
-    @Override
-    public ResponseEntity getAllProjects(Long id) {
-        User korisnik=userRepository.findByID(id);
-        List<Project> projekti=korisnik.getProjects();
-        ResponseEntity response = restTemplate.getForEntity("http://project-client-service/allFiles/"+projekti.get(0).getID(),Object.class);
-        return response;
-    }*/
-
 }
