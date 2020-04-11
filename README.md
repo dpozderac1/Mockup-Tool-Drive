@@ -65,10 +65,3 @@ Jedan od načina jeste pokretanje main metode u:
 Alternativno, moguće je koristiti [Spring Boot Maven plugin](https://docs.spring.io/spring-boot/docs/current/reference/html/build-tool-plugins.html#build-tool-plugins-maven-plugin)
 kako je opisano u prethodnom koraku.
 
-
-
-
-
-
-
-

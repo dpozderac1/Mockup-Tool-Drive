@@ -53,11 +53,11 @@ public class Seeder {
 
     private void insert_user() {
         Role admin = role_repository.findByroleName(RoleNames.ADMIN);
-        User user1 = new User(admin, "zramic1", "i12*67H8", "zramic1@etf.unsa.ba");
+        User user1 = new User(admin, "zramic1", "zramic1@etf.unsa.ba");
         if(!user_repository.existsByusername(user1.getUsername())) user_repository.save(user1);
 
         Role user = role_repository.findByroleName(RoleNames.USER);
-        User user2 = new User(user, "dpozderac1", "Izt123**H", "dpozderac1@etf.unsa.ba");
+        User user2 = new User(user, "dpozderac1", "dpozderac1@etf.unsa.ba");
         if(!user_repository.existsByusername(user2.getUsername())) user_repository.save(user2);
     }
 

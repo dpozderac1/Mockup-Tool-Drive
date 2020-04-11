@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ServerService {
-    public List<Server> getAllServers();
-    public ResponseEntity getServerByID(Long id);
-    public ResponseEntity deleteServerByID(Long id);
-    public List<Server> getUserServers(Long id);
-    public ResponseEntity saveServer(Server server);
-    public ResponseEntity updateServer(Server server, Long id);
+     List<Server> getAllServers();
+     ResponseEntity getServerByID(Long id);
+     ResponseEntity deleteServerByID(Long id);
+     List<Server> getUserServers(Long id);
+     ResponseEntity saveServer(Server server);
+     ResponseEntity updateServer(Server server, Long id);
 }
