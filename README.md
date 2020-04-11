@@ -25,7 +25,10 @@ Za build i pokretanje aplikacije potrebno vam je:
 * [Maven 3](https://maven.apache.org/)
 
 ## Konfiguracija baze
-U svojoj zadanoj konfiguraciji sva tri mikroservisa koriste MySQL bazu podataka, koja se popunjava podacima prilikom pokretanja.
+U svojoj zadanoj konfiguraciji sva tri mikroservisa koriste MySQL bazu podataka, koja se popunjava podacima prilikom pokretanja. Baze podataka imaju sljedeće nazive:
+* online_testing (za mikroservis za online testiranje)
+* projectdb (za mikroservis za upravljanje datotekama)
+* nwtproba (za mikroservis za upravljanje korisnicima)
 
 ## Pokretanje aplikacije lokalno
 
