@@ -8,6 +8,7 @@ import com.example.online_testing.Repositories.UserRepository;
 import com.example.online_testing.Services.OnlineTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class OnlineTestController {
         return onlineTestService.getOnlineTestByID(id);
     }
 
-    @DeleteMapping("/onlineTest/{id}")
+    @DeleteMapping(value = "/onlineTest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity deleteOnlineTest(@PathVariable Long id) {
         return onlineTestService.deleteOnlineTestByID(id);
     }
