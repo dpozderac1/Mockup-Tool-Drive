@@ -67,15 +67,17 @@ public class Project {
 
     @Column(name = "Name")
     @NotEmpty(message = "Document name should not be empty!")
-    @Size(min = 1, max = 255, message = "Number of characters should be less than 255")
+    @Size(min = 2, max = 255, message = "Number of characters should be greater than 1 and less than 255")
     private String name;
 
     @Column(name = "Date_created")
     @PastOrPresent(message = "The date should be in the past or present date!")
+    @NotNull
     private Date date_created;
 
     @Column(name = "Date_modified")
     @PastOrPresent(message = "The date should be in the past or present date!")
+    @NotNull
     private Date date_modified;
 
     @Column(name = "Priority")

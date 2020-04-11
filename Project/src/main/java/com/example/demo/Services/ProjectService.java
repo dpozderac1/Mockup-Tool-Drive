@@ -96,7 +96,7 @@ public class ProjectService implements ProjectServiceInterface {
         Map<Long, Project> map = new HashMap<>();
         map.put(id, newProject);
         HttpEntity<Map<Long, Project>> entity = new HttpEntity<>(map, headers);
-        ResponseEntity<Project> responseEntity = restTemplate.postForEntity("http://user/addUserProject", entity, Project.class);
+        ResponseEntity<Project> responseEntity = restTemplate.postForEntity("http://user/addProject", entity, Project.class);
         List<Project> projects  = projectRepository.findAll();
         boolean alreadyExists = false;
         for(Project p: projects){

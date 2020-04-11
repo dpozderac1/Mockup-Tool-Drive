@@ -14,7 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-//@EnableSwagger2
+@EnableSwagger2
 public class DemoApplication {
 
     public static void main(String[] args) {
@@ -28,11 +28,11 @@ public class DemoApplication {
         restTemplate.setErrorHandler(new RestTemplateResponseErrorHandler());
         return restTemplate;
     }
-/*
+
     @Bean
     public Docket productApi() {
         return new Docket(DocumentationType.SWAGGER_2).select()
                 .apis(RequestHandlerSelectors.basePackage("com.example.demo")).build();
     }
-*/
+
 }

@@ -94,7 +94,7 @@ public class PDF_Document {
 
     @Column(name = "Name")
     @NotEmpty(message = "Document name should not be empty!")
-    @Size(min = 1, max = 255, message = "Number of characters should be less than 255")
+    @Size(min = 2, max = 255, message = "Number of characters should be greater than 1 and less than 255")
     private String name;
 
     @Column(name = "File")

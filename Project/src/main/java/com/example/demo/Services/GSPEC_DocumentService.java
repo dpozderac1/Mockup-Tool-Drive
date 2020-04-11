@@ -39,20 +39,33 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
         HttpEntity<GSPEC_Document> request = new HttpEntity<>(newGspec);
         restTemplate.put("http://online-testing/updateGSPECDocument/{id}", request, id);
         if(gspec_document != null) {
-            if(!newGspec.getName().equals("")) gspec_document.setName(newGspec.getName());
-            if(newGspec.getMockupId() != null) gspec_document.setMockupId(newGspec.getMockupId());
-            if(newGspec.getDate_created() != null) gspec_document.setDate_created(newGspec.getDate_created());
-            if(newGspec.getDate_modified() != null) gspec_document.setDate_modified(newGspec.getDate_modified());
-            if(newGspec.getFile() != null) gspec_document.setFile(newGspec.getFile());
-            if(newGspec.getAccessed_date() != null) gspec_document.setAccessed_date(newGspec.getAccessed_date());
+            Mockup mockup = mockupRepository.findByID(newGspec.getMockupId().getID());
+            if(mockup != null) {
+                gspec_document.setMockupId(mockup);
 
-            gspec_documentRepository.save(gspec_document);
-            return new ResponseEntity<>(gspec_document, HttpStatus.OK);
+                if (!newGspec.getName().equals("")) gspec_document.setName(newGspec.getName());
+
+                if (newGspec.getDate_created() != null) gspec_document.setDate_created(newGspec.getDate_created());
+                if (newGspec.getDate_modified() != null) gspec_document.setDate_modified(newGspec.getDate_modified());
+                if (newGspec.getFile() != null) gspec_document.setFile(newGspec.getFile());
+                if (newGspec.getAccessed_date() != null) gspec_document.setAccessed_date(newGspec.getAccessed_date());
+
+                gspec_documentRepository.save(gspec_document);
+                return new ResponseEntity<>(gspec_document, HttpStatus.OK);
+            }
+            else
+                throw new ObjectNotFoundException("Mockup with id " + newGspec.getMockupId().getID() + " does not exist!");
         }
         else{
-            newGspec.setID(id);
-            gspec_documentRepository.save(newGspec);
-            return new ResponseEntity<>(newGspec, HttpStatus.OK);
+            Mockup mockup = mockupRepository.findByID(newGspec.getMockupId().getID());
+            if(mockup != null){
+                newGspec.setMockupId(mockup);
+                newGspec.setID(id);
+                gspec_documentRepository.save(newGspec);
+                return new ResponseEntity<>(newGspec, HttpStatus.OK);
+            }
+            else
+                throw new ObjectNotFoundException("Mockup with id " + newGspec.getMockupId().getID() + " does not exist!");
         }
     }
 
@@ -95,8 +108,13 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
             if(m.getID().equals(newGspec.getID())) alreadyExists = true;
         }
         if(!alreadyExists) {
-            GSPEC_Document gspec_document = gspec_documentRepository.save(newGspec);
-            return new ResponseEntity<>(gspec_document, HttpStatus.CREATED);
+            Mockup mockup = mockupRepository.findByID(newGspec.getMockupId().getID());
+            if(mockup != null) {
+                GSPEC_Document gspec_document = gspec_documentRepository.save(newGspec);
+                return new ResponseEntity<>(gspec_document, HttpStatus.CREATED);
+            }
+            else
+                throw new ObjectNotFoundException("Mockup with id " + newGspec.getMockupId().getID() + " does not exist!");
         }
         else
             throw new ObjectAlreadyExistsException("GSPEC document with id " + newGspec.getID() + " already exists!");

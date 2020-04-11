@@ -80,7 +80,12 @@ public class ProjectTest {
 
     @Test
     public void deleteProject() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.delete("/delete/project/{id}", 1))
+
+        given(projectRepository.existsByID(Long.valueOf(1))).willReturn(true);
+
+        mvc.perform(MockMvcRequestBuilders.delete("/delete/project/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -201,7 +206,7 @@ public class ProjectTest {
         given(this.projectService.newProject(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
 
         mvc.perform(MockMvcRequestBuilders
-                .post("/addProject")
+                .post("/addProject/{id}", 1L)
                 .content(asJsonString(project1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -295,7 +300,7 @@ public class ProjectTest {
         map.put(project.getID(), project);
         HttpEntity<Map<Long, Project>> entity = new HttpEntity<>(map, headers);
 
-        given(restTemplate.postForObject("http://user/addUserProject", entity, Project.class)).willReturn(project);
+        given(restTemplate.postForObject("http://user/addProject", entity, Project.class)).willReturn(project);
         given(projectService.newProject(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(project, HttpStatus.CREATED));
 
         mvc.perform(MockMvcRequestBuilders
@@ -307,12 +312,58 @@ public class ProjectTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(project.getName()));
     }
 
+    @Test
+    public void addProjectRestTemplateErrorHandling() throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        Map<Long, Project> map = new HashMap<>();
+        map.put(project.getID(), project);
+        HttpEntity<Map<Long, Project>> entity = new HttpEntity<>(map, headers);
+
+        List<String> errors = new ArrayList<>();
+        errors.add("User with id 6 does not exit!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        given(projectService.newProject(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/addProject/{id}", 6)
+                .content(asJsonString(project))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User with id 6 does not exit!"));
+    }
 
     @Test
     public void deleteProjectRestTemplate() throws Exception {
         restTemplate.delete("http://user/delete/project/{id}", 1);
-        mvc.perform(MockMvcRequestBuilders.delete("/delete/project/{id}", 1))
+
+        given(projectRepository.existsByID(Long.valueOf(1))).willReturn(true);
+        mvc.perform(MockMvcRequestBuilders.delete("/delete/project/{id}", 1)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void deleteProjectRestTemplateErrorHandling() throws Exception {
+        List<String> errors = new ArrayList<>();
+        errors.add("Project with id 1 does not exit!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+        restTemplate.delete("http://user/delete/project/{id}", 1);
+        given(projectService.deleteOne(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(MockMvcRequestBuilders
+                .delete("/delete/project/{id}", 1))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Project with id 1 does not exit!"));
+
     }
 
     @Test
@@ -350,7 +401,41 @@ public class ProjectTest {
     }
 
     @Test
-    public void searchFilesByName() throws Exception{
+    public void filterFilesRestTemplateErrorHandling() throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        project.setID(1L);
+        Version version = new Version(project, VersionNames.DESKTOP);
+        version.setID(1L);
+        Mockup mockup = new Mockup(version, "Mockup", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        mockup.setID(1L);
+        Mockup mockup2 = new Mockup(version, "AMockup", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        mockup2.setID(2L);
+        List<Mockup> mockups = new ArrayList<>();
+        mockups.add(mockup2);
+        mockups.add(mockup);
+
+
+        HashMap<String, Object> mapa = new HashMap<>();
+        mapa.put("html", mockups);
+        mapa.put("gspec", new ArrayList<>());
+        mapa.put("pdf", new ArrayList<>());
+
+        List<String> errors = new ArrayList<>();
+        errors.add("User does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+
+        given(projectService.getFilesByFilter(ArgumentMatchers.any(String.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(get("/filterFiles/{filter}/{id}", "name", 8L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User does not exist!"));
+
+    }
+
+    @Test
+    public void searchFilesByNameRestTemplate() throws Exception{
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
         project.setID(1L);
@@ -375,6 +460,35 @@ public class ProjectTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("html")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("gspec")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasKey("pdf")));
+
+    }
+
+    @Test
+    public void searchFilesByNameRestTemplateErrorHandling() throws Exception{
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        project.setID(1L);
+        Version version = new Version(project, VersionNames.DESKTOP);
+        version.setID(1L);
+        Mockup mockup = new Mockup(version, "Mockup", null, format.parse("2020-3-17"), format.parse("2020-3-17"), format.parse("2020-3-17"));
+        mockup.setID(1L);
+
+
+        HashMap<String, Object> mapa = new HashMap<>();
+        mapa.put("html", mockup);
+        mapa.put("gspec", new ArrayList<>());
+        mapa.put("pdf", new ArrayList<>());
+
+        List<String> errors = new ArrayList<>();
+        errors.add("User does not exist!");
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
+
+        given(projectService.searchFilesByName(ArgumentMatchers.any(String.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+
+        mvc.perform(get("/searchFilesByName/{name}/{id}", "Mockup", 1L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("User does not exist!"));
 
     }
 
