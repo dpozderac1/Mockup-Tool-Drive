@@ -23,7 +23,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Table(name = "User")
 public class User {
 
-
     @Id
     @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,26 +37,38 @@ public class User {
     @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
     private String username;
 
+    @Documented
+    @Constraint(validatedBy = PasswordConstraintValidator.class)
+    @Target({ FIELD, ANNOTATION_TYPE })
+    @Retention(RUNTIME)
+    public @interface ValidPassword {
+
+        String message() default "Password must contain at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 symbol!";
+
+        Class<?>[] groups() default {};
+
+        Class<? extends Payload>[] payload() default {};
+    }
+
+
+    @Column(name = "Password")
+    @NotEmpty(message = "Password cannot be null or empty")
+    @ValidPassword
+    @JsonIgnore
+    @Size(min = 8, message = "Password must have min 8 characters")
+    private String password;
 
     @Column(name = "Email")
     @NotEmpty(message = "Email cannot be null or empty")
     @Email(message = "Email should be valid")
     private String email;
 
-    @Transient
-    private int idRole;
-
     public User() {}
 
-    public User(Role role_ID, String username, String email) {
+    public User(Role role_ID, String username, String password, String email) {
         this.roleID = role_ID;
         this.username = username;
-        this.email = email;
-    }
-
-    public User(String username, String email,int idRole) {
-        this.idRole = idRole;
-        this.username = username;
+        this.password = password;
         this.email = email;
     }
 
@@ -85,19 +96,19 @@ public class User {
         this.username = username;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public int getIdRole() {
-        return idRole;
-    }
-
-    public void setIdRole(int idRole) {
-        this.idRole = idRole;
     }
 }

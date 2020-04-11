@@ -176,7 +176,9 @@ public class BrowserControllerTests {
 
         Browser browser = new Browser("Mozila Firefox", null, "Mobile");
 
-        given(this.browserService.saveBrowser(ArgumentMatchers.any(Browser.class))).willReturn(new ResponseEntity(browser, HttpStatus.CREATED));
+        JSONObject jo = new JSONObject();
+        jo.put("message", "Browser is successfully added!");
+        given(this.browserService.saveBrowser(ArgumentMatchers.any(Browser.class))).willReturn(new ResponseEntity(jo.toString(), HttpStatus.CREATED));
 
         mvc.perform(MockMvcRequestBuilders
                 .post("/addBrowser")
@@ -184,7 +186,7 @@ public class BrowserControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(browser.getName()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Browser is successfully added!"));
     }
 
     @Test
@@ -259,7 +261,8 @@ public class BrowserControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errors").isNotEmpty());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[0]").value("Browser name must be between 5 and 20 characters!"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errors[1]").value("Browser name cannot be null or empty!"));
     }
 
     @Test

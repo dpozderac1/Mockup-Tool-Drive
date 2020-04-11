@@ -6,11 +6,11 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface BrowserService {
-     List<Browser> getAllBrowsers();
-     ResponseEntity getBrowserByID(Long id);
-     ResponseEntity deleteBrowserByID(Long id);
-     List<Browser> getBrowsersServer(Long id);
-     ResponseEntity saveBrowser(Browser browser);
-     ResponseEntity updateBrowser(Browser browser, Long id);
+    public List<Browser> getAllBrowsers();
+    public ResponseEntity getBrowserByID(Long id);
+    public ResponseEntity deleteBrowserByID(Long id);
+    public List<Browser> getBrowsersServer(Long id);
+    public ResponseEntity saveBrowser(Browser browser);
+    public ResponseEntity updateBrowser(Browser browser, Long id);
 
 }

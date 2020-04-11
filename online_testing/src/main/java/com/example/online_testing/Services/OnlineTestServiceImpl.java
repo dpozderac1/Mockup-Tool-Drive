@@ -86,10 +86,10 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 
     @Override
     public ResponseEntity saveOnlineTest(OnlineTest onlineTest) {
+        JSONObject jo = new JSONObject();
         Server server = serverRepository.findByID(Long.valueOf(onlineTest.getIdServer()));
         User user = userRepository.findByID(Long.valueOf(onlineTest.getIdUser()));
         GSPECDocument gspecDocument = gspecDocumentRepository.findByID(Long.valueOf(onlineTest.getIdGspecDocument()));
-        OnlineTest onlineTest1 = new OnlineTest();
         if(server == null) {
             throw new RecordNotFoundException("Server does not exist!");
         }
@@ -102,11 +102,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
         else {
             OnlineTest onlineTest11 = onlineTestRepository.findBygspecDocumentID(gspecDocument);
             if(onlineTest11 == null){
-                onlineTest1.setTests(onlineTest.getTests());
-                onlineTest1.setTest_results(onlineTest.getTest_results());
-                onlineTest1.setServerID(server);
-                onlineTest1.setUserID(user);
-                onlineTest1.setGspecDocumentID(gspecDocument);
+                OnlineTest onlineTest1 = new OnlineTest(onlineTest.getTests(), onlineTest.getTest_results(), server, user, gspecDocument);
                 List<OnlineTest> onlineTests = onlineTestRepository.findAll();
                 boolean postoji = false;
                 for (OnlineTest ot: onlineTests) {
@@ -123,7 +119,8 @@ public class OnlineTestServiceImpl implements OnlineTestService{
                 throw new AlreadyExistsException("Online test for this GSPEC document already exists!");
             }
         }
-        return new ResponseEntity(onlineTest1, HttpStatus.CREATED);
+        jo.put("message", "Online test is successfully added!");
+        return new ResponseEntity(jo.toString(), HttpStatus.CREATED);
     }
 
     @Override

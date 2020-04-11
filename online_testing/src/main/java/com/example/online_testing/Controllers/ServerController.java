@@ -8,7 +8,6 @@ import com.example.online_testing.Services.BrowserService;
 import com.example.online_testing.Services.ServerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sun.rmi.runtime.Log;
@@ -36,7 +35,7 @@ public class ServerController {
         return serverService.getServerByID(id);
     }
 
-    @DeleteMapping(value = "/server/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping("/server/{id}")
     ResponseEntity deleteServer(@PathVariable Long id) {
         return serverService.deleteServerByID(id);
     }

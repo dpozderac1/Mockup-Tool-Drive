@@ -61,14 +61,12 @@ public class BrowserServiceImpl implements BrowserService {
     @Override
     public ResponseEntity saveBrowser(Browser browser) {
         Server server = serverRepository.findByID(Long.valueOf(browser.getIdServer()));
-        Browser newBrowser = new Browser();
+        JSONObject jo = new JSONObject();
         if(server == null) {
             throw new RecordNotFoundException("Server does not exist!");
         }
         else {
-            newBrowser.setName(browser.getName());
-            newBrowser.setServerID(server);
-            newBrowser.setVersion(browser.getVersion());
+            Browser newBrowser = new Browser(browser.getName(), server, browser.getVersion());
             List<Browser> browsers = browserRepository.findAll();
             boolean postoji = false;
             for (Browser b: browsers) {
@@ -81,7 +79,8 @@ public class BrowserServiceImpl implements BrowserService {
                 throw new AlreadyExistsException("Browser already exists!");
             }
         }
-        return new ResponseEntity(newBrowser, HttpStatus.CREATED);
+        jo.put("message", "Browser is successfully added!");
+        return new ResponseEntity(jo.toString(), HttpStatus.CREATED);
     }
 
     @Override
