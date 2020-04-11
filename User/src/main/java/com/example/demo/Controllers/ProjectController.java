@@ -25,9 +25,9 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @PostMapping("/addUserProject")
+    @PostMapping("/addProject")
     ResponseEntity<Project> newProject(@RequestBody Map<Long, Project> newProject) throws URISyntaxException {
-        return projectService.newProject(newProject.entrySet().iterator().next().getValue(), newProject.entrySet().iterator().next().getKey() );
+        return projectService.newProject(newProject.entrySet().iterator().next().getValue(), newProject.entrySet().iterator().next().getKey());
     }
 
     @DeleteMapping("/delete/project/{id}")

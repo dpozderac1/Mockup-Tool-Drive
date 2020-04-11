@@ -1,5 +1,7 @@
 package com.example.demo.Services;
 
+import com.example.demo.ErrorHandling.AlreadyExistsException;
+import com.example.demo.ErrorHandling.RecordNotFoundException;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.User;
 import com.example.demo.Repositories.ProjectRepository;
@@ -28,15 +30,27 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ResponseEntity newProject(Project newProject, Long id) throws URISyntaxException{
         User user = userRepository.findByID(id);
-        newProject.getUsers().add(user);
-        projectRepository.save(newProject);
-        return new ResponseEntity<>(newProject, HttpStatus.CREATED);
+        if(user == null)
+            throw new RecordNotFoundException("User with id " + id + " does not exist");
+        else{
+            if(projectRepository.existsByID(newProject.getID()))
+                throw new AlreadyExistsException("Project with id " + newProject.getID() + " already exists!");
+            else{
+                newProject.getUsers().add(user);
+                projectRepository.save(newProject);
+                return new ResponseEntity<>(newProject, HttpStatus.CREATED);
+            }
+        }
     }
 
     @Override
     public ResponseEntity deleteProject(Long id) throws JSONException{
-        projectRepository.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        if(projectRepository.existsByID(id)){
+            projectRepository.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        else
+            throw new RecordNotFoundException("Project with id " + id + " does not exist!");
     }
 
 }
