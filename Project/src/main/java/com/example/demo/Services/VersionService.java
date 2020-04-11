@@ -32,16 +32,44 @@ public class VersionService implements VersionServiceInterface {
     @Override
     public ResponseEntity addOrReplace(Version newVersion, Long id){
         Version version = versionRepository.findByID(id);
+        boolean versionExists = false;
+        for(int i = 0; i < VersionNames.values().length; i++){
+            if(newVersion.getVersion_name().toString().equals(VersionNames.values()[i].name().toString())){
+                versionExists = true;
+                break;
+            }
+        }
+
         if(version != null){
-            if(!newVersion.getVersion_name().equals("")) version.setVersion_name(newVersion.getVersion_name());
-            if(newVersion.getProjectId() != null) version.setProjectId(newVersion.getProjectId());
+            if(versionExists)
+                version.setVersion_name(newVersion.getVersion_name());
+            else
+                throw new ObjectNotFoundException("Version name does not exist!");
+            Project project = projectRepository.findByID(newVersion.getProjectId().getID());
+            if(project != null) {
+                version.setProjectId(project);
+            }
+            else
+                throw new ObjectNotFoundException("Project with id " + newVersion.getProjectId().getID() + " does not exist!");
+
             versionRepository.save(version);
             return new ResponseEntity<>(version, HttpStatus.OK);
         }
         else {
-            newVersion.setID(id);
-            versionRepository.save(newVersion);
-            return new ResponseEntity<>(newVersion, HttpStatus.OK);
+            Project project = projectRepository.findByID(newVersion.getProjectId().getID());
+            if(project != null) {
+
+                newVersion.setProjectId(project);
+                newVersion.setID(id);
+                if(versionExists){
+                    versionRepository.save(newVersion);
+                    return new ResponseEntity<>(newVersion, HttpStatus.OK);
+                }
+                else
+                    throw new ObjectNotFoundException("Version name does not exist!");
+            }
+            else
+                throw new ObjectNotFoundException("Project with id " + newVersion.getProjectId().getID() + " does not exist!");
         }
     }
 
@@ -92,8 +120,23 @@ public class VersionService implements VersionServiceInterface {
             if(p.getID().equals(newVersion.getID())) alreadyExists = true;
         }
         if(!alreadyExists){
-            Version version = versionRepository.save(newVersion);
-            return new ResponseEntity<>(version, HttpStatus.CREATED);
+            boolean versionExists = false;
+            for(int i = 0; i < VersionNames.values().length; i++){
+                if(newVersion.getVersion_name().toString().equals(VersionNames.values()[i].name().toString())){
+                    versionExists = true;
+                    break;
+                }
+            }
+            if(versionExists) {
+                if(projectRepository.existsByID(newVersion.getProjectId().getID())){
+                    Version version = versionRepository.save(newVersion);
+                    return new ResponseEntity<>(version, HttpStatus.CREATED);
+                }
+                else
+                    throw new ObjectNotFoundException("Project with id " + newVersion.getProjectId().getID() + " does not exist");
+            }
+            else
+                throw new ObjectNotFoundException("Version name does not exist!");
         }
         else
             throw new ObjectAlreadyExistsException("Version with id " + newVersion.getID() + " already exists!");

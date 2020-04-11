@@ -32,20 +32,32 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
     public ResponseEntity addOrReplacePDF(PDF_Document newPdf, Long id){
         PDF_Document pdf_document = pdf_documentRepository.findByID(id);
         if(pdf_document != null) {
-            if(!newPdf.getName().equals("")) pdf_document.setName(newPdf.getName());
-            if(newPdf.getMockupId() != null) pdf_document.setMockupId(newPdf.getMockupId());
-            if(newPdf.getDate_created() != null) pdf_document.setDate_created(newPdf.getDate_created());
-            if(newPdf.getDate_modified() != null) pdf_document.setDate_modified(newPdf.getDate_modified());
-            if(newPdf.getFile() != null) pdf_document.setFile(newPdf.getFile());
-            if(newPdf.getAccessed_date() != null) pdf_document.setAccessed_date(newPdf.getAccessed_date());
+            Mockup mockup = mockupRepository.findByID(newPdf.getMockupId().getID());
+            if(mockup != null){
+                pdf_document.setMockupId(mockup);
 
-            pdf_documentRepository.save(pdf_document);
-            return new ResponseEntity<>(pdf_document, HttpStatus.OK);
+                if(!newPdf.getName().equals(" ")) pdf_document.setName(newPdf.getName());
+                if(newPdf.getDate_created() != null) pdf_document.setDate_created(newPdf.getDate_created());
+                if(newPdf.getDate_modified() != null) pdf_document.setDate_modified(newPdf.getDate_modified());
+                if(newPdf.getFile() != null) pdf_document.setFile(newPdf.getFile());
+                if(newPdf.getAccessed_date() != null) pdf_document.setAccessed_date(newPdf.getAccessed_date());
+
+                pdf_documentRepository.save(pdf_document);
+                return new ResponseEntity<>(pdf_document, HttpStatus.OK);
+            }
+            else
+                throw new ObjectNotFoundException("Mockup with id " + newPdf.getMockupId().getID() + " does not exist!");
         }
         else {
-            newPdf.setID(id);
-            pdf_documentRepository.save(newPdf);
-            return new ResponseEntity<>(newPdf, HttpStatus.OK);
+            Mockup mockup = mockupRepository.findByID(newPdf.getMockupId().getID());
+            if(mockup != null){
+                newPdf.setMockupId(mockup);
+                newPdf.setID(id);
+                pdf_documentRepository.save(newPdf);
+                return new ResponseEntity<>(newPdf, HttpStatus.OK);
+            }
+            else
+                throw new ObjectNotFoundException("Mockup with id " + newPdf.getMockupId().getID() + " does not exist!");
         }
     }
 
@@ -83,8 +95,14 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
             if(m.getID().equals(newPDF.getID())) alreadyExists = true;
         }
         if(!alreadyExists) {
-            PDF_Document pdf_document = pdf_documentRepository.save(newPDF);
-            return new ResponseEntity<>(pdf_document, HttpStatus.CREATED);
+            Mockup mockup = mockupRepository.findByID(newPDF.getMockupId().getID());
+            if(mockup != null) {
+                newPDF.setMockupId(mockup);
+                PDF_Document pdf_document = pdf_documentRepository.save(newPDF);
+                return new ResponseEntity<>(pdf_document, HttpStatus.CREATED);
+            }
+            else
+                throw new ObjectNotFoundException("Mockup with id " + newPDF.getMockupId().getID() + " does not exist!");
         }else
             throw new ObjectAlreadyExistsException("PDF document with id " + newPDF.getID() + " already exists!");
 

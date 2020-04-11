@@ -43,8 +43,7 @@ public class Version {
     }
 
     @javax.persistence.Id
-    @GeneratedValue
-    @NotNull
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @ManyToOne()

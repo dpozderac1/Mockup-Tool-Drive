@@ -32,20 +32,38 @@ public class MockupService implements MockupServiceInterface{
     public ResponseEntity addOrReplace(Mockup newMockup, Long id){
         Mockup mockup = mockupRepository.findByID(id);
         if(mockup != null) {
-            if(!newMockup.getName().equals("")) mockup.setName(newMockup.getName());
-            if(newMockup.getVersionId() != null) mockup.setVersionId(newMockup.getVersionId());
-            if(newMockup.getDate_created() != null) mockup.setDate_created(newMockup.getDate_created());
-            if(newMockup.getDate_modified() != null) mockup.setDate_modified(newMockup.getDate_modified());
-            if(newMockup.getFile() != null) mockup.setFile(newMockup.getFile());
-            if(newMockup.getAccessed_date() != null) mockup.setAccessed_date(newMockup.getAccessed_date());
 
-            mockupRepository.save(mockup);
-            return new ResponseEntity<>(mockup, HttpStatus.OK);
+            Version version = versionRepository.findByID(newMockup.getVersionId().getID());
+            if(version != null){
+                mockup.setVersionId(version);
+
+                if(!newMockup.getName().equals(" "))
+                    mockup.setName(newMockup.getName());
+                if(newMockup.getDate_created() != null)
+                    mockup.setDate_created(newMockup.getDate_created());
+                if(newMockup.getDate_modified() != null)
+                    mockup.setDate_modified(newMockup.getDate_modified());
+                if(newMockup.getFile() != null)
+                    mockup.setFile(newMockup.getFile());
+                if(newMockup.getAccessed_date() != null)
+                    mockup.setAccessed_date(newMockup.getAccessed_date());
+
+                mockupRepository.save(mockup);
+                return new ResponseEntity<>(mockup, HttpStatus.OK);
+            }
+            else
+                throw new ObjectNotFoundException("Version with id " + newMockup.getVersionId().getID() + " does not exist");
         }
         else{
-            newMockup.setID(id);
-            mockupRepository.save(newMockup);
-            return new ResponseEntity<>(newMockup, HttpStatus.OK);
+            Version version = versionRepository.findByID(newMockup.getVersionId().getID());
+            if(version != null){
+                newMockup.setVersionId(version);
+                newMockup.setID(id);
+                mockupRepository.save(newMockup);
+                return new ResponseEntity<>(newMockup, HttpStatus.OK);
+            }
+            else
+                throw new ObjectNotFoundException("Version with id " + newMockup.getVersionId().getID() + " does not exist");
         }
     }
 
@@ -84,8 +102,14 @@ public class MockupService implements MockupServiceInterface{
             if(m.getID().equals(newMockup.getID())) alreadyExists = true;
         }
         if(!alreadyExists){
-            Mockup mockup = mockupRepository.save(newMockup);
-            return new ResponseEntity<>(mockup, HttpStatus.CREATED);
+            Version version = versionRepository.findByID(newMockup.getVersionId().getID());
+            if(version != null) {
+                newMockup.setVersionId(version);
+                Mockup mockup = mockupRepository.save(newMockup);
+                return new ResponseEntity<>(mockup, HttpStatus.CREATED);
+            }
+            else
+                throw new ObjectNotFoundException("Version with id " + newMockup.getVersionId().getID() + " does not exist");
         }
         else
             throw new ObjectAlreadyExistsException("Mockup with id " + newMockup.getID() + " already exists!");
