@@ -3,6 +3,7 @@ package com.example.demo.Services;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface UserService {
     ResponseEntity saveUser(User user);
     ResponseEntity updateUser(Long id, User user);
     ResponseEntity deleteUser(Long id);
+    //ResponseEntity getAllProjects(Long id);
 }
