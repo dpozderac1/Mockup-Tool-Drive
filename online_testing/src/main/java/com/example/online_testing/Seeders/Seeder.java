@@ -53,11 +53,11 @@ public class Seeder {
 
     private void insert_user() {
         Role admin = role_repository.findByroleName(RoleNames.ADMIN);
-        User user1 = new User(admin, "zramic1", "zramic1@etf.unsa.ba");
+        User user1 = new User(admin, "dpozderac1", "dpozderac1@etf.unsa.ba");
         if(!user_repository.existsByusername(user1.getUsername())) user_repository.save(user1);
 
         Role user = role_repository.findByroleName(RoleNames.USER);
-        User user2 = new User(user, "dpozderac1", "dpozderac1@etf.unsa.ba");
+        User user2 = new User(user, "zramic1", "zramic1@gmail.com");
         if(!user_repository.existsByusername(user2.getUsername())) user_repository.save(user2);
     }
 
@@ -71,10 +71,10 @@ public class Seeder {
     }
 
     private void insert_GSPEC_document() throws SQLException {
-        GSPECDocument document1 = new GSPECDocument("Document1", null);
+        GSPECDocument document1 = new GSPECDocument("AGspec 1", null);
         if(!gspec_document_repository.existsByname(document1.getName())) gspec_document_repository.save(document1);
 
-        GSPECDocument document2 = new GSPECDocument("Document2", null);
+        GSPECDocument document2 = new GSPECDocument("Gspec 2", null);
         if(!gspec_document_repository.existsByname(document2.getName())) gspec_document_repository.save(document2);
     }
 
