@@ -2,6 +2,7 @@ package com.example.demo.Services;
 
 import com.example.demo.ErrorHandling.AlreadyExistsException;
 import com.example.demo.ErrorHandling.RecordNotFoundException;
+import com.example.demo.GRPCUserService;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.Role;
 import com.example.demo.Models.User;
@@ -23,6 +24,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +47,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    GRPCUserService grpcUserService;
+
     @Override
     public List<User> getAllUsers() {
+        grpcUserService.action("user","GET","User","SUCESS", new Timestamp(System.currentTimeMillis()));
         return userRepository.findAll();
     }
 

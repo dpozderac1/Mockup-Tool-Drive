@@ -3,6 +3,7 @@ package com.example.systemevents;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.sql.Timestamp;
 
 @Entity
@@ -30,4 +31,60 @@ public class Action {
 
     @Column(name="Timestamp")
     private Timestamp timestamp;
+
+    public Action(String microservice, String type, String resource, String responseType, Timestamp timestamp) {
+        this.microservice=microservice;
+        this.type=type;
+        this.resource=resource;
+        this.responseType=responseType;
+        this.timestamp=timestamp;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
+
+    public String getMicroservice() {
+        return microservice;
+    }
+
+    public void setMicroservice(String microservice) {
+        this.microservice = microservice;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getResource() {
+        return resource;
+    }
+
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
+    public String getResponseType() {
+        return responseType;
+    }
+
+    public void setResponseType(String responseType) {
+        this.responseType = responseType;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
 }
