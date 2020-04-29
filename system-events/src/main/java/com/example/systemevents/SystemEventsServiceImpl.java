@@ -1,6 +1,7 @@
 package com.example.systemevents;
 
 import com.example.grpc.server.grpcserver.*;
+import com.example.systemevents.Repositories.ActionRepository;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;

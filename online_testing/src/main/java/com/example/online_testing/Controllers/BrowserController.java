@@ -10,7 +10,7 @@ import com.example.online_testing.Services.BrowserService;
 import com.fasterxml.jackson.databind.node.POJONode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import netscape.javascript.JSObject;
+//import netscape.javascript.JSObject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -40,6 +40,10 @@ public class Action {
         this.timestamp=timestamp;
     }
 
+    public Action(){
+        
+    }
+
     public Long getID() {
         return ID;
     }
