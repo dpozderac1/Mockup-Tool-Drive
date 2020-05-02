@@ -2,6 +2,7 @@ package com.example.demo.Services;
 
 import com.example.demo.ErrorHandling.AlreadyExistsException;
 import com.example.demo.ErrorHandling.RecordNotFoundException;
+import com.example.demo.GRPCUserService;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.Role;
 import com.example.demo.Models.User;
@@ -23,6 +24,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,17 +47,23 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    GRPCUserService grpcUserService;
+
     @Override
     public List<User> getAllUsers() {
+        grpcUserService.action("user","GET","/users","SUCESS", new Timestamp(System.currentTimeMillis()));
         return userRepository.findAll();
     }
 
     @Override
     public ResponseEntity getUserByID(Long id) {
         if(userRepository.existsByID(id)){
+            grpcUserService.action("user","GET","/users/{id}","SUCESS", new Timestamp(System.currentTimeMillis()));
             return new ResponseEntity(userRepository.findByID(id),HttpStatus.OK);
         }
         else{
+            grpcUserService.action("user","GET","/users/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
             throw new RecordNotFoundException("User does not exist!");
         }
     }
@@ -63,9 +73,11 @@ public class UserServiceImpl implements UserService {
         if(roleRepository.existsByID(id)){
             Role uloga = roleRepository.findByID(id);
             List<User> korisnici = userRepository.findByroleID(uloga);
+            grpcUserService.action("user","GET","/users/role/{id}","SUCESS", new Timestamp(System.currentTimeMillis()));
             return korisnici;
         }
         else{
+            grpcUserService.action("user","GET","/users/role/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
             throw new RecordNotFoundException("User does not exist!");
         }
     }
@@ -75,24 +87,23 @@ public class UserServiceImpl implements UserService {
         if(userRepository.existsByID(id)){
             User korisnik=userRepository.findByID(id);
             List<Project> projekti=korisnik.getProjects();
+            grpcUserService.action("user","GET","/users/projects/{id}","SUCESS", new Timestamp(System.currentTimeMillis()));
             return projekti;
         }
         else {
+            grpcUserService.action("user","GET","/users/projects/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
             throw new RecordNotFoundException("User does not exist!");
         }
     }
 
     @Override
     public ResponseEntity saveUser(User user) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<User> request = new HttpEntity<>(user, headers);
-        User user1 = restTemplate.postForObject("http://online-testing/user", request, User.class);
 
         JSONObject objekat=new JSONObject();
         if(!Integer.toString(user.getIdRole()).equals(Integer.toString(0))) {
             Role uloga = roleRepository.findByID(Long.valueOf(user.getIdRole()));
             if (uloga == null) {
+                grpcUserService.action("user","POST","/user","NOT FOUND", new Timestamp(System.currentTimeMillis()));
                 throw new RecordNotFoundException("Role does not exist!");
             }
             else {
@@ -103,9 +114,11 @@ public class UserServiceImpl implements UserService {
         for(int i=0;i<sviKorisnici.size();i++){
             User korisnik=sviKorisnici.get(i);
             if(korisnik.getUsername().equals(user.getUsername())){
+                grpcUserService.action("user","POST","/user","CONFLICT", new Timestamp(System.currentTimeMillis()));
                 throw new AlreadyExistsException("User with same username already exists!");
             }
             if(korisnik.getEmail().equals(user.getEmail())){
+                grpcUserService.action("user","POST","/user","CONFLICT", new Timestamp(System.currentTimeMillis()));
                 throw new AlreadyExistsException("User with same e-mail address already exists!");
             }
         }
@@ -115,6 +128,11 @@ public class UserServiceImpl implements UserService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<User> request = new HttpEntity<>(user, headers);
+        User user1 = restTemplate.postForObject("http://online-testing/user", request, User.class);
+        grpcUserService.action("user","POST","/user","SUCCESS", new Timestamp(System.currentTimeMillis()));
         return new ResponseEntity(user,HttpStatus.CREATED);
     }
 
@@ -123,6 +141,7 @@ public class UserServiceImpl implements UserService {
         User korisnik = userRepository.findByID(id);
         JSONObject objekat = new JSONObject();
         if (korisnik == null || !userRepository.existsByID(id)) {
+            grpcUserService.action("user","PUT","/updateUser/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
             throw new RecordNotFoundException("User does not exist!");
         }
 
@@ -130,9 +149,12 @@ public class UserServiceImpl implements UserService {
         for (int i = 0; i < sviKorisnici.size(); i++) {
             User korisnik1 = sviKorisnici.get(i);
             if (korisnik1.getUsername().equals(user.getUsername())) {
+                grpcUserService.action("user","PUT","/updateUser/{id}","CONFLICT", new Timestamp(System.currentTimeMillis()));
+                System.out.println("Tu sam!");
                 throw new AlreadyExistsException("User with same username already exists!");
             }
             if (korisnik1.getEmail().equals(user.getEmail())) {
+                grpcUserService.action("user","PUT","/updateUser/{id}","CONFLICT", new Timestamp(System.currentTimeMillis()));
                 throw new AlreadyExistsException("User with same e-mail address already exists!");
             }
         }
@@ -140,6 +162,7 @@ public class UserServiceImpl implements UserService {
         if(!Integer.toString(user.getIdRole()).equals(Integer.toString(0))) {
             Role uloga = roleRepository.findByID(Long.valueOf(user.getIdRole()));
             if (uloga == null) {
+                grpcUserService.action("user","PUT","/updateUser/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
                 throw new RecordNotFoundException("Role does not exist!");
             }
             else {
@@ -180,6 +203,7 @@ public class UserServiceImpl implements UserService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        grpcUserService.action("user","PUT","/updateUser/{id}","SUCCESS", new Timestamp(System.currentTimeMillis()));
         return new ResponseEntity<>(korisnik, HttpStatus.OK);
     }
 
@@ -200,9 +224,11 @@ public class UserServiceImpl implements UserService {
             }
 
             restTemplate.delete("http://online-testing/deleteUser/"+id.toString());
+            grpcUserService.action("user","DELETE","/deleteUser/{id}","SUCCESS", new Timestamp(System.currentTimeMillis()));
             return new ResponseEntity(objekat.toString(),HttpStatus.OK);
         }
         else {
+            grpcUserService.action("user","DELETE","/deleteUser/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
             throw new RecordNotFoundException("User does not exist!");
         }
     }

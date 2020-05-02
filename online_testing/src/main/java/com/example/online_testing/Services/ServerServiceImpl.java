@@ -2,6 +2,7 @@ package com.example.online_testing.Services;
 
 import com.example.online_testing.ErrorHandling.AlreadyExistsException;
 import com.example.online_testing.ErrorHandling.RecordNotFoundException;
+import com.example.online_testing.GRPCOnlineTestingService;
 import com.example.online_testing.Models.Role;
 import com.example.online_testing.Models.RoleNames;
 import com.example.online_testing.Models.Server;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -30,18 +32,24 @@ public class ServerServiceImpl implements ServerService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    GRPCOnlineTestingService grpcOnlineTestingService;
+
     @Override
     public List<Server> getAllServers() {
+        grpcOnlineTestingService.action("online-testing","GET","/servers","SUCESS", new Timestamp(System.currentTimeMillis()));
         return serverRepository.findAll();
     }
 
     @Override
     public ResponseEntity getServerByID(Long id) {
         if(serverRepository.existsByID(id)) {
+            grpcOnlineTestingService.action("online-testing","GET","/server/{id}","SUCESS", new Timestamp(System.currentTimeMillis()));
             Server server = serverRepository.findByID(id);
             return new ResponseEntity(server, HttpStatus.OK);
         }
         else {
+            grpcOnlineTestingService.action("online-testing","GET","/server/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
             throw new RecordNotFoundException("Server does not exist!");
         }
     }
@@ -50,15 +58,21 @@ public class ServerServiceImpl implements ServerService {
     public ResponseEntity deleteServerByID(Long id) {
         JSONObject jo = new JSONObject();
         if(serverRepository.existsByID(id)) {
+            grpcOnlineTestingService.action("online-testing","DELETE","/server/{id}","SUCESS", new Timestamp(System.currentTimeMillis()));
             serverRepository.deleteById(id);
             jo.put("message", "Server is successfully deleted!");
             return new ResponseEntity(jo.toString(), HttpStatus.OK);
         }
-        throw new RecordNotFoundException("Server does not exist!");
+        else{
+            grpcOnlineTestingService.action("online-testing","DELETE","/server/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
+            throw new RecordNotFoundException("Server does not exist!");
+        }
+
     }
 
     @Override
     public List<Server> getUserServers(Long id) {
+        grpcOnlineTestingService.action("online-testing","GET","/userServers/{id}","SUCESS", new Timestamp(System.currentTimeMillis()));
         User user = userRepository.findByID(id);
         List<Server> servers = serverRepository.findAllByuserID(user);
         return servers;
@@ -76,8 +90,12 @@ public class ServerServiceImpl implements ServerService {
                 postoji = true;
             }
         }
-        if(!postoji) serverRepository.save(server);
+        if(!postoji) {
+            grpcOnlineTestingService.action("online-testing","POST","/addServer","SUCESS", new Timestamp(System.currentTimeMillis()));
+            serverRepository.save(server);
+        }
         else {
+            grpcOnlineTestingService.action("online-testing","POST","/addServer","CONFLICT", new Timestamp(System.currentTimeMillis()));
             throw new AlreadyExistsException("Server already exists!");
         }
         return new ResponseEntity(server, HttpStatus.CREATED);
@@ -87,6 +105,7 @@ public class ServerServiceImpl implements ServerService {
     public ResponseEntity updateServer(Server server, Long id) {
         Server oldServer = serverRepository.findByID(id);
         if(oldServer == null) {
+            grpcOnlineTestingService.action("online-testing","PUT","/updateServer/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
             throw new RecordNotFoundException("The server you want to update does not exist!");
         }
         else{
@@ -108,12 +127,14 @@ public class ServerServiceImpl implements ServerService {
                 }
             }
             if(!postoji) {
+                grpcOnlineTestingService.action("online-testing","PUT","/updateServer/{id}","SUCESS", new Timestamp(System.currentTimeMillis()));
                 oldServer.setUrl(newServer.getUrl());
                 oldServer.setPort(newServer.getPort());
                 oldServer.setStatus(newServer.getStatus());
                 serverRepository.save(oldServer);
             }
             else {
+                grpcOnlineTestingService.action("online-testing","PUT","/updateServer/{id}","CONFLICT", new Timestamp(System.currentTimeMillis()));
                 throw new AlreadyExistsException("Server already exists!");
             }
 
