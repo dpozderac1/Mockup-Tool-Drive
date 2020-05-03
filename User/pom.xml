@@ -35,6 +35,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>3.8.0-rc-1</version>
+		</dependency>
+
 		<!-- For both -->
 		<dependency>
 			<groupId>net.devh</groupId>

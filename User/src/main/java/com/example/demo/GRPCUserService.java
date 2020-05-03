@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import com.example.grpc.server.grpcserver.ActionRequest;
-import com.example.grpc.server.grpcserver.SystemEvents;
 import com.example.grpc.server.grpcserver.SystemEventsResponse;
 import com.example.grpc.server.grpcserver.SystemEventsServiceGrpc;
 import io.grpc.ManagedChannel;
