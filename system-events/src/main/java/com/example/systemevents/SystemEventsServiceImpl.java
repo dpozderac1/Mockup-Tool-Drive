@@ -1,6 +1,9 @@
 package com.example.systemevents;
 
-import com.example.grpc.server.grpcserver.*;
+//import com.example.grpc.server.grpcserver.*;
+import com.example.grpc.server.grpcserver.ActionRequest;
+import com.example.grpc.server.grpcserver.SystemEventsResponse;
+import com.example.grpc.server.grpcserver.SystemEventsServiceGrpc;
 import com.example.systemevents.Repositories.ActionRepository;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;

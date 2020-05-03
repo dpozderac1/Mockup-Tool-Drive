@@ -118,6 +118,12 @@
             <version>2.2.2.RELEASE</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.8.0-rc-1</version>
+        </dependency>
+
         <!-- For both -->
         <dependency>
             <groupId>net.devh</groupId>
@@ -147,6 +153,8 @@
         <version>2.5.1.RELEASE</version>
         <type>pom</type>
     </dependency>
+
+
 
     </dependencies>
 

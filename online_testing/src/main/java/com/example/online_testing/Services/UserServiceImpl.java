@@ -2,7 +2,6 @@ package com.example.online_testing.Services;
 
 import com.example.online_testing.ErrorHandling.AlreadyExistsException;
 import com.example.online_testing.ErrorHandling.RecordNotFoundException;
-import com.example.online_testing.GRPCOnlineTestingService;
 import com.example.online_testing.Models.Role;
 import com.example.online_testing.Models.User;
 import com.example.online_testing.Repositories.RoleRepository;
