@@ -20,15 +20,16 @@ import java.sql.Timestamp;
 @Service
 public class GRPCOnlineTestingService {
 
+    @Qualifier("eurekaClient")
+    @Autowired
+    private EurekaClient client;
 
     public String action(String microservice, String type, String resource, String responseType, Timestamp timestamp) {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090)
+        final InstanceInfo instanceInfo = client.getNextServerFromEureka("system-events", false);
+        int port = Integer.valueOf(instanceInfo.getMetadata().get("gRPC.port"));
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(instanceInfo.getIPAddr(), port)
                 .usePlaintext()
                 .build();
-        /*final InstanceInfo instanceInfo = client.getNextServerFromEureka("system-events", false);
-        final ManagedChannel channel = ManagedChannelBuilder.forAddress(instanceInfo.getIPAddr(), instanceInfo.getPort())
-                .usePlaintext()
-                .build();*/
         SystemEventsServiceGrpc.SystemEventsServiceBlockingStub stub
                 = SystemEventsServiceGrpc.newBlockingStub(channel);
         SystemEventsResponse helloResponse = stub.action(ActionRequest.newBuilder()
