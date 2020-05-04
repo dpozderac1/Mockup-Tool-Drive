@@ -60,6 +60,11 @@ public class UserController {
         return userService.updateUser(id,user);
     }
 
+    @GetMapping(value="/user/username/{username}",produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity getByUsername(@PathVariable String username){
+        return userService.getUserByUsername(username);
+    }
+
     /*@GetMapping(value="/user/allFiles/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity getAllProjects(@PathVariable Long id) {
         return userService.getAllProjects(id);

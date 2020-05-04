@@ -69,6 +69,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ResponseEntity getUserByUsername(String username) {
+        if(userRepository.existsByUsername(username)){
+            grpcUserService.action("user","GET","/user/username/{username}","SUCESS", new Timestamp(System.currentTimeMillis()));
+            return new ResponseEntity(userRepository.findByUsername(username),HttpStatus.OK);
+        }
+        else{
+            grpcUserService.action("user","GET","/user/username/{username}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
+            throw new RecordNotFoundException("User does not exist!");
+        }
+    }
+
+    @Override
     public List<User> getUsersByRoleID(Long id) {
         if(roleRepository.existsByID(id)){
             Role uloga = roleRepository.findByID(id);
