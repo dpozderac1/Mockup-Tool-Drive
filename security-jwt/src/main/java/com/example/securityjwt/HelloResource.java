@@ -31,12 +31,14 @@ public class HelloResource {
     @Autowired
     private MyUserDetailsService userDetailsService;
 
-    @Autowired
-    private MyUserDetailsService myUserDetailsService;
-
     @RequestMapping("/hello")
     public String hello(){
         return "Hello World!";
+    }
+
+    @RequestMapping(value="/check",method=RequestMethod.GET)
+    public void check(){
+        System.out.println("Usao sam u check!");
     }
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
