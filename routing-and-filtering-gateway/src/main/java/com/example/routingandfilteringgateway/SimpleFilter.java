@@ -32,7 +32,7 @@ public class SimpleFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
-        return true;
+        return false;//stavljeno na false
     }
 
     @Override
@@ -47,13 +47,12 @@ public class SimpleFilter extends ZuulFilter {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity odgovor=null;
+        ResponseEntity odgovor = null;
         try {
             odgovor = restTemplate.exchange("http://security-jwt/check/", HttpMethod.GET, entity, String.class);
-        }
-        catch(HttpClientErrorException e){
+        } catch (HttpClientErrorException e) {
             System.out.println("Doslo je do greske");
-            setFailedRequest("Token is invalid!",403);
+            setFailedRequest("Token is invalid!", 403);
         }
 
 

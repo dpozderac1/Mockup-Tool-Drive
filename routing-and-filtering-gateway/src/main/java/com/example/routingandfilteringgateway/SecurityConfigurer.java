@@ -1,6 +1,8 @@
-package com.example.securityjwt;
+package com.example.routingandfilteringgateway;
 
-import com.example.securityjwt.filter.JwtRequestFilter;
+import com.example.routingandfilteringgateway.ErrorHandling.RestAccessDeniedHandler;
+import com.example.routingandfilteringgateway.ErrorHandling.RestAuthenticationFailureHandler;
+import com.example.routingandfilteringgateway.filter.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,8 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
@@ -53,5 +56,17 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler()
+    {
+        return new RestAuthenticationFailureHandler();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler()
+    {
+        return new RestAccessDeniedHandler();
     }
 }
