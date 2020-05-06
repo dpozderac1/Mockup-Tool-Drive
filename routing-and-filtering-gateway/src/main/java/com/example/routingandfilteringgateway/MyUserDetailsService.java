@@ -30,7 +30,7 @@ public class MyUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException(s);
         }
         System.out.println("Korisnik je: ");
-        System.out.println(user);
+        System.out.println(user.getRoleID().getRole_name().toString());
         return user;
     }
 }
