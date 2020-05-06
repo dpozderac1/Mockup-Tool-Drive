@@ -4,7 +4,6 @@ import com.example.online_testing.ErrorHandling.AlreadyExistsException;
 import com.example.online_testing.ErrorHandling.RecordNotFoundException;
 import com.example.online_testing.Models.GSPECDocument;
 import com.example.online_testing.Repositories.GSPECDocumentRepository;
-import com.netflix.discovery.converters.Auto;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

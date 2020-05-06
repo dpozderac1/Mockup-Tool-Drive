@@ -1,20 +1,13 @@
 package com.example.online_testing.Controllers;
 
 import com.example.online_testing.Models.User;
-import com.example.online_testing.Repositories.UserRepository;
 import com.example.online_testing.Services.UserService;
-import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.List;
 
 @CrossOrigin
 @RestController

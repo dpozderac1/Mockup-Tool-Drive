@@ -1,7 +1,5 @@
 package com.example.online_testing.Models;
 
-import com.example.online_testing.Repositories.RoleRepository;
-import com.example.online_testing.Repositories.UserRepository;
 import com.sun.istack.NotNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -10,7 +8,6 @@ import org.hibernate.validator.constraints.URL;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "Server")

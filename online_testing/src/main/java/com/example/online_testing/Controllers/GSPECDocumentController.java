@@ -1,19 +1,14 @@
 package com.example.online_testing.Controllers;
 
-import com.example.online_testing.Models.Browser;
 import com.example.online_testing.Models.GSPECDocument;
-import com.example.online_testing.Repositories.GSPECDocumentRepository;
 import com.example.online_testing.Services.GSPECDocumentService;
-import com.netflix.discovery.converters.Auto;
-import org.hibernate.internal.build.AllowPrintStacktrace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @CrossOrigin
 @RestController
