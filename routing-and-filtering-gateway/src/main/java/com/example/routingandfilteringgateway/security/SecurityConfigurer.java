@@ -1,8 +1,10 @@
-package com.example.routingandfilteringgateway;
+package com.example.routingandfilteringgateway.security;
 
 import com.example.routingandfilteringgateway.ErrorHandling.RestAccessDeniedHandler;
 import com.example.routingandfilteringgateway.ErrorHandling.RestAuthenticationFailureHandler;
 import com.example.routingandfilteringgateway.filter.JwtRequestFilter;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,33 +34,41 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //super.configure(auth);
         auth.userDetailsService(myUserDetailsService);
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //return NoOpPasswordEncoder.getInstance();
         return new BCryptPasswordEncoder();
     }
 
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        System.out.println("Usao u prvi configure!");
         return super.authenticationManagerBean();
     }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        System.out.println("Usao u configure!");
         httpSecurity.csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/authenticate").permitAll()
-                .antMatchers("/user/*").hasAuthority("USER")
+                .antMatchers(HttpMethod.POST, "/authenticate").permitAll()
+                .antMatchers("/user/roles").hasAuthority("ADMIN")
+                .antMatchers("/user/roles/*").hasAuthority("ADMIN")
+                .antMatchers("/user/role").hasAuthority("ADMIN")
+                .antMatchers("/user/deleteRole/*").hasAuthority("ADMIN")
+                .antMatchers("/user/updateRole/*").hasAuthority("ADMIN")
+
+                .antMatchers("/user/users").hasAuthority("ADMIN")
+                .antMatchers("/user/users/role/*").hasAuthority("ADMIN")
+                .antMatchers("/user/users/*").hasAnyAuthority("ADMIN","USER")
+                .antMatchers("/user").hasAnyAuthority("ADMIN","USER")
+                .antMatchers("/user/deleteUser/*").hasAnyAuthority("ADMIN","USER")
+                .antMatchers("/user/updateUser/*").hasAnyAuthority("ADMIN","USER")
+
                 .antMatchers("/online-testing/servers").hasAnyAuthority("ADMIN", "USER")
                 .antMatchers(HttpMethod.GET, "/online-testing/server/*").hasAnyAuthority("ADMIN", "USER")
                 .antMatchers("/online-testing/addServer").hasAuthority("ADMIN")
@@ -85,23 +95,15 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .antMatchers("/online-testing/addGSPECDocument").denyAll()
                 .anyRequest().authenticated();
 
-/*                .authorizeRequests().antMatchers("/authenticate").permitAll().
-                anyRequest().authenticated().and().
-                exceptionHandling().and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);*/
-
     }
 
     @Bean
-    public AuthenticationFailureHandler authenticationFailureHandler()
-    {
+    public AuthenticationFailureHandler authenticationFailureHandler() {
         return new RestAuthenticationFailureHandler();
     }
 
     @Bean
-    public AccessDeniedHandler accessDeniedHandler()
-    {
+    public AccessDeniedHandler accessDeniedHandler() {
         return new RestAccessDeniedHandler();
     }
 }

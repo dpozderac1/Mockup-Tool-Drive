@@ -21,16 +21,13 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        System.out.println("Tu sam!!!!!");
         User user=null;
         try {
-            user= restTemplate.getForObject("http://user/user/username/" + s, User.class);
+            user= restTemplate.getForObject("http://user/users/username/" + s, User.class);
         }
         catch(HttpClientErrorException e){
             throw new UsernameNotFoundException(s);
         }
-        System.out.println("Korisnik je: ");
-        System.out.println(user.getRoleID().getRole_name().toString());
         return user;
     }
 }

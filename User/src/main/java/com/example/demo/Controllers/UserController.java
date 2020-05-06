@@ -60,7 +60,7 @@ public class UserController {
         return userService.updateUser(id,user);
     }
 
-    @GetMapping(value="/user/username/{username}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value="/users/username/{username}",produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity getByUsername(@PathVariable String username){
         return userService.getUserByUsername(username);
     }

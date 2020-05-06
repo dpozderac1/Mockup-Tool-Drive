@@ -94,11 +94,8 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        // Extract list of permissions (name)
         GrantedAuthority authority = new SimpleGrantedAuthority(this.roleID.getRole_name().toString());
         authorities.add(authority);
-        System.out.println("Autoritet je: ");
-        System.out.println(authority);
         return authorities;
     }
 

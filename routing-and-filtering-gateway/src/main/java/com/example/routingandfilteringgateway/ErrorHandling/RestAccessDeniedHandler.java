@@ -22,10 +22,7 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
         httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
 
         Map<String, Object> data = new HashMap<>();
-        //data.put("timestamp", new Date());
-        //data.put("status",HttpStatus.FORBIDDEN.value());
         data.put("message", "Access Denied");
-        //data.put("path", httpServletRequest.getRequestURL().toString());
 
         OutputStream out = httpServletResponse.getOutputStream();
         com.fasterxml.jackson.databind.ObjectMapper mapper = new ObjectMapper();

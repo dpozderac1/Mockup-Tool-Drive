@@ -2,6 +2,7 @@ package com.example.routingandfilteringgateway;
 
 import com.example.routingandfilteringgateway.models.AuthenticationRequest;
 import com.example.routingandfilteringgateway.models.AuthenticationResponse;
+import com.example.routingandfilteringgateway.models.Message;
 import com.example.routingandfilteringgateway.util.JwtUtil;
 import io.jsonwebtoken.MalformedJwtException;
 import org.apache.coyote.Response;
@@ -48,43 +49,41 @@ public class HelloResource {
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         try {
-            /*authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
-            );*/
             String username = authenticationRequest.getUsername();
             String password = authenticationRequest.getPassword();
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-            /*Authentication authentication = this.authenticationManager.authenticate(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);*/
-            System.out.println("OKURRRRRRRR!!!!!!!!!!!");
         }
         catch (BadCredentialsException e) {
             throw new Exception("Incorrect username or password", e);
         }
 
-        System.out.println("Username je: ");
-        System.out.println(authenticationRequest.getUsername());
         UserDetails userDetails=null;
         try {
             userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         }
         catch (UsernameNotFoundException e){
-            JSONObject jo=new JSONObject();
-            jo.put("message","Username not found!");
-            //HttpHeaders zaglavlja=new HttpHeaders();
-            //zaglavlja.setContentType(MediaType.APPLICATION_JSON);
-            ResponseEntity odgovor=new ResponseEntity(jo.toString(), HttpStatus.NOT_FOUND);
+            /*JSONObject jo=new JSONObject();
+            jo.put("message","Username not found!");*/
+            Message poruka=new Message("Username not found");
+            ResponseEntity odgovor=new ResponseEntity(poruka, HttpStatus.NOT_FOUND);
             return odgovor;
         }
-        //System.out.println("OKURRRRRRRR!!!!!!!!!!!");
+        String password = authenticationRequest.getPassword();
+        System.out.println("Password je: ");
+        System.out.println(password);
+        System.out.println("Autentifikacijski password je: ");
+        System.out.println(userDetails.getPassword());
+        if(!password.equals(userDetails.getPassword())){
+            Message poruka=new Message("Invalid password!");
+            return new ResponseEntity(poruka, HttpStatus.FORBIDDEN);
+        }
         String jwt="";
         try {
             jwt = jwtTokenUtil.generateToken(userDetails);
         }
         catch (MalformedJwtException e){
-            JSONObject jo=new JSONObject();
-            jo.put("message","Invalid token!");
-            return new ResponseEntity(jo.toString(), HttpStatus.FORBIDDEN);
+            Message poruka=new Message("Invalid token!");
+            return new ResponseEntity(poruka, HttpStatus.FORBIDDEN);
         }
 
         return ResponseEntity.ok(new AuthenticationResponse(jwt));

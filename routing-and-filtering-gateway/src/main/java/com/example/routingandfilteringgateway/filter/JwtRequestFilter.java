@@ -1,5 +1,6 @@
 package com.example.routingandfilteringgateway.filter;
 
+import com.example.routingandfilteringgateway.ErrorHandling.RestAccessDeniedHandler;
 import com.example.routingandfilteringgateway.util.JwtUtil;
 import com.example.routingandfilteringgateway.MyUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
