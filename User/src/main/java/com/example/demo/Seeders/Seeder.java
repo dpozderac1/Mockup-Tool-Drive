@@ -10,6 +10,9 @@ import com.example.demo.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,7 +40,8 @@ public class Seeder {
             roleRepository.save(user);
 
         Role uloga=roleRepository.findByroleName(RoleNames.ADMIN);
-        User korisnik=new User(uloga,"Damir","Pozderac","dpozderac1","Password1!","dpozderac1@etf.unsa.ba");
+        BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+        User korisnik=new User(uloga,"Damir","Pozderac","dpozderac1",passwordEncoder.encode("Password1!"),"dpozderac1@etf.unsa.ba");
         if(!userRepository.existsByUsername(korisnik.getUsername()))
             userRepository.save(korisnik);
 
@@ -47,7 +51,7 @@ public class Seeder {
             userRepository.save(korisnik1);
 */
         Role uloga2=roleRepository.findByroleName(RoleNames.USER);
-        User korisnik2=new User(uloga2,"Zerina","Ramic","zramic1","Nesto!!25","zramic1@gmail.com");
+        User korisnik2=new User(uloga2,"Zerina","Ramic","zramic1", passwordEncoder.encode("Nesto!!25"),"zramic1@gmail.com");
         /*if(!userRepository.existsByUsername(korisnik2.getUsername()))
             userRepository.save(korisnik2);*/
 

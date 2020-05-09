@@ -16,6 +16,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -69,11 +70,8 @@ public class HelloResource {
             return odgovor;
         }
         String password = authenticationRequest.getPassword();
-        System.out.println("Password je: ");
-        System.out.println(password);
-        System.out.println("Autentifikacijski password je: ");
-        System.out.println(userDetails.getPassword());
-        if(!password.equals(userDetails.getPassword())){
+        //if(!password.equals(userDetails.getPassword())){
+        if(!BCrypt.checkpw(password, userDetails.getPassword())){
             Message poruka=new Message("Invalid password!");
             return new ResponseEntity(poruka, HttpStatus.FORBIDDEN);
         }
