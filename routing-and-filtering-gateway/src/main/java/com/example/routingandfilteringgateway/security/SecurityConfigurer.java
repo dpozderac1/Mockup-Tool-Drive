@@ -93,6 +93,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .antMatchers("/online-testing/GSPECDocument/*").denyAll()
                 .antMatchers("/online-testing/updateGSPECDocument/*").denyAll()
                 .antMatchers("/online-testing/addGSPECDocument").denyAll()
+                .antMatchers("/online-testing/role").denyAll()
+                .antMatchers("/online-testing/deleteRole/*").denyAll()
+                .antMatchers("/online-testing/updateRole/*").denyAll()
                 .anyRequest().authenticated();
 
     }

@@ -1,44 +1,24 @@
-package com.example.demo.Services;
+package com.example.online_testing.Services;
 
-import com.example.demo.ErrorHandling.AlreadyExistsException;
-import com.example.demo.ErrorHandling.RecordNotFoundException;
-import com.example.demo.Models.Role;
-import com.example.demo.Models.RoleNames;
-import com.example.demo.Models.User;
-import com.example.demo.Repositories.RoleRepository;
-
+import com.example.online_testing.ErrorHandling.AlreadyExistsException;
+import com.example.online_testing.ErrorHandling.RecordNotFoundException;
+import com.example.online_testing.Models.Role;
+import com.example.online_testing.Models.RoleNames;
+import com.example.online_testing.Repositories.RoleRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
 @Service
-public class RoleServiceImpl implements RoleService{
+public class RoleServiceImpl implements RoleService {
 
     @Autowired
     RoleRepository roleRepository;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Override
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
-    }
-
-    @Override
-    public ResponseEntity getRoleByID(Long id) {
-        if(roleRepository.existsByID(id)){
-            return new ResponseEntity(roleRepository.findByID(id), HttpStatus.OK);
-        }
-        else{
-            throw new RecordNotFoundException("Role does not exist!");
-        }
-    }
 
     @Override
     public ResponseEntity saveRole(Role role) {
@@ -54,7 +34,7 @@ public class RoleServiceImpl implements RoleService{
         }
 
         boolean istina=false;
-        for(int i=0;i< RoleNames.values().length;i++){
+        for(int i = 0; i< RoleNames.values().length; i++){
             if(role.getRole_name().toString().equals(RoleNames.values()[i].name().toString())){
                 istina=true;
                 break;
@@ -70,11 +50,8 @@ public class RoleServiceImpl implements RoleService{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Role> request = new HttpEntity<>(role, headers);
-        Role role1 = restTemplate.postForObject("http://online-testing/role", request, Role.class);
-        return new ResponseEntity(objekat.toString(),HttpStatus.CREATED);
+
+        return new ResponseEntity(objekat.toString(), HttpStatus.CREATED);
     }
 
     @Override
@@ -87,7 +64,6 @@ public class RoleServiceImpl implements RoleService{
                 e.printStackTrace();
             }
             roleRepository.deleteById(id);
-            restTemplate.delete("http://online-testing/deleteRole/"+id.toString());
             return new ResponseEntity(objekat.toString(),HttpStatus.OK);
         }
         else {
@@ -123,11 +99,6 @@ public class RoleServiceImpl implements RoleService{
         Role uloga=roleRepository.findByID(id);
         uloga.setRole_name(role.getRole_name());
         roleRepository.save(uloga);
-
-        HttpHeaders httpHeaders=new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Role> request=new HttpEntity<>(role,httpHeaders);
-        restTemplate.put("http://online-testing/updateRole/"+id.toString(),request);
 
         return new ResponseEntity(uloga,HttpStatus.OK);
     }
