@@ -274,7 +274,7 @@ public class GSPEC_DocumentTest {
         restTemplate.delete("http://online-testing/GSPECDocument/{id}", gspec.getID());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message","GSPEC document successfully deleted!");
-        given(gspec_documentService.deleteOneGSPEC(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(jsonObject.toString(), HttpStatus.OK));
+        //given(gspec_documentService.deleteOneGSPEC(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(jsonObject.toString(), HttpStatus.OK));
 
         mvc.perform(MockMvcRequestBuilders
                 .delete("/delete/gspec_document/{id}", 1)
@@ -348,7 +348,7 @@ public class GSPEC_DocumentTest {
         List<String> errors = new ArrayList<>();
         errors.add("GSPEC Document does not exist!");
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Object Not Found", errors);
-        given(gspec_documentService.deleteOneGSPEC(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
+        //given(gspec_documentService.deleteOneGSPEC(ArgumentMatchers.anyLong())).willReturn(new ResponseEntity(apiError, apiError.getStatus()));
 
         mvc.perform(MockMvcRequestBuilders
                 .delete("/delete/gspec_document/{id}", 1)

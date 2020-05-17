@@ -1,22 +1,17 @@
 package com.example.demo.Controllers;
 
 import com.example.demo.Models.Project;
-import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Services.ProjectService;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.swing.text.html.parser.Entity;
 import javax.validation.Valid;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -26,6 +21,7 @@ public class ProjectController {
 
     @Autowired
     private RestTemplate restTemplate;
+
 
     @Autowired
     public ProjectController(ProjectService projectService) {

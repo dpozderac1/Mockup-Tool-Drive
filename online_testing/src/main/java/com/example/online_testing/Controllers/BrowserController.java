@@ -1,26 +1,13 @@
 package com.example.online_testing.Controllers;
 
 import com.example.online_testing.Models.Browser;
-import com.example.online_testing.Models.RoleNames;
-import com.example.online_testing.Models.Server;
-import com.example.online_testing.Models.User;
-import com.example.online_testing.Repositories.BrowserRepository;
-import com.example.online_testing.Repositories.ServerRepository;
 import com.example.online_testing.Services.BrowserService;
-import com.fasterxml.jackson.databind.node.POJONode;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import netscape.javascript.JSObject;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin

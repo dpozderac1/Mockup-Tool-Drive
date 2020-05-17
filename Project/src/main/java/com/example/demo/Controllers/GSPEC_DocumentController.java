@@ -1,29 +1,45 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.RabbitMQ.MessageRabbitMq;
 import com.example.demo.Models.GSPEC_Document;
-import com.example.demo.Models.Mockup;
-import com.example.demo.Models.PDF_Document;
 import com.example.demo.Repositories.GSPEC_DocumentRepository;
-import com.example.demo.Repositories.MockupRepository;
-import com.example.demo.Repositories.PDF_DocumentRepository;
 import com.example.demo.Services.GSPEC_DocumentService;
+import com.example.demo.RabbitMQ.BindingInterfaceInput;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
+@EnableBinding(BindingInterfaceInput.class)
 @CrossOrigin
 @RestController
 public class GSPEC_DocumentController {
+
     private GSPEC_DocumentService gspec_documentService;
+    @Autowired
+    private GSPEC_DocumentRepository gspec_documentRepository;
+
+    //RabbitMQ
+    @StreamListener(target = BindingInterfaceInput.GREETING)
+    public void processHelloChannelGreeting(MessageRabbitMq msg) throws JSONException {
+        System.out.println(msg.getCommand());
+        gspec_documentService.deletegspec(msg);
+    }
 
     @Autowired
     public GSPEC_DocumentController(GSPEC_DocumentService gspec_documentService) {
         this.gspec_documentService = gspec_documentService;
+
+    }
+
+    //RabbitMQ
+    @DeleteMapping("/delete/gspec_document/{id}")
+    void deleteOneGSPEC(@PathVariable Long id) throws JSONException {
+        gspec_documentService.deleteOneGSPEC(id);
     }
 
     @PutMapping("/addOrUpdateGSPEC_Document/{id}")
@@ -36,10 +52,7 @@ public class GSPEC_DocumentController {
         return gspec_documentService.allGSPECsOfMockup(id);
     }
 
-    @DeleteMapping("/delete/gspec_document/{id}")
-    ResponseEntity<?> deleteOneGSPEC(@PathVariable Long id) throws JSONException {
-        return gspec_documentService.deleteOneGSPEC(id);
-    }
+
 
     @PostMapping("/addGSPEC_Document")
     ResponseEntity<?> newGSPEC(@RequestBody GSPEC_Document newGspec) {

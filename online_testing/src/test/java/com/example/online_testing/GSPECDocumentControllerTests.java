@@ -2,9 +2,7 @@ package com.example.online_testing;
 
 import com.example.online_testing.Controllers.GSPECDocumentController;
 import com.example.online_testing.ErrorHandling.ApiError;
-import com.example.online_testing.Models.Browser;
 import com.example.online_testing.Models.GSPECDocument;
-import com.example.online_testing.Models.Server;
 import com.example.online_testing.Services.GSPECDocumentService;
 import org.json.JSONObject;
 import org.junit.Test;

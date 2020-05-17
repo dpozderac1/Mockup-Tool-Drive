@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,6 +65,18 @@ public class UserServiceImpl implements UserService {
         }
         else{
             grpcUserService.action("user","GET","/users/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
+            throw new RecordNotFoundException("User does not exist!");
+        }
+    }
+
+    @Override
+    public ResponseEntity getUserByUsername(String username) {
+        if(userRepository.existsByUsername(username)){
+            grpcUserService.action("user","GET","/user/username/{username}","SUCESS", new Timestamp(System.currentTimeMillis()));
+            return new ResponseEntity(userRepository.findByUsername(username),HttpStatus.OK);
+        }
+        else{
+            grpcUserService.action("user","GET","/user/username/{username}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
             throw new RecordNotFoundException("User does not exist!");
         }
     }
@@ -122,6 +135,10 @@ public class UserServiceImpl implements UserService {
                 throw new AlreadyExistsException("User with same e-mail address already exists!");
             }
         }
+
+        BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+        String sifra=user.getPassword();
+        user.setPassword(passwordEncoder.encode(sifra));
         userRepository.save(user);
         try {
             objekat.put("message","User is successfully added!");
@@ -183,7 +200,9 @@ public class UserServiceImpl implements UserService {
             korisnik.setUsername(user.getUsername());
         }
         if (!user.getPassword().isEmpty()) {
-            korisnik.setPassword(user.getPassword());
+            BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+            String sifra=user.getPassword();
+            korisnik.setPassword(passwordEncoder.encode(sifra));
         }
         if (!user.getEmail().isEmpty()) {
             korisnik.setEmail(user.getEmail());

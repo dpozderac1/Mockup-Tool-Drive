@@ -19,19 +19,30 @@
         <spring-cloud.version>Hoxton.SR3</spring-cloud.version>
     </properties>
 
-    <!--
-    <servlet>
-        <servlet-name>api</servlet-name>
-        <servlet-class>
-            org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>throwExceptionIfNoHandlerFound</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </servlet>
--->
-
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.amqp</groupId>
+            <artifactId>spring-rabbit-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.8.0-rc-1</version>
+        </dependency>
 
         <dependency>
             <groupId>net.devh</groupId>

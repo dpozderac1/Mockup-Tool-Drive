@@ -4,14 +4,15 @@ import com.example.demo.ErrorHandling.AlreadyExistsException;
 import com.example.demo.ErrorHandling.RecordNotFoundException;
 import com.example.demo.Models.Role;
 import com.example.demo.Models.RoleNames;
+import com.example.demo.Models.User;
 import com.example.demo.Repositories.RoleRepository;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -20,6 +21,9 @@ public class RoleServiceImpl implements RoleService{
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public List<Role> getAllRoles() {
@@ -66,7 +70,10 @@ public class RoleServiceImpl implements RoleService{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Role> request = new HttpEntity<>(role, headers);
+        Role role1 = restTemplate.postForObject("http://online-testing/role", request, Role.class);
         return new ResponseEntity(objekat.toString(),HttpStatus.CREATED);
     }
 
@@ -80,6 +87,7 @@ public class RoleServiceImpl implements RoleService{
                 e.printStackTrace();
             }
             roleRepository.deleteById(id);
+            restTemplate.delete("http://online-testing/deleteRole/"+id.toString());
             return new ResponseEntity(objekat.toString(),HttpStatus.OK);
         }
         else {
@@ -115,6 +123,11 @@ public class RoleServiceImpl implements RoleService{
         Role uloga=roleRepository.findByID(id);
         uloga.setRole_name(role.getRole_name());
         roleRepository.save(uloga);
+
+        HttpHeaders httpHeaders=new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Role> request=new HttpEntity<>(role,httpHeaders);
+        restTemplate.put("http://online-testing/updateRole/"+id.toString(),request);
 
         return new ResponseEntity(uloga,HttpStatus.OK);
     }

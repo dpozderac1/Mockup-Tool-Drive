@@ -1,14 +1,19 @@
 package com.example.online_testing.Services;
 
+import com.example.online_testing.RabbitMQ.BindingInterfaceOutput;
 import com.example.online_testing.ErrorHandling.AlreadyExistsException;
 import com.example.online_testing.ErrorHandling.RecordNotFoundException;
+import com.example.online_testing.RabbitMQ.MessageRabbitMq;
+import com.example.online_testing.RabbitMQ.Command;
 import com.example.online_testing.Models.GSPECDocument;
 import com.example.online_testing.Repositories.GSPECDocumentRepository;
-import com.netflix.discovery.converters.Auto;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,12 +22,20 @@ import java.util.List;
 @Service
 public class GSPECDocumentServiceImpl implements GSPECDocumentService {
 
+    private MessageChannel greet;
 
     @Autowired
     private GSPECDocumentRepository gspecDocumentRepository;
 
+
     @Autowired
     private RestTemplate restTemplate;
+
+    public GSPECDocumentServiceImpl(BindingInterfaceOutput binding) {
+        this.greet = binding.greeting();
+    }
+
+
 
     @Override
     public ResponseEntity deleteGSPECDocumentByID(Long id) {
@@ -30,9 +43,19 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
         if(gspecDocumentRepository.existsByID(id)) {
             gspecDocumentRepository.deleteById(id);
             jo.put("message", "GSPEC Document is successfully deleted!");
+            Command poruka = Command.FINAL;
+            MessageRabbitMq messageRabbitMq = new MessageRabbitMq(id, poruka);
+            Message<MessageRabbitMq> msg = MessageBuilder.withPayload(messageRabbitMq).build();
+            this.greet.send(msg);
             return new ResponseEntity(jo.toString(), HttpStatus.OK);
         }
-        throw new RecordNotFoundException("GSPEC Document does not exist!");
+
+        Command poruka = Command.FAIL;
+        MessageRabbitMq messageRabbitMq = new MessageRabbitMq(id, poruka);
+        Message<MessageRabbitMq> msg = MessageBuilder.withPayload(messageRabbitMq).build();
+        this.greet.send(msg);
+        return new ResponseEntity(HttpStatus.OK);
+        //throw new RecordNotFoundException("GSPEC Document does not exist!");
     }
 
     @Override
