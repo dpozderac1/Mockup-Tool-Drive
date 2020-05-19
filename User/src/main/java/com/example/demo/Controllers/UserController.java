@@ -18,7 +18,7 @@ import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 public class UserController {
 

@@ -18,7 +18,7 @@ import javax.validation.Valid;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 public class ProjectController {
 

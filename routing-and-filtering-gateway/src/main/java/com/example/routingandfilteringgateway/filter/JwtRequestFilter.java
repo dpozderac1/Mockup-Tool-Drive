@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -29,6 +30,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
+    /*@Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        System.out.println("request je: ");
+        StringBuilder requestURL = new StringBuilder(request.getRequestURL().toString());
+        String queryString = request.getRequestURI();
+        System.out.println(request.getRequestURI());
+        String[] splitovano=queryString.split("/");
+        String metoda=request.getMethod();
+        if(metoda!=null && metoda.toUpperCase().equals("POST") && splitovano!=null && splitovano.length>2 && splitovano[1].equals("user") && splitovano[2].equals("user")){
+            System.out.println("TRUE JE!");
+            return true;
+        }
+        return super.shouldNotFilter(request);
+    }*/
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -36,12 +52,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String zahtjev=request.getRequestURI();
         String[] splitano=zahtjev.split("/");
 
+        //poseban slucaj POST za Usera
+        /*if(splitano!=null && splitano.length>2 && splitano[1].equals("user") && splitano[2].equals("user") && request.getMethod()!=null && request.getMethod().toUpperCase().equals("POST")){
+            System.out.println("USLOV ISPUNJEN!");
+            chain.doFilter(request,response);
+        }*/
+
+
         String parametarId;
         String parametarUsername=null;
         if(splitano!=null && splitano.length>4 && splitano[3].equals("username")){
             parametarUsername=splitano[4];
         }
-
         String username = null;
         String jwt = null;
 

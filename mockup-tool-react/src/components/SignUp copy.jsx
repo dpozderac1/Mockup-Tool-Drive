@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText, Col, Container, Row, ButtonGroup, Alert } from 'reactstrap';
 import axios from 'axios';
-import AdvancedOptions from './advancedOptions';
-import UpdateAndDeleteUser from './updateAndDeleteUser';
+import jQuery from 'jquery';
 
 
-class SignUp extends Component {
-    constructor(props) {
+class SignUp extends React.Component {
+    constructor() {
         super();
         this.state = {
+            trenutnoLogovaniToken: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcG96ZGVyYWMxIiwiZXhwIjoxNTg5OTMxNDE1LCJpYXQiOjE1ODk4OTU0MTV9.itcv_BVOEgXuBOb9NTgHzPzKStKpVB9dXVfRBrud6LY",
             firstName: "",
             lastName: "",
             username: "",
@@ -46,17 +46,37 @@ class SignUp extends Component {
             else {
                 console.log("Zahtjev je: ");
                 console.log(user);
+                const AuthStr = 'Bearer '.concat(this.state.trenutnoLogovaniToken);
 
-                axios.post("http://localhost:8080/user/user", {
-                    name: this.state.firstName,
-                    surname: this.state.lastName,
-                    username: this.state.username,
-                    password: this.state.password,
-                    email: this.state.email
+                const novi = {
+                    username: "dpozderac1",
+                    password: "Password1!"
+                }
+                axios.post("http://localhost:8080/authenticate", {
+                    username: "dpozderac1",
+                    password: "Password1!"
                 }).then(res => {
+                    localStorage.setItem('token', res.data.jwt);
                     console.log(res);
                     console.log(res.data);
                 })
+                    /* {
+                        name: this.state.firstName,
+                        surname: this.state.lastName,
+                        username: this.state.username,
+                        password: this.state.password,
+                        email: this.state.email
+                    }*/
+                    /*axios.post("http://localhost:8080/user/user", {
+                        name: this.state.firstName,
+                        surname: this.state.lastName,
+                        username: this.state.username,
+                        password: this.state.password,
+                        email: this.state.email
+                    }, { headers: { 'Authorization': AuthStr } }).then(res => {
+                        console.log(res);
+                        console.log(res.data);
+                    })*/
                     /*axios.get("http://localhost:8080/user/users/1", { headers: { Authorization: AuthStr } }).then(res => {
                         console.log(res);
                         console.log(res.data);
@@ -78,10 +98,10 @@ class SignUp extends Component {
     render() {
         return (
             <Container className="col-lg-6" style={{
-                position: 'absolute', left: '50%', top: '52%',
+                position: 'absolute', left: '50%', top: '50%',
                 transform: 'translate(-50%, -50%)'
             }}>
-                <h1 className="text-secondary" style={{ textAlign: "left" }}>{(this.props.podaci.state.forma == "signup") ? "Sign Up" : this.props.podaci.state.forma == "admin" ? "Good afternoon" : "Good afternoon"}</h1>
+                <h1 className="text-secondary" style={{ textAlign: "left" }}>Sign Up</h1>
                 <hr className="my-2" />
                 <Form onSubmit={this.posaljiZahtjev}>
                     <Row>
@@ -132,7 +152,7 @@ class SignUp extends Component {
                             </FormGroup>
                         </Col>
                         <Col xs="6">
-                            <FormGroup style={{ display: (this.props.podaci.state.forma == "signup") ? "block" : (this.props.podaci.state.forma == "admin") ? "none" : "none" }}>
+                            <FormGroup>
                                 <Label for="passwordRepeatLabel">Repeat password</Label>
                                 <Input type="password" name="passwordRepeat" id="passwordRepeatLabel" onChange={(e) =>
                                     this.setState({ repeatPassword: e.target.value })
@@ -147,16 +167,9 @@ class SignUp extends Component {
                         </Col>
                     </Row>
                     <Row style={{ paddingRight: "15px" }}>
-                        <Button type="submit" id="submitButton" className="secondary px-3 bg-dark" style={{ marginLeft: "auto" }}>{(this.props.podaci.state.forma == "signup") ? "Sign Up" : (this.props.podaci.state.forma == "admin") ? "Save changes" : "Save changes"}</Button>
-                    </Row>
-                    <Row style={{ display: (this.props.podaci.state.forma == "signup") ? "none" : (this.props.podaci.state.forma == "admin") ? "block" : "none" }}>
-                        <AdvancedOptions />
-                    </Row>
-                    <Row style={{ display: (this.props.podaci.state.forma == "signup") ? "none" : (this.props.podaci.state.forma == "admin") ? "block" : "block" }}>
-                        <UpdateAndDeleteUser />
+                        <Button type="submit" id="submitButton" className="px-3 bg-dark" style={{ marginLeft: "auto" }}>Sign Up</Button>
                     </Row>
                 </Form>
-
             </Container >
         );
     }
