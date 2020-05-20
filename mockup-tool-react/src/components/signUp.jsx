@@ -33,7 +33,7 @@ class SignUp extends React.Component {
             this.dobaviPodatkeKorisnika();
         }
     }
-
+ 
     dobaviPodatkeKorisnika() {
         const idKorisnika = "1";
         //const AuthStr = 'Bearer '.concat(this.state.token);

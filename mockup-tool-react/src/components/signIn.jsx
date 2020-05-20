@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Form, FormGroup, Input, Container, Nav, NavItem, NavLink } from "reactstrap";
+import { Button, Form, FormGroup, Input, Container, Nav, NavItem, NavLink, Alert } from "reactstrap";
 import { getAllByAltText } from '@testing-library/react';
 import axios from "axios";
+import SignUp from './signUp';
 
 class SignIn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             username: " ",
-            password: " "
+            password: " ",
+            goodParameters: "hidden", 
+            userRole: "", 
+            forma: "signin",
+            aktivni: [true, false]
         };
     }
     componentDidMount = () => {
@@ -18,6 +23,9 @@ class SignIn extends React.Component {
 
     handleChange = event => {
         var id = event.target.id;
+        this.setState({
+            goodParameters: "hidden"
+        });
         switch (id) {
             case "username": {
                 this.setState({ username: document.getElementById("username").value });
@@ -40,18 +48,44 @@ class SignIn extends React.Component {
             localStorage.setItem('token', res.data.jwt);
             console.log("Odgovor!")
             console.log(res);
+            axios.get("http://localhost:8080/getUser/" + localStorage.getItem('token')).then(userData => {
+                this.setState({
+                    userRole: userData.data.roleID.role_name,
+                    //aktivni: [false, true]
+                });
+                if(userData.data.roleID.role_name == "ADMIN"){
+                    this.setState({
+                        forma: "admin"
+                    });
+                }
+                else if(userData.data.roleID.role_name){
+                    this.setState({
+                        forma: "user"
+                    });
+                }
+                
+                console.log(userData.data.roleID.role_name);
+            });
             console.log(res.data);
+            this.setState({
+                goodParameters: "hidden"
+            });
         })
             .catch((error) => {
                 console.log("Status");
                 console.log(error.response.status);
                 console.log("Greska!");
                 console.log(error);
-            })
+                this.setState({
+                    goodParameters: "visible"
+                });
+            });
     };
 
     render() {
         return (
+        <Form>
+            {this.state.aktivni[0] && 
             <Container className="col-log-6" style={
                 {
                     position: 'absolute', left: '50%', top: '50%',
@@ -71,6 +105,11 @@ class SignIn extends React.Component {
                             <Input type="password" name="password" id="password" placeholder="password"
                                 onChange={this.handleChange} />
                         </FormGroup >
+                        <FormGroup>
+                        <Alert color="danger" style={{ visibility: this.state.goodParameters}}>
+                            Username or password are invalid!
+                        </Alert>
+                        </FormGroup>
                         <b class="row justify-content-center">
                             <Button
                                 className="bg-dark"
@@ -97,7 +136,11 @@ class SignIn extends React.Component {
                     </Form>
                 </Form>
             </Container>
-
+            }
+            {
+                this.state.aktivni[1] && <SignUp podaci = {this}/>
+            }
+        </Form>
         );
     }
 }
