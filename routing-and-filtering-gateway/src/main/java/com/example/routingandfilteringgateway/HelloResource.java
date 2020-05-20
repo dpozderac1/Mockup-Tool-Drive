@@ -45,6 +45,21 @@ public class HelloResource {
         System.out.println("Usao sam u check!");
     }
 
+    @RequestMapping(value = "/getUser/{token}", method = RequestMethod.GET)
+    public ResponseEntity returnUser(@PathVariable String token) throws Exception {
+        String username = "";
+        UserDetails userDetails = null;
+        try {
+            username = jwtTokenUtil.extractUsername(token);
+            userDetails = userDetailsService.loadUserByUsername(username);
+        }
+        catch (Exception e){
+            Message poruka = new Message("Token invalid!");
+            return new ResponseEntity(poruka, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity(userDetails, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         try {
