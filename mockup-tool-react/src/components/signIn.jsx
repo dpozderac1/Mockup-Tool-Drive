@@ -38,9 +38,16 @@ class SignIn extends React.Component {
             password: this.state.password
         }).then(res => {
             localStorage.setItem('token', res.data.jwt);
+            console.log("Odgovor!")
             console.log(res);
             console.log(res.data);
         })
+            .catch((error) => {
+                console.log("Status");
+                console.log(error.response.status);
+                console.log("Greska!");
+                console.log(error);
+            })
     };
 
     render() {
