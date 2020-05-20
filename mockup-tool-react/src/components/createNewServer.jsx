@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { UncontrolledButtonDropdown, Navbar, Nav, NavItem, NavLink, Button, Form, FormGroup, Label, Input, FormText, Col, Container, Row, ButtonGroup, Alert, UncontrolledDropdown, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
+import axios from 'axios';
 
 class CreateNewServer extends Component {
     constructor(props) {
@@ -8,8 +9,12 @@ class CreateNewServer extends Component {
             url: "",
             port: "",
             values: [{value: "1 - Active", active: true}, {value: "0 - Inactive", active: false}],
-            title : "1 - Active"
+            title : "1 - Active",
+            errorMessage: "", 
+            errorVisible: false,
+            success: false
         }
+        this.addServer = this.addServer.bind(this);
     }
 
     handleClick = (element) => {
@@ -21,6 +26,29 @@ class CreateNewServer extends Component {
 
     }
 
+    addServer(e) {
+        e.preventDefault();
+        const token = 'Bearer '.concat(localStorage.getItem('token'));
+        const status = this.state.title == "1 - Active" ? 1 : 0;
+        console.log(this.state.url, this.state.port, status);
+        axios.post("http://localhost:8080/online-testing/addServer", {
+            url: this.state.url,
+            port: this.state.port,
+            status: status
+        }, { headers: { Authorization: token } })
+        .then(res => {
+            console.log("odg: ", res.data); 
+            document.getElementById("url").value = "";
+            document.getElementById("port").value = "";
+            this.setState({url: "", port: "", title: this.state.values[0].value, errorVisible: false, success: true});
+        })
+        .catch((error) => {
+            console.log("Greska!");
+            this.setState({errorMessage: error.response.data.errors[0], errorVisible: true, success: false});
+            console.log(error.response.data.errors[0]);
+        });
+    }
+
     render() { 
         return (  
             <Container className="col-lg-6" style={{
@@ -29,7 +57,7 @@ class CreateNewServer extends Component {
             }}>
                 <h1 className="text-secondary" style={{ textAlign: "left" }}>Create new server</h1>
                 <hr className="my-2" />
-                <Form>
+                <Form onSubmit={this.addServer}>
                     <Row>
                         <Col xs = {6}>
                             <FormGroup>
@@ -55,7 +83,7 @@ class CreateNewServer extends Component {
                                 <Navbar color="light" light expand="md">
                                     <Nav className="ml-auto" navbar className = "align-left">
                                         <UncontrolledDropdown>
-                                            <DropdownToggle tag="a" className="nav-link" caret className = "align-left">
+                                            <DropdownToggle id = "toggle" tag="a" className="nav-link" caret className = "align-left">
                                                 {this.state.title}
                                             </DropdownToggle>
                                             {this.renderDropDownItems()}
@@ -66,8 +94,16 @@ class CreateNewServer extends Component {
                         </Col>
                     </Row>
                     <Row>
+                        <Col xs = {6}>
+                        </Col>
+                        <Col>   
+                            {this.state.errorVisible == true ? <Alert color = "danger">{this.state.errorMessage}</Alert> : ""}
+                            {this.state.success == true ? <Alert color = "success">Server successfully added!</Alert> : ""}
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col>
-                            <Button style = {{float: "right", width: "15%"}} className="bg-dark">Create</Button>
+                            <Button type="submit" id="submitButton" style = {{float: "right", width: "15%"}} className="bg-dark">Create</Button>
                         </Col>
                     </Row>
                 </Form>
