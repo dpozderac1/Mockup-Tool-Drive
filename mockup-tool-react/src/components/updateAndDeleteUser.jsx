@@ -6,21 +6,18 @@ class UpdateAndDeleteUser extends Component {
 
     constructor(props) {
         super();
-        this.state = {  
-            token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcG96ZGVyYWMxIiwiZXhwIjoxNTg5OTM3Nzg2LCJpYXQiOjE1ODk5MDE3ODZ9.e32N7CC6Xze9JcciJs1ZkZXvXXJLyrSaCFNZUzDTrw0"
-        }
+        this.state = {  }
     }
     
 
     handleClick = () => {
-        console.log("kliknuto");
-        const AuthStr = 'Bearer '.concat(this.state.token);
-        console.log("token", AuthStr);
-        axios.get("http://localhost:8080/user/users/1", { headers: { Authorization: AuthStr } });
+        const token = 'Bearer '.concat(localStorage.getItem('token'));
+        axios.get("http://localhost:8080/getUser/" + localStorage.getItem('token')).then(res => {
+            axios.delete("http://localhost:8080/user/deleteUser/" + res.data.id, { headers: { Authorization: token } }).then(res => {console.log("odg: ", res)});
+        });
     };
 
     render() { 
-        //console.log("props: ", this.props.children);
         return (  
                 <Form >
                     <hr className="my-2" />
