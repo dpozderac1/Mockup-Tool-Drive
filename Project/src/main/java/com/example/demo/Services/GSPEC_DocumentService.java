@@ -1,5 +1,6 @@
 package com.example.demo.Services;
 
+import com.example.demo.RabbitMQ.BindingInterfaceInput;
 import com.example.demo.RabbitMQ.Command;
 import com.example.demo.ErrorMessageHandling.ObjectAlreadyExistsException;
 import com.example.demo.ErrorMessageHandling.ObjectNotFoundException;
@@ -13,6 +14,7 @@ import com.example.demo.ServisInterfaces.GSPEC_DocumentServiceInterface;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +30,12 @@ import java.util.List;
 public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
     private GSPEC_DocumentRepository gspec_documentRepository;
     private MockupRepository mockupRepository;
-
+    private MessageRabbitMq messageRabbitMq = new MessageRabbitMq(0L, Command.START);
     private MessageChannel greet;
+
+    public GSPEC_DocumentService(MessageRabbitMq messageRabbitMq) {
+        this.messageRabbitMq = messageRabbitMq;
+    }
 
     @Autowired
     private RestTemplate restTemplate;
@@ -39,6 +45,14 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
         this.gspec_documentRepository = gspec_documentRepository;
         this.mockupRepository = mockupRepository;
         this.greet = binding.greeting();
+    }
+
+    //RabbitMQ
+    @StreamListener(target = BindingInterfaceInput.GREETING)
+    public void processHelloChannelGreeting(MessageRabbitMq msg) throws JSONException {
+        System.out.println(msg.getCommand());
+        messageRabbitMq = msg;
+        deletegspec(msg);
     }
 
     @Override
@@ -102,23 +116,37 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
     }
 
     @Override
-    public void deleteOneGSPEC(Long id) throws JSONException {
+    public ResponseEntity deleteOneGSPEC(Long id) throws JSONException {
         //restTemplate.delete("http://online-testing/GSPECDocument/{id}", id);
         if(gspec_documentRepository.existsById(id)){
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("message","GSPEC document successfully deleted!");
             Command poruka = Command.SUCCESS;
             MessageRabbitMq messageRabbitMq = new MessageRabbitMq(id, poruka);
             Message<MessageRabbitMq> msg = MessageBuilder.withPayload(messageRabbitMq).build();
             this.greet.send(msg);
-            //return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
         }
         else{
             Command poruka = Command.FAIL;
             MessageRabbitMq messageRabbitMq = new MessageRabbitMq(id, poruka);
             Message<MessageRabbitMq> msg = MessageBuilder.withPayload(messageRabbitMq).build();
             this.greet.send(msg);
-            //throw new ObjectNotFoundException("GSPEC document with id " + id + " does not exit!");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("message","GSPEC document does not exit");
+            return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
+        }
+
+        while (true){
+            if(messageRabbitMq.getCommand().equals(Command.FINAL)) {
+                messageRabbitMq.setCommand(Command.START);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("message","GSPEC document successfully deleted!");
+                return new ResponseEntity<>(jsonObject.toString(), HttpStatus.OK);
+            }
+            if(messageRabbitMq.getCommand().equals(Command.FAIL)) {
+                messageRabbitMq.setCommand(Command.START);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("message","GSPEC document does not exit");
+                return new ResponseEntity<>(jsonObject.toString(), HttpStatus.NOT_FOUND);
+            }
         }
     }
 

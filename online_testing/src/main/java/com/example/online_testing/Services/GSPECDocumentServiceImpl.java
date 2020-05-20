@@ -35,8 +35,6 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
         this.greet = binding.greeting();
     }
 
-
-
     @Override
     public ResponseEntity deleteGSPECDocumentByID(Long id) {
         JSONObject jo = new JSONObject();
@@ -49,13 +47,15 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
             this.greet.send(msg);
             return new ResponseEntity(jo.toString(), HttpStatus.OK);
         }
-
-        Command poruka = Command.FAIL;
-        MessageRabbitMq messageRabbitMq = new MessageRabbitMq(id, poruka);
-        Message<MessageRabbitMq> msg = MessageBuilder.withPayload(messageRabbitMq).build();
-        this.greet.send(msg);
-        return new ResponseEntity(HttpStatus.OK);
-        //throw new RecordNotFoundException("GSPEC Document does not exist!");
+        else{
+            Command poruka = Command.FAIL;
+            MessageRabbitMq messageRabbitMq = new MessageRabbitMq(id, poruka);
+            Message<MessageRabbitMq> msg = MessageBuilder.withPayload(messageRabbitMq).build();
+            this.greet.send(msg);
+            jo.put("message", "GSPEC Document is not found!");
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+            //throw new RecordNotFoundException("GSPEC Document does not exist!");
+        }
     }
 
     @Override

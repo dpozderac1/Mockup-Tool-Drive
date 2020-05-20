@@ -20,15 +20,7 @@ import javax.validation.Valid;
 public class GSPEC_DocumentController {
 
     private GSPEC_DocumentService gspec_documentService;
-    @Autowired
-    private GSPEC_DocumentRepository gspec_documentRepository;
 
-    //RabbitMQ
-    @StreamListener(target = BindingInterfaceInput.GREETING)
-    public void processHelloChannelGreeting(MessageRabbitMq msg) throws JSONException {
-        System.out.println(msg.getCommand());
-        gspec_documentService.deletegspec(msg);
-    }
 
     @Autowired
     public GSPEC_DocumentController(GSPEC_DocumentService gspec_documentService) {
@@ -38,8 +30,8 @@ public class GSPEC_DocumentController {
 
     //RabbitMQ
     @DeleteMapping("/delete/gspec_document/{id}")
-    void deleteOneGSPEC(@PathVariable Long id) throws JSONException {
-        gspec_documentService.deleteOneGSPEC(id);
+    ResponseEntity deleteOneGSPEC(@PathVariable Long id) throws JSONException {
+        return gspec_documentService.deleteOneGSPEC(id);
     }
 
     @PutMapping("/addOrUpdateGSPEC_Document/{id}")
