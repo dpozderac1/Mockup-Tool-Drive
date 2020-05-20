@@ -39,26 +39,28 @@ class SignUp extends React.Component {
         //const AuthStr = 'Bearer '.concat(this.state.token);
         const AuthStr = 'Bearer '.concat(localStorage.getItem('token'));
         console.log("token", AuthStr);
-        axios.get("http://localhost:8080/user/users/" + idKorisnika, { headers: { Authorization: AuthStr } }).then(res => {
-            console.log(res);
-            console.log(res.data);
-            this.setState({
-                firstName: res.data.name,
-                lastName: res.data.surname,
-                username: res.data.username,
-                email: res.data.email,
-                password: res.data.password
-            });
-            document.getElementById("firstNameLabel").value = this.state.firstName;
-            document.getElementById("lastNameLabel").value = this.state.lastName;
-            document.getElementById("usernameLabel").value = this.state.username;
-            document.getElementById("emailLabel").value = this.state.email;
-            //document.getElementById("passwordLabel").value = this.state.password;
-        })
-            .catch((error) => {
-                console.log("Greska u GET!");
-                console.log(error);
-            });
+        axios.get("http://localhost:8080/getUser/" + localStorage.getItem('token')).then(res => {
+            axios.get("http://localhost:8080/user/users/" + res.data.id, { headers: { Authorization: AuthStr } }).then(res => {
+                console.log(res);
+                console.log(res.data);
+                this.setState({
+                    firstName: res.data.name,
+                    lastName: res.data.surname,
+                    username: res.data.username,
+                    email: res.data.email,
+                    password: res.data.password
+                });
+                document.getElementById("firstNameLabel").value = this.state.firstName;
+                document.getElementById("lastNameLabel").value = this.state.lastName;
+                document.getElementById("usernameLabel").value = this.state.username;
+                document.getElementById("emailLabel").value = this.state.email;
+                //document.getElementById("passwordLabel").value = this.state.password;
+            })
+                .catch((error) => {
+                    console.log("Greska u GET!");
+                    console.log(error);
+                });
+        });
     }
 
     posaljiZahtjev(e) {
@@ -136,33 +138,36 @@ class SignUp extends React.Component {
         const idKorisnika = "1";
         //const AuthStr = 'Bearer '.concat(this.state.token);
         const AuthStr = 'Bearer '.concat(localStorage.getItem('token'));
-        axios.put("http://localhost:8080/user/updateUser/" + idKorisnika, { headers: { Authorization: AuthStr } }, {
-            name: this.state.firstName,
-            surname: this.state.lastName,
-            username: this.state.username,
-            password: this.state.password,
-            email: this.state.email
-        }).then(res => {
-            console.log("Odgovor!");
-            console.log(res);
-            console.log(res.data);
-        })
-            .catch((error) => {
-                console.log("Greska!");
-                console.log(error.response);
-                if (error.response.status === 403) {
-                    this.setState({
-                        errorZahtjev: "You are not authorized!"
-                    });
-                }
-                else {
-                    console.log(error.response.data.errors[0]);
-                    this.setState({
-                        errorZahtjev: error.response.data.errors[0]
-                    });
-                }
-                //console.log(error);
+        axios.get("http://localhost:8080/getUser/" + localStorage.getItem('token')).then(res => {
+            console.log("idddd: ", res.data.id, AuthStr);
+            axios.put("http://localhost:8080/user/updateUser/" + res.data.id, {
+                name: this.state.firstName,
+                surname: this.state.lastName,
+                username: this.state.username,
+                password: this.state.password,
+                email: this.state.email
+            }, { headers: { Authorization: AuthStr } }).then(res => {
+                console.log("Odgovor!");
+                console.log(res);
+                console.log(res.data);
             })
+                .catch((error) => {
+                    console.log("Greska!");
+                    console.log(error.response);
+                    if (error.response.status === 403) {
+                        this.setState({
+                            errorZahtjev: "You are not authorized!"
+                        });
+                    }
+                    else {
+                        console.log(error.response.data.errors[0]);
+                        this.setState({
+                            errorZahtjev: error.response.data.errors[0]
+                        });
+                    }
+                    //console.log(error);
+                })
+        });
     }
 
     render() {
@@ -171,7 +176,7 @@ class SignUp extends React.Component {
                 position: 'absolute', left: '50%', top: '52%',
                 transform: 'translate(-50%, -50%)'
             }}>
-                <h1 className="text-secondary" style={{ textAlign: "left" }}>{(this.props.podaci.state.forma === "signup") ? "Sign Up" : this.props.podaci.state.forma === "admin" ? "Good afternoon" : "Good afternoon"}</h1>
+                <h1 className="text-secondary" style={{ textAlign: "left" }}>{(this.props.podaci.state.forma === "signup") ? "Sign Up" : this.props.podaci.state.forma === "admin" ? "Good afternoon, ".concat(this.state.username) : "Good afternoon, ".concat(this.state.username)}</h1>
                 <hr className="my-2" />
                 <Form onSubmit={this.props.podaci.state.forma === "signup" ? this.posaljiZahtjev : this.uradiPut}>
                     <Row>
