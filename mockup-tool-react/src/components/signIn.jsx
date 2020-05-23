@@ -4,6 +4,7 @@ import { Button, Form, FormGroup, Input, Container, Nav, NavItem, NavLink, Alert
 import { getAllByAltText } from '@testing-library/react';
 import axios from "axios";
 import SignUp from './signUp';
+import {UrlContext} from '../urlContext';
 
 class SignIn extends React.Component {
     constructor(props) {
@@ -41,14 +42,15 @@ class SignIn extends React.Component {
     handleClick = () => {
         console.log(this.state.username);
         console.log(this.state.password);
-        axios.post("http://localhost:8080/authenticate", {
+        let url = this.context;
+        axios.post(url.gateway + "/authenticate", {
             username: this.state.username,
             password: this.state.password
         }).then(res => {
             localStorage.setItem('token', res.data.jwt);
             console.log("Odgovor!")
             console.log(res);
-            axios.get("http://localhost:8080/getUser/" + localStorage.getItem('token')).then(userData => {
+            axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(userData => {
                 this.setState({
                     userRole: userData.data.roleID.role_name,
                     //aktivni: [false, true]
@@ -144,7 +146,7 @@ class SignIn extends React.Component {
         );
     }
 }
-
+SignIn.contextType = UrlContext;
 
 
 

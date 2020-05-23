@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { UncontrolledButtonDropdown, Navbar, Nav, NavItem, NavLink, Button, Form, FormGroup, Label, Input, FormText, Col, Container, Row, ButtonGroup, Alert, UncontrolledDropdown, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
 import axios from 'axios';
+import {UrlContext} from '../urlContext';
 
 class CreateNewServer extends Component {
     constructor(props) {
@@ -28,14 +29,14 @@ class CreateNewServer extends Component {
 
     addServer(e) {
         e.preventDefault();
-        const token = 'Bearer '.concat(localStorage.getItem('token'));
         const status = this.state.title == "1 - Active" ? 1 : 0;
         console.log(this.state.url, this.state.port, status);
-        axios.post("http://localhost:8080/online-testing/addServer", {
+        let url = this.context;
+        axios.post(url.onlineTesting + "/addServer", {
             url: this.state.url,
             port: this.state.port,
             status: status
-        }, { headers: { Authorization: token } })
+        })
         .then(res => {
             console.log("odg: ", res.data); 
             document.getElementById("url").value = "";
@@ -44,8 +45,15 @@ class CreateNewServer extends Component {
         })
         .catch((error) => {
             console.log("Greska!");
-            this.setState({errorMessage: error.response.data.errors[0], errorVisible: true, success: false});
-            console.log(error.response.data.errors[0]);
+            let err = "";
+            if(error.response.data.errors == undefined) {
+                err = "Unknown error!";
+            }
+            else {
+                err = error.response.data.errors[0];
+            }
+            this.setState({errorMessage: err, errorVisible: true, success: false});
+            console.log(err);
         });
     }
 
@@ -111,5 +119,6 @@ class CreateNewServer extends Component {
         );
     }
 }
+CreateNewServer.contextType = UrlContext;
  
 export default CreateNewServer;

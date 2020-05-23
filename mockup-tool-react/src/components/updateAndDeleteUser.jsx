@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Form, FormGroup, Label, Input, FormText, Col, Container, Row, ButtonGroup, Alert } from 'reactstrap';
 import axios from 'axios';
+import {UrlContext} from '../urlContext';
 
 class UpdateAndDeleteUser extends Component {
 
@@ -11,9 +12,9 @@ class UpdateAndDeleteUser extends Component {
     
 
     handleClick = () => {
-        const token = 'Bearer '.concat(localStorage.getItem('token'));
-        axios.get("http://localhost:8080/getUser/" + localStorage.getItem('token')).then(res => {
-            axios.delete("http://localhost:8080/user/deleteUser/" + res.data.id, { headers: { Authorization: token } }).then(res => {console.log("odg: ", res)});
+        let url = this.context;
+        axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
+            axios.delete(url.user + "/deleteUser/" + res.data.id).then(res => {console.log("odg: ", res)});
         });
     };
 
@@ -38,5 +39,6 @@ class UpdateAndDeleteUser extends Component {
         );
     }
 }
+UpdateAndDeleteUser.contextType = UrlContext;
  
 export default UpdateAndDeleteUser;

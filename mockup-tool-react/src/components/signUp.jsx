@@ -3,6 +3,7 @@ import { Button, Form, FormGroup, Label, Input, Col, Container, Row, Alert } fro
 import axios from 'axios';
 import AdvancedOptions from './advancedOptions';
 import UpdateAndDeleteUser from './updateAndDeleteUser';
+import {UrlContext} from '../urlContext';
 
 
 class SignUp extends React.Component {
@@ -39,8 +40,9 @@ class SignUp extends React.Component {
         //const AuthStr = 'Bearer '.concat(this.state.token);
         const AuthStr = 'Bearer '.concat(localStorage.getItem('token'));
         console.log("token", AuthStr);
-        axios.get("http://localhost:8080/getUser/" + localStorage.getItem('token')).then(res => {
-            axios.get("http://localhost:8080/user/users/" + res.data.id, { headers: { Authorization: AuthStr } }).then(res => {
+        let url = this.context;
+        axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
+            axios.get(url.user + "/users/" + res.data.id/*, { headers: { Authorization: AuthStr } }*/).then(res => {
                 console.log(res);
                 console.log(res.data);
                 this.setState({
@@ -65,6 +67,7 @@ class SignUp extends React.Component {
 
     posaljiZahtjev(e) {
         e.preventDefault();
+        let url = this.context;
         const pass = this.state.password;
         const repeatPass = this.state.repeatPassword;
         const dobarPassword = pass === repeatPass;
@@ -89,7 +92,7 @@ class SignUp extends React.Component {
             else {
                 console.log("Zahtjev je: ");
                 console.log(user);
-                axios.post("http://localhost:8080/user/user", {
+                axios.post(url.user + "/user", {
                     name: this.state.firstName,
                     surname: this.state.lastName,
                     username: this.state.username,
@@ -136,17 +139,18 @@ class SignUp extends React.Component {
     uradiPut(e) {
         e.preventDefault();
         const idKorisnika = "1";
+        let url = this.context;
         //const AuthStr = 'Bearer '.concat(this.state.token);
         const AuthStr = 'Bearer '.concat(localStorage.getItem('token'));
-        axios.get("http://localhost:8080/getUser/" + localStorage.getItem('token')).then(res => {
+        axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
             console.log("idddd: ", res.data.id, AuthStr);
-            axios.put("http://localhost:8080/user/updateUser/" + res.data.id, {
+            axios.put(url.user + "/updateUser/" + res.data.id, {
                 name: this.state.firstName,
                 surname: this.state.lastName,
                 username: this.state.username,
                 password: this.state.password,
                 email: this.state.email
-            }, { headers: { Authorization: AuthStr } }).then(res => {
+            }/*, { headers: { Authorization: AuthStr } }*/).then(res => {
                 console.log("Odgovor!");
                 console.log(res);
                 console.log(res.data);
@@ -270,5 +274,6 @@ class SignUp extends React.Component {
         );
     }
 }
+SignUp.contextType = UrlContext;
 
 export default SignUp;
