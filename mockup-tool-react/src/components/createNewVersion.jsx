@@ -28,7 +28,7 @@ class CreateNewVersion extends Component {
                                              </svg>
                      },
             projectName: "",
-            project: false,
+            project: true,
             date_created: "",
             date_modified: "",
             priority: 0,
@@ -140,7 +140,7 @@ class CreateNewVersion extends Component {
                     transform: 'translate(-50%, -50%)'
                 }
             }>
-                <Form className="row align-items-center ">
+                <Form className="row align-items-center row justify-content-center">
                     <Form className="col-md-5 my-auto">
                         <h1 className="text-secondary" style={{ textAlign: "left" }}>{this.state.project == true ? "Create project" : "Create new version"}</h1>
                         <hr className="my-2" />

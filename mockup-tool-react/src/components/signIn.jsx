@@ -17,6 +17,8 @@ class SignIn extends React.Component {
             forma: "signin",
             aktivni: [true, false]
         };
+
+        this.displaySignUp = this.displaySignUp.bind(this);
     }
     componentDidMount = () => {
 
@@ -55,6 +57,7 @@ class SignIn extends React.Component {
                     userRole: userData.data.roleID.role_name,
                     //aktivni: [false, true]
                 });
+                this.props.data.setRole(userData.data.roleID.role_name);
                 if(userData.data.roleID.role_name == "ADMIN"){
                     this.setState({
                         forma: "admin"
@@ -72,6 +75,7 @@ class SignIn extends React.Component {
             this.setState({
                 goodParameters: "hidden"
             });
+            this.props.data.hideComponent("showMockupTool");
         })
             .catch((error) => {
                 console.log("Status");
@@ -84,6 +88,10 @@ class SignIn extends React.Component {
             });
     };
 
+    displaySignUp() {
+        this.props.data.hideComponent("showSignUp");
+    }
+
     render() {
         return (
         <Form>
@@ -94,7 +102,7 @@ class SignIn extends React.Component {
                     transform: 'translate(-50%, -50%)'
                 }
             }>
-                <Form className="row align-items-center ">
+                <Form className="row align-items-center row justify-content-center">
                     <Form className="col-md-5 my-auto">
                         <h1 class="row justify-content-center text-secondary">Sign In </h1>
                         <hr className="my-2"></hr>
@@ -118,7 +126,8 @@ class SignIn extends React.Component {
                                 onClick={this.handleClick}
                                 style={
                                     {
-                                        width: '30%'
+                                        width: '30%',
+                                        margin: "auto"
                                     }
                                 }
                             >
@@ -130,8 +139,8 @@ class SignIn extends React.Component {
                                 {/*<NavItem>
                                     <NavLink className="text-secondary" href="#">Forgot password?</NavLink>
                                 </NavItem>*/}
-                                <NavItem>
-                                    <NavLink style = {{float: "right"}} className="text-secondary" href="#">Not member yet?</NavLink>
+                                <NavItem className="row justify-content-center" style = {{margin: "auto"}}>
+                                    <NavLink  onClick = {this.displaySignUp}  className="text-secondary row justify-content-center" href="#">Not member yet?</NavLink>
                                 </NavItem>
                             </Nav>
                         </FormGroup>

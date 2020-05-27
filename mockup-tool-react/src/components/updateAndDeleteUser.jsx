@@ -14,7 +14,23 @@ class UpdateAndDeleteUser extends Component {
     handleClick = () => {
         let url = this.context;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
-            axios.delete(url.user + "/deleteUser/" + res.data.id).then(res => {console.log("odg: ", res)});
+            axios.delete(url.user + "/deleteUser/" + res.data.id).then(res => {
+                console.log("odg: ", res);
+                localStorage.setItem('token', "")
+                this.props.handler("showSignIn");
+            })
+            .catch((error) => {
+                console.log("Greska!");
+                let err = "";
+                if(error.response.data.errors == undefined) {
+                    err = "Unknown error!";
+                }
+                else {
+                    err = error.response.data.errors[0];
+                }
+                console.log(err);
+            });
+            ;
         });
     };
 

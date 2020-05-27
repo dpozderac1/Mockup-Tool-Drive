@@ -134,7 +134,7 @@ class CreateNewServer extends Component {
                             <FormGroup>
                                 <Label for="statusLabel">{this.props.data.state.serverOrBrowser == "server" ? "Status" : "Server"}</Label>
                                 <Navbar color="light" light expand="md">
-                                    <Nav className="ml-auto" navbar className = "align-left">
+                                    <Nav className="ml-auto" navbar className = "align-left" style = {{margin: "auto"}}>
                                         <UncontrolledDropdown>
                                             <DropdownToggle id = "toggle" tag="a" className="nav-link" caret className = "align-left">
                                                 {this.props.data.state.serverOrBrowser == "server" ? this.state.titleServer : this.state.titleBrowser}

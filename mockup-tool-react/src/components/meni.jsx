@@ -18,6 +18,7 @@ import Collaboration from './collaboration';
 import CreateNewServer from './createNewServer';
 import axios from 'axios';
 import {UrlContext} from '../urlContext';
+import CreateNewVersion from './createNewVersion';
 
 class Meni extends Component {
     constructor(props) {
@@ -28,13 +29,20 @@ class Meni extends Component {
             forma: "signup",
             serverOrBrowser: "",
             servers: [],
-            firstServer: ""
+            firstServer: "", 
+            role: ""
         };
         this.hideComponent = this.hideComponent.bind(this);
         this.hideAll = this.hideAll.bind(this);
+        this.setRole = this.setRole.bind(this);
     }
 
     componentDidMount() {
+        console.log("desilo se");
+        let url = this.context;
+        axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
+            this.setState({role: res.data.roleID.role_name});
+        });
         this.sakrijMockupTool();
     }
 
@@ -124,6 +132,11 @@ class Meni extends Component {
         document.getElementById('desniToolbar').style.display = "none";
     }
 
+    setRole (role) {
+        this.setState({role});
+        console.log("meni role: ", this.state.role);
+    }
+
     render() {
         const { showSignIn, showSignUp, showUpdateAdmin, showUpdateUser } = this.state;
 
@@ -135,8 +148,8 @@ class Meni extends Component {
                     <Nav className="mr-auto" navbar>
                         {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignIn") }}>Sign in</NavLink> : ""}
                         {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignUp"); this.setPodaci("showSignUp"); }}>Sign up</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showUpdateAdmin"); this.setPodaci("showUpdateAdmin"); }}>Admin profile</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showUpdateUser"); this.setPodaci("showUpdateUser"); }}>User profile</NavLink> : ""}
+                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "ADMIN" ? <NavLink onClick={() => { this.hideComponent("showUpdateAdmin"); this.setPodaci("showUpdateAdmin"); }}>Admin profile</NavLink> : ""}
+                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "USER" ? <NavLink onClick={() => { this.hideComponent("showUpdateUser"); this.setPodaci("showUpdateUser"); }}>User profile</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showMockupTool"); }}>Mockup Tool</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showCollaboration"); }}>Collaborate</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>Sign out</NavLink> : ""}
@@ -144,7 +157,7 @@ class Meni extends Component {
                 </Navbar>
 
                 <Form>
-                    {this.state.aktivni[0] && <SignIn />}
+                    {this.state.aktivni[0] && <SignIn data = {this}/>}
                     {this.state.aktivni[1] && <SignUp podaci={this} />}
                     {(this.state.aktivni[2] || this.state.aktivni[3]) &&
                         <div>
@@ -158,7 +171,7 @@ class Meni extends Component {
                         </div>}
                     {this.state.aktivni[4] ? this.prikaziMockupTool() : this.sakrijMockupTool()}
                     {this.state.aktivni[5] && <Collaboration />}
-                    {this.state.aktivni[6] && <CreateNewServer data ={this}/>}
+                    {this.state.aktivni[6] && <CreateNewServer data ={this}/> }
                 </Form>
             </div>
         );

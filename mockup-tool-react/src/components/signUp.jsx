@@ -102,6 +102,7 @@ class SignUp extends React.Component {
                     console.log("Odgovor!");
                     console.log(res);
                     console.log(res.data);
+                    this.props.podaci.hideComponent("showSignIn");
                 })
                     .catch((error) => {
                         console.log("Greska!");
@@ -266,7 +267,7 @@ class SignUp extends React.Component {
                         <AdvancedOptions handler = {this.props.podaci.hideAll}/>
                     </Row>
                     <Row style={{ display: (this.props.podaci.state.forma === "signup") ? "none" : (this.props.podaci.state.forma === "admin") ? "block" : "block" }}>
-                        <UpdateAndDeleteUser />
+                        <UpdateAndDeleteUser handler = {this.props.podaci.hideComponent}/>
                     </Row>
                 </Form>
 
