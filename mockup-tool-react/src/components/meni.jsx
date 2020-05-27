@@ -15,16 +15,23 @@ import {
 import SignIn from './signIn';
 import SignUp from './signUp';
 import Collaboration from './collaboration';
+import CreateNewServer from './createNewServer';
+import axios from 'axios';
+import {UrlContext} from '../urlContext';
 
 class Meni extends Component {
     constructor(props) {
         super();
         this.state = {
             name: "React",
-            aktivni: [false, false, false, false],
-            forma: "signup"
+            aktivni: [false, false, false, false, false, false, false],
+            forma: "signup",
+            serverOrBrowser: "",
+            servers: [],
+            firstServer: ""
         };
         this.hideComponent = this.hideComponent.bind(this);
+        this.hideAll = this.hideAll.bind(this);
     }
 
     componentDidMount() {
@@ -40,24 +47,46 @@ class Meni extends Component {
 
         switch (name) {
             case "showSignIn":
-                this.setState({ aktivni: [true, false, false, false, false, false] });
+                this.setState({ aktivni: [true, false, false, false, false, false, false] });
                 break;
             case "showSignUp":
-                this.setState({ aktivni: [false, false, true, false, false, false] });
+                this.setState({ aktivni: [false, false, true, false, false, false, false] });
                 break;
             case "showUpdateAdmin":
-                this.setState({ aktivni: [false, false, false, true, false, false] });
+                this.setState({ aktivni: [false, false, false, true, false, false, false] });
                 break;
             case "showUpdateUser":
-                this.setState({ aktivni: [false, false, false, true, false, false] });
+                this.setState({ aktivni: [false, false, false, true, false, false, false] });
                 break;
             case "showMockupTool":
-                this.setState({ aktivni: [false, false, false, false, true, false] });
+                this.setState({ aktivni: [false, false, false, false, true, false, false] });
                 break;
             case "showCollaboration":
-                this.setState({ aktivni: [false, false, false, false, false, true] });
+                this.setState({ aktivni: [false, false, false, false, false, true, false] });
                 break;
         }
+    }
+
+    hideAll(name) {
+        console.log("meni naziv: ", name);
+        if(name == "browser"){
+            let url = this.context;
+            console.log("contekst: ", url);
+            axios.get(url.onlineTesting + "/servers").then(res => {
+                let servers = [];
+                res.data.map(server => 
+                    {
+                        let s = {"id": server.id, "name": server.url};
+                        servers.push(s);
+                    }
+                );
+                console.log("serveriii: ", servers);
+                this.setState({ aktivni: [false, false, false, false, false, false, true], serverOrBrowser: name, servers, firstServer: servers[0].name});
+            });
+        }   
+        else {
+            this.setState({ aktivni: [false, false, false, false, false, false, true], serverOrBrowser: name});
+        }     
     }
 
     setPodaci = (param) => {
@@ -129,10 +158,11 @@ class Meni extends Component {
                         </div>}
                     {this.state.aktivni[4] ? this.prikaziMockupTool() : this.sakrijMockupTool()}
                     {this.state.aktivni[5] && <Collaboration />}
+                    {this.state.aktivni[6] && <CreateNewServer data ={this}/>}
                 </Form>
             </div>
         );
     }
 }
-
+Meni.contextType = UrlContext;
 export default Meni;

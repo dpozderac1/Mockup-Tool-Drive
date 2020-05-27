@@ -2,11 +2,19 @@ import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Form, FormGroup, Input, Container, Row, Col, ButtonGroup } from "reactstrap";
 import { Label } from 'reactstrap';
+import CreateNewServer from './createNewServer';
 
 class AdvancedOptions extends Component {
     state = { 
-        
-     }
+        clicked : ""
+    }
+
+    handleClick = (name) => {
+        console.log(name);
+        this.props.handler(name);
+        this.setState({clicked: name});
+    };
+
     render() { 
         return (  
                 <Form>
@@ -23,6 +31,7 @@ class AdvancedOptions extends Component {
                         <Col md={6}>
                             <FormGroup className="float-sm-right">
                                 <Button 
+                                    onClick = {() => this.handleClick("server")}
                                     className="bg-dark btn form-control"
                                     style={
                                         {
@@ -46,6 +55,7 @@ class AdvancedOptions extends Component {
                         <Col md={6}>
                             <FormGroup className="float-sm-right">
                                 <Button 
+                                    onClick = {() => this.handleClick("browser")}
                                     className="bg-dark btn form-control"
                                     style={
                                         {

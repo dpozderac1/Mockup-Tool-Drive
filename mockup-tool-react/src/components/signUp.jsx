@@ -263,7 +263,7 @@ class SignUp extends React.Component {
                         <Button type="submit" id="submitButton" className="secondary px-3 bg-dark" style={{ marginLeft: "auto" }}>{(this.props.podaci.state.forma === "signup") ? "Sign Up" : (this.props.podaci.state.forma === "admin") ? "Save changes" : "Save changes"}</Button>
                     </Row>
                     <Row style={{ display: (this.props.podaci.state.forma === "signup") ? "none" : (this.props.podaci.state.forma === "admin") ? "block" : "none" }}>
-                        <AdvancedOptions />
+                        <AdvancedOptions handler = {this.props.podaci.hideAll}/>
                     </Row>
                     <Row style={{ display: (this.props.podaci.state.forma === "signup") ? "none" : (this.props.podaci.state.forma === "admin") ? "block" : "block" }}>
                         <UpdateAndDeleteUser />

@@ -127,11 +127,11 @@ class SignIn extends React.Component {
                         </b>
                         <FormGroup className="row justify-content-center">
                             <Nav>
-                                <NavItem>
+                                {/*<NavItem>
                                     <NavLink className="text-secondary" href="#">Forgot password?</NavLink>
-                                </NavItem>
+                                </NavItem>*/}
                                 <NavItem>
-                                    <NavLink className="text-secondary" href="#">Not member yet?</NavLink>
+                                    <NavLink style = {{float: "right"}} className="text-secondary" href="#">Not member yet?</NavLink>
                                 </NavItem>
                             </Nav>
                         </FormGroup>
