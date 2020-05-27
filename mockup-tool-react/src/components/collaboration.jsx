@@ -37,7 +37,7 @@ class Collaboration extends Component {
                 this.setState({
                     korisnici: res.data,
                 });
-                if (this.state.korisnici.length != 0) {
+                if (this.state.korisnici.length !== 0) {
                     this.setState({ postojeKorisnici: true });
                 }
                 else {

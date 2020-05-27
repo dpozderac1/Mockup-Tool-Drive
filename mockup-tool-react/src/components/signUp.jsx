@@ -3,7 +3,7 @@ import { Button, Form, FormGroup, Label, Input, Col, Container, Row, Alert } fro
 import axios from 'axios';
 import AdvancedOptions from './advancedOptions';
 import UpdateAndDeleteUser from './updateAndDeleteUser';
-import {UrlContext} from '../urlContext';
+import { UrlContext } from '../urlContext';
 
 
 class SignUp extends React.Component {
@@ -18,8 +18,8 @@ class SignUp extends React.Component {
             repeatPassword: "",
             greskaVisible: "hidden",
             nepodudaranPassword: "hidden",
-            errorZahtjev: ""
-            //token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcG96ZGVyYWMxIiwiZXhwIjoxNTkwMDIzMjM2LCJpYXQiOjE1ODk5ODcyMzZ9.WdEp5LUXeqIa5-Z2w4sa68qFscEmQweX-g1sdnweVMY"
+            errorZahtjev: "",
+            uspjesanZahtjev: false
         }
         this.posaljiZahtjev = this.posaljiZahtjev.bind(this);
         this.dobaviPodatkeKorisnika = this.dobaviPodatkeKorisnika.bind(this);
@@ -34,10 +34,9 @@ class SignUp extends React.Component {
             this.dobaviPodatkeKorisnika();
         }
     }
- 
+
     dobaviPodatkeKorisnika() {
         const idKorisnika = "1";
-        //const AuthStr = 'Bearer '.concat(this.state.token);
         const AuthStr = 'Bearer '.concat(localStorage.getItem('token'));
         console.log("token", AuthStr);
         let url = this.context;
@@ -56,7 +55,6 @@ class SignUp extends React.Component {
                 document.getElementById("lastNameLabel").value = this.state.lastName;
                 document.getElementById("usernameLabel").value = this.state.username;
                 document.getElementById("emailLabel").value = this.state.email;
-                //document.getElementById("passwordLabel").value = this.state.password;
             })
                 .catch((error) => {
                     console.log("Greska u GET!");
@@ -93,6 +91,10 @@ class SignUp extends React.Component {
                 console.log("Zahtjev je: ");
                 console.log(user);
                 axios.post(url.user + "/user", {
+                    roleID: {
+                        id: 2,
+                        role_name: "USER"
+                    },
                     name: this.state.firstName,
                     surname: this.state.lastName,
                     username: this.state.username,
@@ -115,15 +117,10 @@ class SignUp extends React.Component {
                         else {
                             console.log(error.response.data.errors[0]);
                             this.setState({
-                                errorZahtjev: error.response.data.errors[0]
+                                errorZahtjev: error.response.data.errors
                             });
                         }
-                        //console.log(error);
                     })
-                /*axios.get("http://localhost:8080/user/users/1", { headers: { Authorization: AuthStr } }).then(res => {
-                    console.log(res);
-                    console.log(res.data);
-                })*/
 
             }
         }
@@ -141,7 +138,6 @@ class SignUp extends React.Component {
         e.preventDefault();
         const idKorisnika = "1";
         let url = this.context;
-        //const AuthStr = 'Bearer '.concat(this.state.token);
         const AuthStr = 'Bearer '.concat(localStorage.getItem('token'));
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
             console.log("idddd: ", res.data.id, AuthStr);
@@ -151,26 +147,30 @@ class SignUp extends React.Component {
                 username: this.state.username,
                 password: this.state.password,
                 email: this.state.email
-            }/*, { headers: { Authorization: AuthStr } }*/).then(res => {
+            }).then(res => {
                 console.log("Odgovor!");
                 console.log(res);
                 console.log(res.data);
+                this.setState({
+                    errorZahtjev: "",
+                    uspjesanZahtjev: true
+                });
             })
                 .catch((error) => {
                     console.log("Greska!");
                     console.log(error.response);
                     if (error.response.status === 403) {
                         this.setState({
-                            errorZahtjev: "You are not authorized!"
+                            errorZahtjev: "You are not authorized!",
+                            uspjesanZahtjev: false
                         });
                     }
                     else {
-                        console.log(error.response.data.errors[0]);
                         this.setState({
-                            errorZahtjev: error.response.data.errors[0]
+                            errorZahtjev: error.response.data.errors,
+                            uspjesanZahtjev: false
                         });
                     }
-                    //console.log(error);
                 })
         });
     }
@@ -252,22 +252,19 @@ class SignUp extends React.Component {
                             </Alert> : this.state.errorZahtjev !== "" ? <Alert color="danger" style={{ visibility: "visible" }}>
                                         {this.state.errorZahtjev}
                                     </Alert> : ""}
-                            {/*<Alert color="danger" style={{ visibility: this.state.nepodudaranPassword }}>
-                                Passwords do not match!
-                            </Alert>
-                            <Alert color="danger" style={{ visibility: this.state.greskaVisible }}>
-                                Fields cannot be empty!
-                            </Alert>*/}
+                            {this.state.uspjesanZahtjev ? <Alert color="success" style={{ visibility: "visible" }}>
+                                Changes are successfully saved!
+                                    </Alert> : ""}
                         </Col>
                     </Row>
                     <Row style={{ paddingRight: "15px" }}>
                         <Button type="submit" id="submitButton" className="secondary px-3 bg-dark" style={{ marginLeft: "auto" }}>{(this.props.podaci.state.forma === "signup") ? "Sign Up" : (this.props.podaci.state.forma === "admin") ? "Save changes" : "Save changes"}</Button>
                     </Row>
                     <Row style={{ display: (this.props.podaci.state.forma === "signup") ? "none" : (this.props.podaci.state.forma === "admin") ? "block" : "none" }}>
-                        <AdvancedOptions handler = {this.props.podaci.hideAll}/>
+                        <AdvancedOptions handler={this.props.podaci.hideAll} />
                     </Row>
                     <Row style={{ display: (this.props.podaci.state.forma === "signup") ? "none" : (this.props.podaci.state.forma === "admin") ? "block" : "block" }}>
-                        <UpdateAndDeleteUser handler = {this.props.podaci.hideComponent}/>
+                        <UpdateAndDeleteUser handler={this.props.podaci.hideComponent} />
                     </Row>
                 </Form>
 

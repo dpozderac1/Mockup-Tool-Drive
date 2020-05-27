@@ -198,7 +198,7 @@ public class UserServiceImpl implements UserService {
         if (!user.getUsername().isEmpty()) {
             korisnik.setUsername(user.getUsername());
         }
-        if (!user.getPassword().isEmpty()) {
+        if (!user.getPassword().isEmpty() && !user.getPassword().equals(korisnik.getPassword())) {
             BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
             String sifra=user.getPassword();
             korisnik.setPassword(passwordEncoder.encode(sifra));
