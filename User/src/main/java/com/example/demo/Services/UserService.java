@@ -17,5 +17,6 @@ public interface UserService {
     ResponseEntity saveUser(User user);
     ResponseEntity updateUser(Long id, User user);
     ResponseEntity deleteUser(Long id);
+    List<User> getUsersSharingProjectByProjectId(Long id);
     //ResponseEntity getAllProjects(Long id);
 }

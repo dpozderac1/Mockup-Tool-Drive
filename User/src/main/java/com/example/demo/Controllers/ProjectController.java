@@ -34,4 +34,9 @@ public class ProjectController {
     ResponseEntity deleteProject(@PathVariable Long id) throws JSONException {
         return projectService.deleteProject(id);
     }
+
+    @PostMapping("/addProjectToUser/{id}")
+    ResponseEntity addProjectToUser(@PathVariable Long id,@RequestBody Project project) {
+        return projectService.addProjectToUser(id,project);
+    }
 }

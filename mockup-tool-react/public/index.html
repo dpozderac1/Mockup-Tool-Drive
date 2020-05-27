@@ -24,10 +24,13 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
+    <script src="https://cdn.jsdelivr.net/npm/interactjs@next/dist/interact.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <style id="stil"></style>
     <title>React App</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!--
       This HTML file is a template.
@@ -39,5 +42,491 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <div id="zaglavlje">
+      <h1 id="h1Mockup">Mockup tool</h1>
+    </div>
+    <div id="lijevo">
+      <ul id="listaMockupa">
+        <li id="searchLi">
+          <div class="searchBox">
+            <input
+              class="searchText"
+              type="text"
+              placeholder="Search"
+              id="searchText"
+            />
+            <button class="deleteButton" id="deleteButton">✘</button>
+            <button class="searchButton" id="searchButton">Search</button>
+          </div>
+        </li>
+        <li>
+          <div id="dugme" class="dugmeKlasa" title="Button">
+            <p>Button</p>
+          </div>
+        </li>
+        <li>
+          <div id="labela" class="labelaKlasa" title="Label">
+            <p id="pLabela">Label</p>
+          </div>
+        </li>
+        <li>
+          <div id="link" class="linkKlasa" title="Link">
+            <p id="pLink">Link</p>
+          </div>
+        </li>
+        <li id="divLi">
+          <div id="divElement" class="divElementKlasa" title="Div">
+            <p>Div</p>
+          </div>
+        </li>
+        <li>
+          <div id="naslov" class="naslovKlasa" title="Headline">
+            <p id="pNaslov">Headline</p>
+          </div>
+        </li>
+        <li id="slikaLi">
+          <div id="slika" class="slikaKlasa" title="Image">
+            <p id="pSlika">Image</p>
+            <p>
+              <img id="ikonaZaSliku" src="/ikonice/insert-picture-icon.png" />
+            </p>
+          </div>
+        </li>
+        <li>
+          <div id="inputText" class="inputKlasa" title="Input">
+            <p id="pInputText">Input</p>
+          </div>
+        </li>
+        <li id="parLi">
+          <div id="paragraf" class="paragrafKlasa" title="Paragraph">
+            <p id="pParagraf">Paragraph</p>
+          </div>
+        </li>
+
+        <li>
+          <div id="spinner" class="spinnerKlasa" title="Number spinner">
+            <p id="pSpinner">Number spinner</p>
+            <div id="spinnerLi">
+              <div id="spinnerStrelicaGoreDiv">
+                <span id="spinnerStrelicaGoreSpan">▴</span>
+              </div>
+              <div id="spinnerStrelicaDoljeDiv">
+                <span id="spinnerStrelicaDoljeSpan">▾</span>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <li id="tabDio">
+          <div id="tab" class="tabKlasa" title="Tabs">
+            <horizontal id="tabHorizontal">
+              <ul id="tabLista" class="tabListaKlasa">
+                <li id="prviLiUTabu" data-oznacen="1">Tab1</li>
+                <li data-oznacen="0">Tab2</li>
+                <li data-oznacen="0">Tab3</li>
+              </ul>
+            </horizontal>
+            <div id="unutrasnji"></div>
+          </div>
+        </li>
+        <li id="noteLi">
+          <div id="note" class="noteKlasa" title="Note">
+            <p id="pNote">Note</p>
+          </div>
+        </li>
+        <li>
+          <div id="dropdown" class="dropdownKlasa" title="Dropdown">
+            <p id="pDropdown">Dropdown</p>
+            <div id="dropdownStrelicaDoljeDiv">
+              <span id="dropdownStrelicaDoljeSpan">▾</span>
+            </div>
+          </div>
+        </li>
+
+        <li id="tabelaLi">
+          <div id="tabela" class="tabelaKlasa" title="Table">
+            <table id="tabelaElement" class="tabelaElementKlasa">
+              <thead>
+                <tr class="prviRedTabeleKlasa">
+                  <th>Header 1</th>
+                  <th>Header 2</th>
+                  <th>Header 3</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Cell 1</td>
+                  <td>Cell 2</td>
+                  <td>Cell 3</td>
+                </tr>
+                <tr>
+                  <td>Cell 4</td>
+                  <td>Cell 5</td>
+                  <td>Cell 6</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </li>
+
+        <li>
+          <div id="radioButton" class="radioButtonKlasa" title="Radio Button">
+            <ul id="radioButtonLista" class="radioButtonListaKlasa">
+              <li class="neoznacena">
+                option1
+              </li>
+              <li class="oznacena">
+                option2
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li>
+          <div id="checkbox" class="checkboxKlasa" title="Checkbox">
+            <ul id="checkboxLista" class="checkboxListaKlasa">
+              <li class="checkboxNeoznacena">
+                option1
+              </li>
+              <li class="checkboxOznacena">
+                option2
+              </li>
+            </ul>
+          </div>
+        </li>
+
+        <li>
+          <div id="verticalList" class="listKlasa" title="Vertical List">
+            <div id="unutarListe">
+              <vertical id="listVertical">
+                <ul class="verticalListKlasa">
+                  <li class="elementListeV">List element 1</li>
+                  <li class="elementListeV">List element 2</li>
+                  <li class="elementListeV">List element 3</li>
+                </ul>
+              </vertical>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <div id="horizontalList" class="hListKlasa" title="Horizontal List">
+            <div id="unutarHorizontalneListe">
+              <horizontal id="listHorizontal">
+                <ul class="horizontalListKlasa">
+                  <li class="elementListeH">List element 1</li>
+                  <li class="elementListeH">List element 2</li>
+                  <li class="elementListeH">List element 3</li>
+                </ul>
+              </horizontal>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div id="glavni"></div>
+    <div id="strelicaToolbara">
+      <button>&lt;&lt;</button>
+    </div>
+    <div id="desniToolbar">
+      <ul id="desniToolbarOpcije">
+        <li>
+          <div id="nazivElementaDiv">
+            <span id="nazivOdabranogElementa">Nesto</span>
+          </div>
+        </li>
+        <li id="standardneOpcije">
+          <ul id="tekstOpcije">
+            <li>
+              <span>Id:</span>
+              <input type="text" id="unosIdTrenutnogElementa" />
+            </li>
+            <li>
+              <span>Class:</span>
+              <input type="text" id="unosKlaseTrenutnogElementa" />
+            </li>
+            <li id="upravljanjeElementimaLi">
+              <button
+                id="deleteDugme"
+                onclick="obrisiElement();"
+                title="deletes currently selected element in workspace"
+              >
+                Delete ✘
+              </button>
+              <button
+                id="undoDugme"
+                onclick="vratiPosljednjeObrisaniElement()"
+                title="returns last deleted element to screen"
+              >
+                Undo ↶
+              </button>
+              <br />
+              <button
+                id="bringToFrontDugme"
+                onclick="staviIspred();"
+                title="brings currently selected element to front"
+              >
+                Bring To Front ▸
+              </button>
+              <button
+                id="sendToBackDugme"
+                onclick="staviIza();"
+                title="sends currently selected element to back"
+              >
+                Send To Back ◂
+              </button>
+              <button id="Group" title="grouping selected elements">
+                Group
+              </button>
+            </li>
+            <li>
+              <form id="formaPoravnanja">
+                <span>Alignment:</span>
+                <input
+                  type="radio"
+                  id="radio1"
+                  value="1"
+                  name="radio"
+                  checked="checked"
+                  onclick="poravnajLijevo()"
+                />
+                <label for="radio1"><img src="/ikonice/left.png" /></label>
+                <input
+                  type="radio"
+                  id="radio2"
+                  value="2"
+                  name="radio"
+                  onclick="centriraj()"
+                />
+                <label for="radio2"><img src="/ikonice/center.png" /></label>
+                <input
+                  type="radio"
+                  id="radio3"
+                  value="3"
+                  name="radio"
+                  onclick="poravnajDesno()"
+                />
+                <label for="radio3"><img src="/ikonice/right.png" /></label>
+                <input
+                  type="radio"
+                  id="radio4"
+                  value="4"
+                  name="radio"
+                  onclick="justify()"
+                />
+                <label for="radio4"><img src="/ikonice/justify.png" /></label>
+              </form>
+            </li>
+            <li>
+              <span>Font:</span>
+              <input type="number" id="fontElementa" min="1" max="100" />
+            </li>
+
+            <li>
+              <span>Height:</span>
+              <input type="text" id="unosVisineTextBox" />
+              <select id="visina">
+                <option value="px">px</option>
+                <option value="%">%</option>
+              </select>
+              <br />
+              <span>Width:</span>
+              <input type="text" id="unosSirineTextBox" />
+              <select id="sirina">
+                <option value="px">px</option>
+                <option value="%">%</option>
+              </select>
+            </li>
+            <li><button id="apply" onclick="apply()">Apply ✔</button></li>
+          </ul>
+        </li>
+        <li id="dodatneOpcije">
+          <ul id="listaDodatnihOpcija">
+            <li id="redovi">
+              <span>Rows:</span>
+              <input type="number" id="brojRedova" min="1" max="20" />
+            </li>
+            <li id="kolone">
+              <span>Columns:</span>
+              <input type="number" id="brojKolona" min="1" max="20" />
+            </li>
+            <li id="tabovi">
+              <span>Number of tabs:</span>
+              <input type="number" id="brojTabova" min="1" max="20" />
+            </li>
+            <li id="trenutnoOznaceniTab">
+              <span>Currently selected tab:</span>
+              <input
+                type="number"
+                id="brojTrenutnoOznacenogTaba"
+                min="1"
+                max="20"
+              />
+            </li>
+            <li id="radioDugmadi">
+              <span>Number of options in radio button:</span>
+              <input
+                type="number"
+                id="brojOpcijaRadioDugmadi"
+                min="1"
+                max="20"
+              />
+            </li>
+            <li id="trenutnoOznacenoRadioDugme">
+              <span>Currently selected radio button:</span>
+              <input
+                type="number"
+                id="brojTrenutnoOznacenogRadioDugmeta"
+                min="1"
+                max="20"
+              />
+            </li>
+
+            <li id="checkboxovi">
+              <span>Number of options in checkbox:</span>
+              <input
+                type="number"
+                id="brojOpcijaCheckboxova"
+                min="1"
+                max="20"
+              />
+            </li>
+            <li id="oznaceniCheckboxovi">
+              <span>Select checkbox:</span>
+              <input
+                type="number"
+                id="brojTrenutnoOznacenogCheckboxa"
+                min="1"
+                max="20"
+              />
+            </li>
+            <li id="neoznaceniCheckboxovi">
+              <span>Unselect checkbox:</span>
+              <input
+                type="number"
+                id="brojTrenutnoNeoznacenogCheckboxa"
+                min="1"
+                max="20"
+              />
+            </li>
+
+            <li id="vertikalnaLista">
+              <span>Number of elements in vertical list:</span>
+              <input
+                type="number"
+                id="brojOpcijaVertikalneListe"
+                min="1"
+                max="20"
+              />
+            </li>
+
+            <li id="horizontalnaLista">
+              <span>Number of elements in horizontal list:</span>
+              <input
+                type="number"
+                id="brojOpcijaHorizontalneListe"
+                min="1"
+                max="20"
+              />
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <span>Vertical distance:</span>
+          <input type="text" id="unosVertikalneUdaljenosti" disabled />
+          <select id="vertikalnaUdaljenostSelect" disabled>
+            <option value="px">px</option>
+            <option value="%">%</option>
+          </select>
+          <br />
+          <span>Horizontal distance:</span>
+          <input type="text" id="unosHorizontalneUdaljenosti" disabled />
+          <select id="horizontalnaUdaljenostSelect" disabled>
+            <option value="px">px</option>
+            <option value="%">%</option>
+          </select>
+          <br />
+        </li>
+        <li>
+          <button
+            id="ocitavanjeUdaljenosti"
+            onclick="ocitajSveUdaljenosti();"
+            title="Reads distance between elements"
+          >
+            Read the distance
+          </button>
+          <button
+            id="snimanjeFajlaDugme"
+            onclick="snimiCitavFajl();"
+            title="Stores the file on your local computer"
+          >
+            Save File
+          </button>
+          <button
+            id="snimanjeFajlaKaoPDF"
+            onclick="print();"
+            title="Stores the file on your local computer as PDF"
+          >
+            Save as PDF
+          </button>
+          <button
+            id="otvoriModalDugme"
+            onclick="prikaziModal();"
+            title="Allows you to choose Galen tests you want to create"
+          >
+            Choose test
+          </button>
+
+          <div id="modal" class="modalKlasa">
+            <div class="sadrzajModalaKlasa">
+              <span class="zatvoriModalKlasa">&times;</span>
+            </div>
+          </div>
+          <input type="file" id="importFajlaInput" accept="text/html" />
+          <button
+            id="importFajlaDugme"
+            onclick="otvoriFajl();"
+            title="Allows you to import file from your local computer"
+          >
+            Open
+          </button>
+        </li>
+        <li>
+          <span>Different sizes of canvas:</span><br />
+          <button
+            id="mobitel"
+            onclick="mobileVersion();"
+            title="Gives mobile sized canvas"
+          >
+            Mobile
+          </button>
+          <button
+            id="desktop"
+            onclick="desktopVersion();"
+            title="Gives desktop sized canvas"
+          >
+            Desktop
+          </button>
+          <button
+            id="tablet"
+            onclick="tabletVersion();"
+            title="Gives tablet sized canvas"
+          >
+            Tablet
+          </button>
+        </li>
+      </ul>
+    </div>
+    <script src="/js/diplomski.js"></script>
+    <script src="/js/interact.js"></script>
+    <script src="/js/desniToolbar.js"></script>
+    <script src="/js/galenDio.js"></script>
+    <script src="/js/vertikalnaIHorizontalnaUdaljenost.js"></script>
+    <script src="/js/snimanjeFajlova.js"></script>
+    <script src="/js/poravnanje.js"></script>
+    <script src="/js/html2canvas.js"></script>
+    <script src="/js/pdf.js"></script>
+    <script src="/js/evaluacija.js"></script>
   </body>
 </html>

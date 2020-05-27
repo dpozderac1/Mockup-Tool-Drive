@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 public class VersionController {
 

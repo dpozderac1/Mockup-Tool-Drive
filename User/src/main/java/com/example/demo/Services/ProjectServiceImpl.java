@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -52,5 +54,30 @@ public class ProjectServiceImpl implements ProjectService {
         else
             throw new RecordNotFoundException("Project with id " + id + " does not exist!");
     }
+
+    @Override
+    public ResponseEntity addProjectToUser(Long id, Project project) {
+        if(!userRepository.existsByID(id)){
+            throw new RecordNotFoundException("User with id " + id + " does not exist");
+        }
+        else if(!projectRepository.existsByID(project.getID())){
+            throw new RecordNotFoundException("Project with id " + project.getID() + " does not exist");
+        }
+        else{
+            Project projekat=projectRepository.findByID(project.getID());
+            User korisnik=userRepository.findByID(id);
+            List<Project> projekti=korisnik.getProjects();
+            projekti.add(projekat);
+            korisnik.setProjects(projekti);
+
+            /*List<User> korisnici=projekat.getUsers();
+            korisnici.add(korisnik);
+            projekat.setUsers(korisnici);*/
+            userRepository.save(korisnik);
+            //projectRepository.save(projekat);
+            return new ResponseEntity<>(projekat, HttpStatus.CREATED);
+        }
+    }
+
 
 }

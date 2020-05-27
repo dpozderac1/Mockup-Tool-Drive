@@ -23,7 +23,7 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 public class PDF_DocumentController {
 

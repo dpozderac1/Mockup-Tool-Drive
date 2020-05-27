@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @EnableBinding(BindingInterfaceInput.class)
-@CrossOrigin
+//@CrossOrigin
 @RestController
 public class GSPEC_DocumentController {
 

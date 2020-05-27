@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 public interface ProjectService {
 
     ResponseEntity newProject(Project newProject, Long id) throws URISyntaxException;
     ResponseEntity deleteProject(Long id) throws JSONException;
-
+    ResponseEntity addProjectToUser(Long id,Project project);
 }

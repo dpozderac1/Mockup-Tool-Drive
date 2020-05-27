@@ -65,6 +65,10 @@ public class UserController {
         return userService.getUserByUsername(username);
     }
 
+    @GetMapping(value="/users/sharedProjects/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    List<User> getUsersSharingProjectByProjectId(@PathVariable Long id){
+        return userService.getUsersSharingProjectByProjectId(id);
+    }
     /*@GetMapping(value="/user/allFiles/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity getAllProjects(@PathVariable Long id) {
         return userService.getAllProjects(id);

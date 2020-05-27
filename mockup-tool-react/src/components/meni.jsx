@@ -14,6 +14,7 @@ import {
 } from 'reactstrap';
 import SignIn from './signIn';
 import SignUp from './signUp';
+import Collaboration from './collaboration';
 
 class Meni extends Component {
     constructor(props) {
@@ -26,6 +27,10 @@ class Meni extends Component {
         this.hideComponent = this.hideComponent.bind(this);
     }
 
+    componentDidMount() {
+        this.sakrijMockupTool();
+    }
+
     divStyle = {
         overflowY: 'scroll'
     };
@@ -35,16 +40,22 @@ class Meni extends Component {
 
         switch (name) {
             case "showSignIn":
-                this.setState({ aktivni: [true, false, false, false] });
+                this.setState({ aktivni: [true, false, false, false, false, false] });
                 break;
             case "showSignUp":
-                this.setState({ aktivni: [false, true, false, false] });
+                this.setState({ aktivni: [false, false, true, false, false, false] });
                 break;
             case "showUpdateAdmin":
-                this.setState({ aktivni: [false, false, true, false] });
+                this.setState({ aktivni: [false, false, false, true, false, false] });
                 break;
             case "showUpdateUser":
-                this.setState({ aktivni: [false, false, false, true] });
+                this.setState({ aktivni: [false, false, false, true, false, false] });
+                break;
+            case "showMockupTool":
+                this.setState({ aktivni: [false, false, false, false, true, false] });
+                break;
+            case "showCollaboration":
+                this.setState({ aktivni: [false, false, false, false, false, true] });
                 break;
         }
     }
@@ -68,6 +79,22 @@ class Meni extends Component {
 
     };
 
+    prikaziMockupTool() {
+        document.getElementById('zaglavlje').style.display = "flex";
+        document.getElementById('lijevo').style.display = "flex";
+        document.getElementById('glavni').style.display = "flex";
+        document.getElementById('strelicaToolbara').style.display = "flex";
+        document.getElementById('desniToolbar').style.display = "flex";
+    }
+
+    sakrijMockupTool() {
+        document.getElementById('zaglavlje').style.display = "none";
+        document.getElementById('lijevo').style.display = "none";
+        document.getElementById('glavni').style.display = "none";
+        document.getElementById('strelicaToolbara').style.display = "none";
+        document.getElementById('desniToolbar').style.display = "none";
+    }
+
     render() {
         const { showSignIn, showSignUp, showUpdateAdmin, showUpdateUser } = this.state;
 
@@ -81,7 +108,9 @@ class Meni extends Component {
                         {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignUp"); this.setPodaci("showSignUp"); }}>Sign up</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showUpdateAdmin"); this.setPodaci("showUpdateAdmin"); }}>Admin profile</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showUpdateUser"); this.setPodaci("showUpdateUser"); }}>User profile</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { localStorage.clear(); window.location.reload(); }}>Sign out</NavLink> : ""}
+                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showMockupTool"); }}>Mockup Tool</NavLink> : ""}
+                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showCollaboration"); }}>Collaborate</NavLink> : ""}
+                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>Sign out</NavLink> : ""}
                     </Nav>
                 </Navbar>
 
@@ -98,6 +127,8 @@ class Meni extends Component {
                                 />
                             </Row>
                         </div>}
+                    {this.state.aktivni[4] ? this.prikaziMockupTool() : this.sakrijMockupTool()}
+                    {this.state.aktivni[5] && <Collaboration />}
                 </Form>
             </div>
         );
