@@ -19,6 +19,7 @@ import CreateNewServer from './createNewServer';
 import axios from 'axios';
 import {UrlContext} from '../urlContext';
 import CreateNewVersion from './createNewVersion';
+import ProjectOverview from './projectOverview';
 
 class Meni extends Component {
     constructor(props) {
@@ -142,19 +143,24 @@ class Meni extends Component {
 
         return (
             <div>
-                <Navbar color="light" light expand="md">
-                    <NavbarBrand href="/">Mockup tool drive</NavbarBrand>
-                    <NavbarToggler />
-                    <Nav className="mr-auto" navbar>
-                        {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignIn") }}>Sign in</NavLink> : ""}
-                        {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignUp"); this.setPodaci("showSignUp"); }}>Sign up</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "ADMIN" ? <NavLink onClick={() => { this.hideComponent("showUpdateAdmin"); this.setPodaci("showUpdateAdmin"); }}>Admin profile</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "USER" ? <NavLink onClick={() => { this.hideComponent("showUpdateUser"); this.setPodaci("showUpdateUser"); }}>User profile</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showMockupTool"); }}>Mockup Tool</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showCollaboration"); }}>Collaborate</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>Sign out</NavLink> : ""}
-                    </Nav>
-                </Navbar>
+                <Row xs={12}>
+                    <Col>
+                    <Navbar color="light" light expand="md">
+                        <NavbarBrand href="/">Mockup tool drive</NavbarBrand>
+                        <NavbarToggler />
+                        <Nav className="mr-auto" navbar>
+                            {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignIn") }}>Sign in</NavLink> : ""}
+                            {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignUp"); this.setPodaci("showSignUp"); }}>Sign up</NavLink> : ""}
+                            {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "ADMIN" ? <NavLink onClick={() => { this.hideComponent("showUpdateAdmin"); this.setPodaci("showUpdateAdmin"); }}>Admin profile</NavLink> : ""}
+                            {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "USER" ? <NavLink onClick={() => { this.hideComponent("showUpdateUser"); this.setPodaci("showUpdateUser"); }}>User profile</NavLink> : ""}
+                            {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showMockupTool"); }}>Mockup Tool</NavLink> : ""}
+                            {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showCollaboration"); }}>Collaborate</NavLink> : ""}
+                            {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>Sign out</NavLink> : ""}
+                        </Nav>
+                    </Navbar>
+                    </Col>
+                </Row>
+                <ProjectOverview></ProjectOverview>
 
                 <Form>
                     {this.state.aktivni[0] && <SignIn data = {this}/>}
