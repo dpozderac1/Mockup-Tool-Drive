@@ -28,10 +28,10 @@ class CreateNewVersion extends Component {
                                              </svg>
                      },
             projectName: "",
-            project: true,
+            project: this.props.data.state.createProject,
             date_created: "",
             date_modified: "",
-            priority: 0,
+            priority: 1,
             errorVisible: false,
             successProject: false, 
             successVersion: false,
@@ -44,7 +44,6 @@ class CreateNewVersion extends Component {
     handleClick = (element) => {
         const e = {name: element.name, icon: element.icon};
         this.setState({checked: e});
-        console.log("datum: ", new Date().toLocaleString());
     };
 
     renderDropDownItems() {
@@ -59,7 +58,15 @@ class CreateNewVersion extends Component {
             const today = new Date();
             let month = today.getMonth().toString();
             month.length == 1 ? month = "0" + month : month = month;
-            const date = today.getFullYear() + "-" + month + "-" + today.getDate() + "T" + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + "." + today.getMilliseconds() + "Z";
+            let day = today.getDate().toString();
+            day.length == 1 ? day = "0" + day : day = day;
+            let hours = today.getHours().toString();
+            hours.length == 1 ? hours = "0" + hours : hours = hours;
+            let minutes = today.getMinutes().toString();
+            minutes.length == 1 ? minutes = "0" + minutes : minutes = minutes;
+            let seconds = today.getSeconds().toString();
+            seconds.length == 1 ? seconds = "0" + seconds : seconds = seconds;
+            const date = today.getFullYear() + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "." + today.getMilliseconds() + "Z";
             axios.post(url.project + "/addProject/" + res.data.id, {
                 name: this.state.projectName,
                 date_created: date,
@@ -83,6 +90,7 @@ class CreateNewVersion extends Component {
                 });
                 document.getElementById("projectName").value = "";
                 this.setState({projectName: "", errorVisible: false, successProject: true, checked: this.state.versions[0]});
+                setTimeout(() => this.props.data.hideComponent("showProjectOverview"), 2000);
             })
             .catch((error) => {
                 console.log("Greska!");

@@ -75,7 +75,7 @@ class SignIn extends React.Component {
             this.setState({
                 goodParameters: "hidden"
             });
-            this.props.data.hideComponent("showMockupTool");
+            this.props.data.hideComponent("showProjectOverview");
         })
             .catch((error) => {
                 console.log("Status");

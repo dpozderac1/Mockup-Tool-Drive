@@ -26,16 +26,18 @@ class Meni extends Component {
         super();
         this.state = {
             name: "React",
-            aktivni: [false, false, false, false, false, false, false],
+            aktivni: [false, false, false, false, false, false, false, false, false],
             forma: "signup",
             serverOrBrowser: "",
             servers: [],
             firstServer: "", 
-            role: ""
+            role: "",
+            createProject: false
         };
         this.hideComponent = this.hideComponent.bind(this);
         this.hideAll = this.hideAll.bind(this);
         this.setRole = this.setRole.bind(this);
+        this.setIsProjectCreated = this.setIsProjectCreated.bind(this);
     }
 
     componentDidMount() {
@@ -56,31 +58,35 @@ class Meni extends Component {
 
         switch (name) {
             case "showSignIn":
-                this.setState({ aktivni: [true, false, false, false, false, false, false] });
+                this.setState({ aktivni: [true, false, false, false, false, false, false, false] });
                 break;
             case "showSignUp":
-                this.setState({ aktivni: [false, false, true, false, false, false, false] });
+                this.setState({ aktivni: [false, false, true, false, false, false, false, false, false] });
                 break;
             case "showUpdateAdmin":
-                this.setState({ aktivni: [false, false, false, true, false, false, false] });
+                this.setState({ aktivni: [false, false, false, true, false, false, false, false, false] });
                 break;
             case "showUpdateUser":
-                this.setState({ aktivni: [false, false, false, true, false, false, false] });
+                this.setState({ aktivni: [false, false, false, true, false, false, false, false, false] });
                 break;
             case "showMockupTool":
-                this.setState({ aktivni: [false, false, false, false, true, false, false] });
+                this.setState({ aktivni: [false, false, false, false, true, false, false, false, false] });
                 break;
             case "showCollaboration":
-                this.setState({ aktivni: [false, false, false, false, false, true, false] });
+                this.setState({ aktivni: [false, false, false, false, false, true, false, false, false] });
+                break;
+            case "showProjectOverview":
+                this.setState({ aktivni: [false, false, false, false, false, false, false, true, false] });
+                break;
+            case "showCreateProject":
+                this.setState({ aktivni: [false, false, false, false, false, false, false, false, true] });
                 break;
         }
     }
 
     hideAll(name) {
-        console.log("meni naziv: ", name);
         if(name == "browser"){
             let url = this.context;
-            console.log("contekst: ", url);
             axios.get(url.onlineTesting + "/servers").then(res => {
                 let servers = [];
                 res.data.map(server => 
@@ -89,12 +95,11 @@ class Meni extends Component {
                         servers.push(s);
                     }
                 );
-                console.log("serveriii: ", servers);
-                this.setState({ aktivni: [false, false, false, false, false, false, true], serverOrBrowser: name, servers, firstServer: servers[0].name});
+                this.setState({ aktivni: [false, false, false, false, false, false, true, false, false], serverOrBrowser: name, servers, firstServer: servers[0].name});
             });
         }   
         else {
-            this.setState({ aktivni: [false, false, false, false, false, false, true], serverOrBrowser: name});
+            this.setState({ aktivni: [false, false, false, false, false, false, true, false, false], serverOrBrowser: name});
         }     
     }
 
@@ -135,7 +140,10 @@ class Meni extends Component {
 
     setRole (role) {
         this.setState({role});
-        console.log("meni role: ", this.state.role);
+    }
+
+    setIsProjectCreated() {
+        this.setState({createProject: true});
     }
 
     render() {
@@ -155,12 +163,13 @@ class Meni extends Component {
                             {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "USER" ? <NavLink onClick={() => { this.hideComponent("showUpdateUser"); this.setPodaci("showUpdateUser"); }}>User profile</NavLink> : ""}
                             {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showMockupTool"); }}>Mockup Tool</NavLink> : ""}
                             {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showCollaboration"); }}>Collaborate</NavLink> : ""}
+                            {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showProjectOverview"); }}>Project Overview</NavLink> : ""}
                             {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>Sign out</NavLink> : ""}
                         </Nav>
                     </Navbar>
                     </Col>
                 </Row>
-                <ProjectOverview></ProjectOverview>
+                
 
                 <Form>
                     {this.state.aktivni[0] && <SignIn data = {this}/>}
@@ -178,6 +187,8 @@ class Meni extends Component {
                     {this.state.aktivni[4] ? this.prikaziMockupTool() : this.sakrijMockupTool()}
                     {this.state.aktivni[5] && <Collaboration />}
                     {this.state.aktivni[6] && <CreateNewServer data ={this}/> }
+                    {this.state.aktivni[7] && <ProjectOverview data = {this}/>}
+                    {this.state.aktivni[8] && <CreateNewVersion data = {this} />}
                 </Form>
             </div>
         );

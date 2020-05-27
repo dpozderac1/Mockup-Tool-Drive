@@ -16,6 +16,8 @@ class ProjectOverview extends Component {
             listaProjekata: [],
             searchProjectValue: ""
         };
+
+        this.handleClick = this.handleClick.bind(this);
     }
 
     renderDropDownItems() {
@@ -46,9 +48,18 @@ class ProjectOverview extends Component {
 
         
     };
+
+
     componentDidMount() {
         this.getProjectsOfUser();
     }
+
+    
+    handleClick () {
+        this.props.data.hideComponent("showCreateProject");
+        this.props.data.setIsProjectCreated();
+        this.getProjectsOfUser();
+    };
 
     render() {
         return (
@@ -82,6 +93,7 @@ class ProjectOverview extends Component {
                                     }
                                 }>
                                     <Button 
+                                        onClick = {this.handleClick}
                                         className="bg-dark btn form-control"
                                         style={
                                             {
