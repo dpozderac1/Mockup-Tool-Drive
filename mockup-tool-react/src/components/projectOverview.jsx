@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import {Form, FormGroup,  Col,  Row, Container, Label, Button, Input, InputGroup, InputGroupAddon,
+import {Form, Alert, FormGroup,  Col,  Row, Container, Label, Button, Input, InputGroup, InputGroupAddon,
      InputGroupText, DropdownMenu, DropdownItem, UncontrolledDropdown, DropdownToggle, Nav, NavLink, NavItem} from 'reactstrap';
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import SideBar from './sidebar';
@@ -11,19 +11,50 @@ class ProjectOverview extends Component {
     constructor(props) {
         super();
         this.state = {
-            values: [{value: "Alphabetical", active: true}, {value: "Druga opcija", active: false}],
+            values: [{value: "Alphabetical", active: true}, {value: "Date created", active: false}, {value: "Date modified", active: false}],
             title : "Alphabetical",
             listaProjekata: [],
-            searchProjectValue: ""
+            searchProjectValue: "",
+            deleteSuccess: false,
+            errorMessage: "",
+            errorVisible: false,
+            hide: true
         };
 
         this.handleClick = this.handleClick.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
     }
 
     renderDropDownItems() {
-        return <DropdownMenu>{ this.state.values.map(element => <DropdownItem tag="a" href="#" onClick={() => this.handleClick(element)}>{ element.value }</DropdownItem>) }</DropdownMenu>;
+        return <DropdownMenu>{ this.state.values.map(element => <DropdownItem tag="a" href="#" onClick={() => this.handleClickFilter(element)}>{ element.value }</DropdownItem>) }</DropdownMenu>;
 
     }
+
+    handleClickFilter = (element) => {
+        let array = [...this.state.listaProjekata];
+        if(element.value == "Alphabetical") {
+            array.sort(function(a, b){
+                if(a[3].toUpperCase() < b[3].toUpperCase()) { return -1; }
+                if(a[3].toUpperCase() > b[3].toUpperCase()) { return 1; }
+                return 0;
+            });
+        }
+        else if (element.value == "Date created") {
+            array.sort(function(a, b){
+                if(Date.parse(a[1]) < Date.parse(b[1])) { return -1; }
+                if(Date.parse(a[1]) > Date.parse(b[1])) { return 1; }
+                return 0;
+            });
+        }
+        else if (element.value == "Date modified") {
+            array.sort(function(a, b){
+                if(Date.parse(a[2]) < Date.parse(b[2])) { return -1; }
+                if(Date.parse(a[2]) > Date.parse(b[2])) { return 1; }
+                return 0;
+            });
+        }
+        this.setState({listaProjekata: array, title: element.value});
+    };
 
     getProjectsOfUser = () => {
         let url = this.context;
@@ -60,6 +91,35 @@ class ProjectOverview extends Component {
         this.props.data.setIsProjectCreated();
         this.getProjectsOfUser();
     };
+
+    handleDelete (id) {
+        let url = this.context;
+        axios.delete(url.project + "/delete/project/" + id).then(res => {
+            let array = [...this.state.listaProjekata];
+            let index = "";
+            array.forEach(element => {
+                if (id == element[0]) {
+                    index = array.indexOf(element);
+                }
+            });
+            array.splice(index, 1);
+            this.setState({listaProjekata: array, deleteSuccess: true, errorVisible: false, hide: true});
+            setTimeout(() => {this.setState({hide: false})}, 3000);
+        })
+        .catch((error) => {
+            console.log("Greska!");
+            let err = "";
+            if(error.response.data.errors == undefined) {
+                err = "Unknown error!";
+            }
+            else {
+                err = error.response.data.errors[0];
+            }
+            this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
+            setTimeout(() => {this.setState({hide: false})}, 3000);
+        });
+    }
+
 
     render() {
         return (
@@ -144,6 +204,10 @@ class ProjectOverview extends Component {
                             </Col>
                         </Row>
                         <br/>
+                        <Col xs = {6} style = {{padding: '0'}}>
+                            {this.state.deleteSuccess == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none"}} color = "success">Project successfully deleted!</Alert> : ""}
+                            {this.state.errorVisible == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none"}} color = "danger">{this.state.errorMessage}</Alert> : ""}
+                        </Col>
                         <br/>
                         <Row>
                             {this.state.listaProjekata.map((el) => (
@@ -170,7 +234,8 @@ class ProjectOverview extends Component {
                                 }
                             vertical>
                                 <NavItem>
-                                    <NavLink className="" href="#">Delete</NavLink>
+                                    <NavLink id = {el[0]} onClick = {(e) =>
+                                        this.handleDelete(e.target.id)} className="" href="#">Delete</NavLink>
                                 </NavItem>
                                 <NavItem>
                                     <Label 
@@ -191,6 +256,5 @@ class ProjectOverview extends Component {
 }
  
 ProjectOverview.contextType = UrlContext;
-
 
 export default ProjectOverview;
