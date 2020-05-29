@@ -16,6 +16,13 @@
 .breadcrumb {
   background-color: white !important;
 }
+
+nav.breadcrumb{
+  background-color: white !important;
+  padding: 0;
+  margin-bottom: 0;
+}
+
 .bkItem:hover {
   cursor: pointer;
   text-decoration: underline;

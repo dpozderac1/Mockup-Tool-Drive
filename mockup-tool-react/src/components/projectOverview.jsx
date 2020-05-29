@@ -26,6 +26,7 @@ class ProjectOverview extends Component {
             gspecs: [], 
             pdfMockupi: [],
             gspecsMockupi: [],
+            pretragaProketi: [],
             searchProjectValue: "",
             deleteSuccess: false,
             errorMessage: "",
@@ -46,6 +47,14 @@ class ProjectOverview extends Component {
                 </DropdownItem>) }
         </DropdownMenu>
         );
+    }
+
+    searchFiles = (s) =>{
+        if(this.state.listaProjekata != null){
+            this.state.listaProjekata.map((mockup) => {
+                console.log(s);
+            });
+        }
     }
 
     handleClickFilter = (element) => {
@@ -250,6 +259,129 @@ class ProjectOverview extends Component {
         });
     }
 
+    deleteVersion = (indeks) => {
+        let url = this.context;
+        if(this.state.verzije != null){
+            console.log(this.state.verzije)
+            axios.delete(url.project + "/delete/version/" + this.state.verzije[indeks].id).then(res => { 
+                let array = [...this.state.verzije];
+                array.splice(indeks, 1)
+                this.setState({ 
+                    verzije: array,
+                    listaAktivnih: [false, true, false, false, false, false],
+                    deleteSuccess: true, 
+                    errorVisible: false, 
+                    hide: true});
+                setTimeout(() => {this.setState({hide: false})}, 3000);
+            })
+            .catch((error) => {
+                console.log("Greska!");
+                let err = "";
+                if(error.response.data.errors == undefined) {
+                    err = "Unknown error!";
+                }
+                else {
+                    err = error.response.data.errors[0];
+                }
+                this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
+                setTimeout(() => {this.setState({hide: false})}, 3000);
+            });
+        }
+    }
+
+    deleteMockup = (indeks) => {
+        let url = this.context;
+        if(this.state.mockupi != null){
+            console.log(this.state.verzije)
+            axios.delete(url.project + "/delete/mockup/" + this.state.mockupi[indeks].id).then(res => { 
+                let array = [...this.state.mockupi];
+                array.splice(indeks, 1)
+                this.setState({ 
+                    mockupi: array,
+                    listaAktivnih: [false, false, false, true, false, false],
+                    deleteSuccess: true, 
+                    errorVisible: false, 
+                    hide: true});
+                setTimeout(() => {this.setState({hide: false})}, 3000);
+            })
+            .catch((error) => {
+                console.log("Greska!");
+                let err = "";
+                if(error.response.data.errors == undefined) {
+                    err = "Unknown error!";
+                }
+                else {
+                    err = error.response.data.errors[0];
+                }
+                this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
+                setTimeout(() => {this.setState({hide: false})}, 3000);
+            });
+        }
+    
+    }
+
+    deletePDF = (indeks) => {
+        let url = this.context;
+        if(this.state.pdfs != null){
+            console.log(this.state.pdfs)
+            axios.delete(url.project + "/delete/pdf_document/" + this.state.pdfs[indeks].id).then(res => { 
+                let array = [...this.state.pdfs];
+                array.splice(indeks, 1)
+                this.setState({ 
+                    pdfs: array,
+                    listaAktivnih: [false, false, false, false, false, true],
+                    deleteSuccess: true, 
+                    errorVisible: false, 
+                    hide: true});
+                setTimeout(() => {this.setState({hide: false})}, 3000);
+            })
+            .catch((error) => {
+                console.log("Greska!");
+                let err = "";
+                if(error.response.data.errors == undefined) {
+                    err = "Unknown error!";
+                }
+                else {
+                    err = error.response.data.errors[0];
+                }
+                this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
+                setTimeout(() => {this.setState({hide: false})}, 3000);
+            });
+        }
+    
+    }
+
+    deleteGSPEC = (indeks) => {
+        let url = this.context;
+        if(this.state.gspecs != null){
+            console.log(this.state.gspecs)
+            axios.delete(url.project + "/delete/gspec_document/" + this.state.gspecs[indeks].id).then(res => { 
+                let array = [...this.state.gspecs];
+                array.splice(indeks, 1)
+                this.setState({ 
+                    gspecs: array,
+                    listaAktivnih: [false, false, false, false, true, false],
+                    deleteSuccess: true, 
+                    errorVisible: false, 
+                    hide: true});
+                setTimeout(() => {this.setState({hide: false})}, 3000);
+            })
+            .catch((error) => {
+                console.log("Greska!");
+                let err = "";
+                if(error.response.data.errors == undefined) {
+                    err = "Unknown error!";
+                }
+                else {
+                    err = error.response.data.errors[0];
+                }
+                this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
+                setTimeout(() => {this.setState({hide: false})}, 3000);
+            });
+        }
+    
+    }
+
     dinamickiDodajElementeNiza = (niz, a) => {
         return(
             <Row>
@@ -286,7 +418,16 @@ class ProjectOverview extends Component {
                     <NavLink id = {a[0] ? el[0] : " "} 
                             onClick = {(e) =>{
                             if(a[0])  
-                                this.handleDelete(e.target.id);}} 
+                                this.handleDelete(e.target.id);
+                            if(a[1])
+                                this.deleteVersion(indeks);
+                            if(a[3])
+                                this.deleteMockup(indeks);
+                            if(a[4])
+                                this.deleteGSPEC(indeks);
+                            if(a[5])
+                                this.deletePDF(indeks);
+                            }} 
                             className="" href="#">
                     Delete
                     </NavLink>
@@ -327,9 +468,9 @@ class ProjectOverview extends Component {
                     <br/>
                     <Form>
                         <FormGroup/>
-                        <Row form>
-                            <Col md={!a[2] ? 9 : 12}>         
-                                <Breadcrumb tag="nav" listTag="div" className="breadcrumb">
+                        <Row>
+                            <Col md={!a[2] ? 9 : 12}>        
+                                <Breadcrumb  className="breadcrumb">
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
@@ -340,50 +481,49 @@ class ProjectOverview extends Component {
                                     </BreadcrumbItem>
                                     {(!a[0]) && 
                                     <BreadcrumbItem tag="a"
-                                    onClick = {(e) =>{
-                                        this.setState({
-                                            listaAktivnih: [false, true, false, false, false, false],
-                                        });
-                                    }}> 
-                                    <h4 className="bkItem text-secondary"> {this.vratiNaziv(this.state.listaProjekata[this.state.indeksKlika])}</h4>
+                                        onClick = {(e) =>{
+                                            this.setState({
+                                                listaAktivnih: [false, true, false, false, false, false],
+                                            });
+                                        }}> 
+                                        <h4 className="bkItem text-secondary"> {this.vratiNaziv(this.state.listaProjekata[this.state.indeksKlika])}</h4>
                                     </BreadcrumbItem>}
                                     {(a[2] || a[3] || a[5] || a[4]) && 
                                     <BreadcrumbItem tag="a"
-                                    onClick = {(e) =>{
-                                        this.setState({
-                                            listaAktivnih: [false, false, true, false, false, false],
-                                        });
-                                    }}> 
-                                    <h4 className="bkItem text-secondary"> {this.state.verzije[this.state.indeksKlikaVerzija].versionName}</h4>
+                                        onClick = {(e) =>{
+                                            this.setState({
+                                                listaAktivnih: [false, false, true, false, false, false],
+                                            });
+                                        }}> 
+                                        <h4 className="bkItem text-secondary"> {this.state.verzije[this.state.indeksKlikaVerzija].versionName}</h4>
                                     </BreadcrumbItem>}
                                     {(a[3]) && 
                                     <BreadcrumbItem tag="a"
-                                    onClick = {(e) =>{
-                                        this.setState({
-                                            listaAktivnih: [false, false, false, true, false, false],
-                                        });
-                                    }}> 
-                                    <h4 className="bkItem text-secondary"> {this.state.tipFilea[0]}</h4>
+                                        onClick = {(e) =>{
+                                            this.setState({
+                                                listaAktivnih: [false, false, false, true, false, false],
+                                            });
+                                        }}> 
+                                        <h4 className="bkItem text-secondary"> {this.state.tipFilea[0]}</h4>
                                     </BreadcrumbItem>}
                                     {(a[5]) && 
                                     <BreadcrumbItem tag="a"
-                                    onClick = {(e) =>{
-                                        this.setState({
-                                            listaAktivnih: [false, false, false, false, false, true],
-                                        });
-                                    }}> 
-                                    <h4 className="bkItem text-secondary"> {this.state.tipFilea[2]}</h4>
+                                        onClick = {(e) =>{
+                                            this.setState({
+                                                listaAktivnih: [false, false, false, false, false, true],
+                                            });
+                                        }}> 
+                                        <h4 className="bkItem text-secondary"> {this.state.tipFilea[2]}</h4>
                                     </BreadcrumbItem>}
                                     {(a[4]) && 
                                     <BreadcrumbItem tag="a"
-                                    onClick = {(e) =>{
-                                        this.setState({
-                                            listaAktivnih: [false, false, false, false, true, false],
-                                        });
-                                    }}> 
-                                    <h4 className="bkItem text-secondary"> {this.state.tipFilea[1]}</h4>
+                                        onClick = {(e) =>{
+                                            this.setState({
+                                                listaAktivnih: [false, false, false, false, true, false],
+                                            });
+                                        }}> 
+                                        <h4 className="bkItem text-secondary"> {this.state.tipFilea[1]}</h4>
                                     </BreadcrumbItem>}
-                                    
                                 </Breadcrumb>
                             </Col>
                             {a[1] && <Col md={1}>
@@ -411,8 +551,10 @@ class ProjectOverview extends Component {
                             <Col md={4}>
                                 <InputGroup>
                                     <Input placeholder = {a[0] ? "Search projects" : a[3] ? "Search mockups": a[5] ? "Search pdfs" : a[4] ? "Search gspecs": " "} 
-                                        onChange={(e) =>
+                                        onChange={(e) =>{
                                         this.setState({ searchProjectValue: e.target.value})
+                                        this.searchFiles(e);
+                                    }
                                     } 
                                     />
                                     <InputGroupAddon addonType="prepend">
@@ -440,7 +582,7 @@ class ProjectOverview extends Component {
                         <br/>
                         
                             <Col xs = {12} style = {{padding: '0'}}>
-                                {this.state.deleteSuccess == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none"}} color = "success">Project successfully deleted!</Alert> : ""}
+                                {this.state.deleteSuccess == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none"}} color = "success">Successfully deleted!</Alert> : ""}
                                 {this.state.errorVisible == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none"}} color = "danger">{this.state.errorMessage}</Alert> : ""}
                             </Col>
                         
