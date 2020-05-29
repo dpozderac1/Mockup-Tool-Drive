@@ -129,6 +129,7 @@ class ProjectOverview extends Component {
                         this.setState(previousState => ({
                             listaProjekata: [...previousState.listaProjekata, element]
                         }));
+                        console.log("projekti iz state", this.state.listaProjekata);
                     });
                     
                 }
@@ -282,7 +283,13 @@ class ProjectOverview extends Component {
                 </NavItem>}
 
                 {!a[2] && <NavItem>
-                    <NavLink  href="#">Delete</NavLink>
+                    <NavLink id = {a[0] ? el[0] : " "} 
+                            onClick = {(e) =>{
+                            if(a[0])  
+                                this.handleDelete(e.target.id);}} 
+                            className="" href="#">
+                    Delete
+                    </NavLink>
                 </NavItem>}
                 <NavItem>
                 <Label>
@@ -431,6 +438,12 @@ class ProjectOverview extends Component {
                             </Col>
                         </Row>}
                         <br/>
+                        
+                            <Col xs = {12} style = {{padding: '0'}}>
+                                {this.state.deleteSuccess == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none"}} color = "success">Project successfully deleted!</Alert> : ""}
+                                {this.state.errorVisible == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none"}} color = "danger">{this.state.errorMessage}</Alert> : ""}
+                            </Col>
+                        
                         <br/>
                         {a[0] && this.dinamickiDodajElementeNiza(this.state.listaProjekata, a)}
                         {a[1] && this.dinamickiDodajElementeNiza(this.state.verzije, a)}
