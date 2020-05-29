@@ -287,7 +287,7 @@ class ProjectOverview extends Component {
                 <NavItem>
                 <Label>
                     {a[0] && el[3]}
-                    {a[1] && el.version_name}
+                    {a[1] && el.versionName}
                     {a[2] && el}
                     {a[3] && el.name}
                     {a[5] && el.name}
@@ -347,7 +347,7 @@ class ProjectOverview extends Component {
                                             listaAktivnih: [false, false, true, false, false, false],
                                         });
                                     }}> 
-                                    <h4 className="bkItem text-secondary"> {this.state.verzije[this.state.indeksKlikaVerzija].version_name}</h4>
+                                    <h4 className="bkItem text-secondary"> {this.state.verzije[this.state.indeksKlikaVerzija].versionName}</h4>
                                     </BreadcrumbItem>}
                                     {(a[3]) && 
                                     <BreadcrumbItem tag="a"

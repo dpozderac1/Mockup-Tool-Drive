@@ -9,4 +9,5 @@ import java.util.List;
 public interface MockupRepository extends JpaRepository<Mockup,Long> {
     Mockup findByID(Long ID);
     List<Mockup> findAllByversionId(Version version);
+    Boolean existsByName(String name);
 }

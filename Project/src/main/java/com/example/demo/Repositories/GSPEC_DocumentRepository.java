@@ -9,4 +9,5 @@ import java.util.List;
 public interface GSPEC_DocumentRepository extends JpaRepository<GSPEC_Document,Long> {
     GSPEC_Document findByID(Long Id);
     List<GSPEC_Document> findAllBymockupID(Mockup mockup);
+    Boolean existsByName(String name);
 }
