@@ -7,6 +7,7 @@ import SideBar from './sidebar';
 import axios from "axios";
 import "../App.css";
 import {UrlContext} from '../urlContext';
+import CreateNewVersion from './createNewVersion';
 
 class ProjectOverview extends Component {
     constructor(props) {
@@ -16,7 +17,7 @@ class ProjectOverview extends Component {
             title : "Alphabetical",
             listaProjekata: [],
             searchProjectValue: "",
-            listaAktivnih: [true, false, false, false, false, false],
+            listaAktivnih: [true, false, false, false, false, false, false],
             indeksKlika: "",
             indeksKlikaVerzija: "",
             verzije: [],
@@ -31,11 +32,14 @@ class ProjectOverview extends Component {
             deleteSuccess: false,
             errorMessage: "",
             errorVisible: false,
-            hide: true
+            hide: true,
+            isProject: "project"
         };
 
         this.handleClick = this.handleClick.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.backToProjects = this.backToProjects.bind(this);
+        this.goBack = this.goBack.bind(this);
     }
 
     renderDropDownItems() {
@@ -87,11 +91,29 @@ class ProjectOverview extends Component {
         this.getProjectsOfUser();
     }
  
-    handleClick () {
-        this.props.data.hideComponent("showCreateProject");
-        this.props.data.setIsProjectCreated();
-        this.getProjectsOfUser();
+    handleClick (element) {
+        this.setState({listaAktivnih: [false, false, false, false, false, false, true]});
     };
+
+    backToProjects() {
+        if(this.state.isProject === "project") {
+            this.getProjectsOfUser();
+            this.setState({listaAktivnih: [true, false, false, false, false, false, false], isProject: "project"});
+        }
+        else if (this.state.isProject === "version") {
+            this.udjiUProjekat(this.state.indeksKlika);
+            this.setState({listaAktivnih: [false, true, false, false, false, false, false], isProject: "version"});
+        }
+    }
+
+    goBack () {
+        if(this.state.isProject === "project") {
+            this.setState({listaAktivnih: [true, false, false, false, false, false, false], isProject: "project"});
+        }
+        else if (this.state.isProject === "version") {
+            this.setState({listaAktivnih: [false, true, false, false, false, false, false], isProject: "version"});
+        }
+    }
 
     handleDelete (id) {
         let url = this.context;
@@ -167,8 +189,7 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, false, false, true, false, false],
-            indeksKlika: indeks
+            listaAktivnih: [false, false, false, true, false, false, false]
         });
     };
 
@@ -197,7 +218,7 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, false, false, false, false, true]
+            listaAktivnih: [false, false, false, false, false, true, false]
         });
 
     }
@@ -228,7 +249,7 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, false, false, false, true, false]
+            listaAktivnih: [false, false, false, false, true, false, false]
         });
     }
 
@@ -242,19 +263,20 @@ class ProjectOverview extends Component {
                     verzije: versions.data
                 });
 
-                console.log(this.state.verzije[0]);
+                console.log("ta verzija: ", this.state.verzije[0]);
             });
         }
 
         this.setState({
-            listaAktivnih: [false, true, false, false, false, false],
-            indeksKlika: indeks
+            listaAktivnih: [false, true, false, false, false, false, false],
+            indeksKlika: indeks,
+            isProject: "version"
         });
     }
 
     udjiUVerziju = (indeks) => {
         this.setState({
-            listaAktivnih: [false, false, true, false, false, false],
+            listaAktivnih: [false, false, true, false, false, false, false],
             indeksKlikaVerzija: indeks
         });
     }
@@ -268,10 +290,12 @@ class ProjectOverview extends Component {
                 array.splice(indeks, 1)
                 this.setState({ 
                     verzije: array,
-                    listaAktivnih: [false, true, false, false, false, false],
+                    listaAktivnih: [false, true, false, false, false, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
-                    hide: true});
+                    hide: true,
+                    isProject:"version"
+                });
                 setTimeout(() => {this.setState({hide: false})}, 3000);
             })
             .catch((error) => {
@@ -298,7 +322,7 @@ class ProjectOverview extends Component {
                 array.splice(indeks, 1)
                 this.setState({ 
                     mockupi: array,
-                    listaAktivnih: [false, false, false, true, false, false],
+                    listaAktivnih: [false, false, false, true, false, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
                     hide: true});
@@ -329,7 +353,7 @@ class ProjectOverview extends Component {
                 array.splice(indeks, 1)
                 this.setState({ 
                     pdfs: array,
-                    listaAktivnih: [false, false, false, false, false, true],
+                    listaAktivnih: [false, false, false, false, false, true, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
                     hide: true});
@@ -360,7 +384,7 @@ class ProjectOverview extends Component {
                 array.splice(indeks, 1)
                 this.setState({ 
                     gspecs: array,
-                    listaAktivnih: [false, false, false, false, true, false],
+                    listaAktivnih: [false, false, false, false, true, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
                     hide: true});
@@ -454,6 +478,7 @@ class ProjectOverview extends Component {
     render() {
         var a = this.state.listaAktivnih;
         return (
+            <Form>{!a[6] &&
             <Row>
                 {a[0] &&
                 <Col xs='2' style={{height:'100vh'}}>
@@ -474,7 +499,8 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [true, false, false, false, false, false],
+                                                listaAktivnih: [true, false, false, false, false, false, false],
+                                                isProject: "project"
                                             });
                                         }}>
                                         <h4 className="bkItem text-secondary">Projects</h4>
@@ -483,7 +509,8 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, true, false, false, false, false],
+                                                listaAktivnih: [false, true, false, false, false, false, false],
+                                                isProject: "version"
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.vratiNaziv(this.state.listaProjekata[this.state.indeksKlika])}</h4>
@@ -492,7 +519,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, false, true, false, false, false],
+                                                listaAktivnih: [false, false, true, false, false, false, false],
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.verzije[this.state.indeksKlikaVerzija].versionName}</h4>
@@ -501,7 +528,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, false, false, true, false, false],
+                                                listaAktivnih: [false, false, false, true, false, false, false],
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.tipFilea[0]}</h4>
@@ -510,7 +537,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, false, false, false, false, true],
+                                                listaAktivnih: [false, false, false, false, false, true, false],
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.tipFilea[2]}</h4>
@@ -519,7 +546,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, false, false, false, true, false],
+                                                listaAktivnih: [false, false, false, false, true, false, false],
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.tipFilea[1]}</h4>
@@ -538,7 +565,20 @@ class ProjectOverview extends Component {
                                 <FormGroup className="float-sm-right"
                                 style={{paddingRight:'15%'}}>
                                     <Button 
-                                    onClick = {a[0] ? this.handleClick: ""}
+                                    onClick = {(e) =>{
+                                        if (a[0]) {
+                                            this.setState({
+                                                listaAktivnih: [false, false, false, false, false, false, true],
+                                                isProject: "project"
+                                            });
+                                        }
+                                        else if (a[1]) {
+                                            this.setState({
+                                                listaAktivnih: [false, false, false, false, false, false, true],
+                                                isProject: "version"
+                                            });
+                                        }
+                                    }}
                                     className="bg-dark btn form-control">
                                     {a[0] ? "Create project" : a[1] ? "Create new version" : "Create new mockup"}
                                     </Button>
@@ -596,6 +636,9 @@ class ProjectOverview extends Component {
                     </Form>
                 </Col>
             </Row>
+            }
+            {a[6] && <CreateNewVersion data = {this}/>}
+            </Form>
           );
     }
 }

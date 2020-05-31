@@ -18,7 +18,6 @@ import Collaboration from './collaboration';
 import CreateNewServer from './createNewServer';
 import axios from 'axios';
 import {UrlContext} from '../urlContext';
-import CreateNewVersion from './createNewVersion';
 import ProjectOverview from './projectOverview';
 
 class Meni extends Component {
@@ -26,18 +25,16 @@ class Meni extends Component {
         super();
         this.state = {
             name: "React",
-            aktivni: [false, false, false, false, false, false, false, false, false],
+            aktivni: [false, false, false, false, false, false, false, false],
             forma: "signup",
             serverOrBrowser: "",
             servers: [],
             firstServer: "", 
-            role: "",
-            createProject: false
+            role: ""
         };
         this.hideComponent = this.hideComponent.bind(this);
         this.hideAll = this.hideAll.bind(this);
         this.setRole = this.setRole.bind(this);
-        this.setIsProjectCreated = this.setIsProjectCreated.bind(this);
     }
 
     componentDidMount() {
@@ -58,28 +55,25 @@ class Meni extends Component {
 
         switch (name) {
             case "showSignIn":
-                this.setState({ aktivni: [true, false, false, false, false, false, false, false] });
+                this.setState({ aktivni: [true, false, false, false, false, false, false] });
                 break;
             case "showSignUp":
-                this.setState({ aktivni: [false, false, true, false, false, false, false, false, false] });
+                this.setState({ aktivni: [false, false, true, false, false, false, false, false] });
                 break;
             case "showUpdateAdmin":
-                this.setState({ aktivni: [false, false, false, true, false, false, false, false, false] });
+                this.setState({ aktivni: [false, false, false, true, false, false, false, false] });
                 break;
             case "showUpdateUser":
-                this.setState({ aktivni: [false, false, false, true, false, false, false, false, false] });
+                this.setState({ aktivni: [false, false, false, true, false, false, false, false] });
                 break;
             case "showMockupTool":
-                this.setState({ aktivni: [false, false, false, false, true, false, false, false, false] });
+                this.setState({ aktivni: [false, false, false, false, true, false, false, false] });
                 break;
             case "showCollaboration":
-                this.setState({ aktivni: [false, false, false, false, false, true, false, false, false] });
+                this.setState({ aktivni: [false, false, false, false, false, true, false, false] });
                 break;
             case "showProjectOverview":
-                this.setState({ aktivni: [false, false, false, false, false, false, false, true, false] });
-                break;
-            case "showCreateProject":
-                this.setState({ aktivni: [false, false, false, false, false, false, false, false, true] });
+                this.setState({ aktivni: [false, false, false, false, false, false, false, true] });
                 break;
         }
     }
@@ -95,11 +89,11 @@ class Meni extends Component {
                         servers.push(s);
                     }
                 );
-                this.setState({ aktivni: [false, false, false, false, false, false, true, false, false], serverOrBrowser: name, servers, firstServer: servers[0].name});
+                this.setState({ aktivni: [false, false, false, false, false, false, true, false], serverOrBrowser: name, servers, firstServer: servers[0].name});
             });
         }   
         else {
-            this.setState({ aktivni: [false, false, false, false, false, false, true, false, false], serverOrBrowser: name});
+            this.setState({ aktivni: [false, false, false, false, false, false, true, false], serverOrBrowser: name});
         }     
     }
 
@@ -140,10 +134,6 @@ class Meni extends Component {
 
     setRole (role) {
         this.setState({role});
-    }
-
-    setIsProjectCreated() {
-        this.setState({createProject: true});
     }
 
     render() {
@@ -188,7 +178,6 @@ class Meni extends Component {
                     {this.state.aktivni[5] && <Collaboration />}
                     {this.state.aktivni[6] && <CreateNewServer data ={this}/> }
                     {this.state.aktivni[7] && <ProjectOverview data = {this}/>}
-                    {this.state.aktivni[8] && <CreateNewVersion data = {this} />}
                 </Form>
             </div>
         );

@@ -28,7 +28,7 @@ class CreateNewVersion extends Component {
                                              </svg>
                      },
             projectName: "",
-            project: this.props.data.state.createProject,
+            project: this.props.data.state.isProject,
             date_created: "",
             date_modified: "",
             priority: 1,
@@ -74,7 +74,6 @@ class CreateNewVersion extends Component {
                 priority: this.state.priority
             })
             .then(res => {
-                console.log("odg: ", res.data); 
                 axios.post(url.project + "/addVersion", {
                     projectId: {
                         date_created: date,
@@ -83,14 +82,26 @@ class CreateNewVersion extends Component {
                         name: this.state.projectName,
                         priority: this.state.priority
                     },
-                    version_name: this.state.checked.name.toLocaleUpperCase()
+                    versionName: this.state.checked.name.toLocaleUpperCase()
                 })
                 .then(res => {
                     console.log("odg verzija: ", res.data);
+                    document.getElementById("projectName").value = "";
+                    this.setState({projectName: "", errorVisible: false, successProject: true, checked: this.state.versions[0]});
+                    setTimeout(() => this.props.data.backToProjects(), 2000);
+                })
+                .catch((error) => {
+                    console.log("Greska!");
+                    let err = "";
+                    if(error.response.data.errors == undefined) {
+                        err = "Unknown error!";
+                    }
+                    else {
+                        err = error.response.data.errors[0];
+                    }
+                    this.setState({errorMessage: err, errorVisible: true, successProject: false});
+                    console.log(error.response);
                 });
-                document.getElementById("projectName").value = "";
-                this.setState({projectName: "", errorVisible: false, successProject: true, checked: this.state.versions[0]});
-                setTimeout(() => this.props.data.hideComponent("showProjectOverview"), 2000);
             })
             .catch((error) => {
                 console.log("Greska!");
@@ -110,20 +121,21 @@ class CreateNewVersion extends Component {
     addVersion (e) {
         e.preventDefault();
         let url = this.context;
+        const project = this.props.data.state.listaProjekata[this.props.data.state.indeksKlika];
         axios.post(url.project + "/addVersion", {
             projectId: {
-                //hardkodirano za sad
-                date_created: "2020-03-24T15:33:24.020Z",
-                date_modified: "2020-03-24T15:33:24.020Z",
-                id: 1,
-                name: this.state.projectName,
-                priority: this.state.priority
+                date_created: project[1],
+                date_modified: project[2],
+                id: project[0],
+                name: project[3],
+                priority: project[4]
             },
-            version_name: this.state.checked.name.toLocaleUpperCase()
+            versionName: this.state.checked.name.toLocaleUpperCase()
         })
         .then(res => {
             console.log("odg verzija: ", res.data);
             this.setState({errorVisible: false, successVersion: true, checked: this.state.versions[0]});
+            setTimeout(() => this.props.data.backToProjects(), 2000);
         })
         .catch((error) => {
             console.log("Greska!");
@@ -139,9 +151,13 @@ class CreateNewVersion extends Component {
         });
     }
 
+    goBack = () => {
+        this.props.data.goBack();
+    }
+
     render() { 
         return (  
-            <Form onSubmit = {this.state.project == true ? this.addProject : this.addVersion}>
+            <Form onSubmit = {this.state.project == "project" ? this.addProject : this.addVersion}>
             <Container className="col-log-6" style={
                 {
                     position: 'absolute', left: '50%', top: '50%',
@@ -150,9 +166,9 @@ class CreateNewVersion extends Component {
             }>
                 <Form className="row align-items-center row justify-content-center">
                     <Form className="col-md-5 my-auto">
-                        <h1 className="text-secondary" style={{ textAlign: "left" }}>{this.state.project == true ? "Create project" : "Create new version"}</h1>
+                        <h1 className="text-secondary" style={{ textAlign: "left" }}>{this.state.project == "project" ? "Create project" : "Create new version"}</h1>
                         <hr className="my-2" />
-                        <FormGroup style = {{display: (this.state.project == true) ? "block" : "none"}}>
+                        <FormGroup style = {{display: (this.state.project == "project") ? "block" : "none"}}>
                             <Label for="projectNameLabel">Project name</Label>
                             <Input type="text" name="projectName" id="projectName" placeholder = "Enter project name" onChange={(e) =>
                                     this.setState({ projectName: e.target.value })
@@ -174,13 +190,16 @@ class CreateNewVersion extends Component {
                         </FormGroup>
                         <Row>
                             <Col>
-                            {this.state.successProject == true && this.state.project == true ? <Alert style = {{marginTop: '8%'}} color = "success">Project successfully added!</Alert> : ""}
-                            {this.state.successVersion == true && this.state.project == false ? <Alert style = {{marginTop: '8%'}} color = "success">New project version successfully added!</Alert> : ""}
+                            {this.state.successProject == true && this.state.project == "project" ? <Alert style = {{marginTop: '8%'}} color = "success">Project successfully added!</Alert> : ""}
+                            {this.state.successVersion == true && this.state.project == "version" ? <Alert style = {{marginTop: '8%'}} color = "success">New project version successfully added!</Alert> : ""}
                             {this.state.errorVisible == true ? <Alert style = {{marginTop: '8%'}} color = "danger">{this.state.errorMessage}</Alert> : ""}
                             </Col>
                         </Row>
                         <Row>
                             <Col>
+                                <Button outline color = "danger" style = {{float: "left", width: "30%", marginTop: '8%', marginLeft: '0'}} onClick = {(e) =>{
+                                            this.goBack()
+                                        }} >Cancel</Button>
                                 <Button type="submit" id="submitButton" style = {{float: "right", width: "30%", marginTop: '8%'}} className="bg-dark">Create</Button>
                             </Col>
                         </Row>
