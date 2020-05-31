@@ -16,7 +16,12 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -110,4 +115,21 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
         jo.put("message", "GSPEC Document is successfully added!");
         return new ResponseEntity(newGspecDocument, HttpStatus.CREATED);
     }
+
+    @Override
+    public ResponseEntity changeGSPECFile(MultipartFile gspecFile, Long id) throws IOException, SQLException {
+        if(gspecDocumentRepository.existsByID(id)){
+            GSPECDocument trenutniGSPEC=gspecDocumentRepository.findByID(id);
+            Blob blob=new SerialBlob(gspecFile.getBytes());
+            trenutniGSPEC.setFile(blob);
+            gspecDocumentRepository.save(trenutniGSPEC);
+            JSONObject jo = new JSONObject();
+            jo.put("message", "File for GSPEC Document is successfully updated!");
+            return new ResponseEntity(jo, HttpStatus.CREATED);
+        }
+        else{
+            throw new RecordNotFoundException("The GSPEC Document you want to update does not exist!");
+        }
+    }
+
 }

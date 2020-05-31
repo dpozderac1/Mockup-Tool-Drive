@@ -209,6 +209,12 @@ function razvrstajTestove(udaljenostiSvakogElementaX, jedanUnutarDrugog, jedanDe
   var nizZKoordinata = odrediZKoordinatu();
   console.log("Razvrstaj testove");
   var sviCheckboxovi = `<span class="zatvoriModalKlasa" onclick="zatvoriModal();">&times;</span><p style="text-decoration:none">&nbsp;</p>`;
+
+  //dodano input polje za naziv
+  sviCheckboxovi += `<span>Galen file name:  </span><input type="text" id="inputZaNazivGalena" style="border:gray;border-style:solid;margin-top:0px;margin-bottom:2%;border-width:thin;border-color:#ced4da">`;
+
+
+
   var modal = document.getElementsByClassName("sadrzajModalaKlasa")[0];
   sviCheckboxovi += `<p>Width</p>`;
   for (var i = 0; i < udaljenostiSvakogElementaX.length; i++) {
@@ -280,7 +286,9 @@ function razvrstajTestove(udaljenostiSvakogElementaX, jedanUnutarDrugog, jedanDe
     sviCheckboxovi+=`<input type="checkbox" checked>`+nizZKoordinata[i][0]+` is on `+nizZKoordinata[i][1]+`<br>`;
   }*/
 
-  modal.innerHTML = sviCheckboxovi + `<p style="text-decoration:none">&nbsp;</p><button onclick="napisiGalen();" title="Creates and saves Galen tests on local computer">Save tests</Button>`;
+  modal.innerHTML = sviCheckboxovi + `<p style="text-decoration:none">&nbsp;</p>
+  <button onclick="napisiGalen(false);" title="Creates and saves Galen tests on server">Save Galen file</Button>
+  <button onclick="napisiGalen();" title="Creates and saves Galen tests on local computer">Save tests</Button>`;
   udaljenostiSvakogElementaXGlobalni = udaljenostiSvakogElementaX;
   jedanUnutarDrugogGlobalni = jedanUnutarDrugog;
   jedanDesnoOdDvaGlobalni = jedanDesnoOdDva;
@@ -348,7 +356,7 @@ jedanIznadDvaGlobalni = [];
 //galen check galenTestsConvertAnythingToAnything.gspec --url https://cloudconvert.com/?fbclid=IwAR2hB9QhHrz78ojPmPtB94IohW8R8DdlU-8Ma56bYFfouaLhtssLwm7I0N4 --size 1600x900 --htmlreport "Izvjestaj"
 
 //napisi Galen pravila i testove
-function napisiGalen() {
+function napisiGalen(snimiLokalno = true) {
   var udaljenostiSvakogElementaX = udaljenostiSvakogElementaXGlobalni;
   var jedanUnutarDrugog = jedanUnutarDrugogGlobalni;
   var jedanDesnoOdDva = jedanDesnoOdDvaGlobalni;
@@ -357,7 +365,12 @@ function napisiGalen() {
   var jedanIznadDva = jedanIznadDvaGlobalni;
   console.log("X" + udaljenostiSvakogElementaX);
   var izuzeci = [];
-  var checkboxovi = document.getElementsByClassName("sadrzajModalaKlasa")[0].getElementsByTagName("input");
+  var sviCheckboxovi = document.getElementsByClassName("sadrzajModalaKlasa")[0].getElementsByTagName("input");
+  var checkboxovi = [];
+  for (var i = 1; i < sviCheckboxovi.length; i++) {
+    checkboxovi.push(sviCheckboxovi[i]);
+  }
+  console.log("SviCheckboxovi su:", checkboxovi);
   for (var i = 0; i < checkboxovi.length; i++) {
     if (!checkboxovi[i].checked) {
       izuzeci.push(i);
@@ -374,11 +387,11 @@ function napisiGalen() {
     else if (udaljenostiSvakogElementaX[i][9] != "") {
       var razdvoji = udaljenostiSvakogElementaX[i][9].split(".");
       var broj = razdvoji[razdvoji.length - 1];
-      var ostatak="";
-      for(var j=0;j<razdvoji.length-1;j++){
-        ostatak+=razdvoji[j];
-        if(j!=razdvoji.length-2){
-          ostatak+=" ";
+      var ostatak = "";
+      for (var j = 0; j < razdvoji.length - 1; j++) {
+        ostatak += razdvoji[j];
+        if (j != razdvoji.length - 2) {
+          ostatak += " ";
         }
       }
       objekti += "\t" + udaljenostiSvakogElementaX[i][9] + " xpath //*[@class=\'" + ostatak + "\'][" + broj + "]\n";
@@ -603,7 +616,44 @@ function napisiGalen() {
 
   galen = objekti + sekcije;
   console.log(galen);
-  download(galen, "galenTests.gspec", "txt");
+
+  var nazivGalenDokumenta = document.getElementById("inputZaNazivGalena").value;
+
+  if (snimiLokalno) {
+    if (nazivGalenDokumenta === "") {
+      nazivGalenDokumenta = "galenTests.gspec";
+    }
+    download(galen, nazivGalenDokumenta, "txt");
+  }
+  else {
+    var mockupId = 1;
+    axios.get("http://localhost:8080/project-client-service" + "/mockup/" + mockupId, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(res => {
+      var trenutniMockup = res.data;
+      var formData = new FormData();
+      console.log("Trenutni mockup je: ", trenutniMockup);
+
+      if (nazivGalenDokumenta === "") {
+        nazivGalenDokumenta = res.data.name + "GSPEC";
+      }
+
+      formData.append('gspecFile', new Blob([galen]));
+      formData.append('name', nazivGalenDokumenta);
+      for (var key of formData.entries()) {
+        console.log(key[0] + ', ' + key[1]);
+      }
+      axios.post("http://localhost:8080/project-client-service" + "/addGSPECFile/" + mockupId, formData, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token'), 'content-type': 'multipart/form-data' } }).then(res => {
+        console.log("Uspjesan POST u GSPEC dokument");
+      })
+        .catch(error => {
+          console.log("Greska u POST kod addGSPECFile/{id}");
+          console.log(error);
+        });
+    })
+      .catch(error => {
+        console.log("Greska u GET kod mockup/{id}");
+        console.log(error);
+      });
+  }
 }
 
 function ocitajJeLiParent() {

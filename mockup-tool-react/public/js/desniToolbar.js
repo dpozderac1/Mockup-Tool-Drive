@@ -253,7 +253,7 @@ function applyDesniDio() {
     console.log("Usao sam u uslov\t" + pronadjen);
     if (unosIdTrenutnogElementa.value == "") {
       trenutnoOznaceniElement.id = trenutnoOznaceniElement.dataset.inicijalniid;
-      trenutnoOznaceniElement.dataset.dodijeljeniid="";
+      trenutnoOznaceniElement.dataset.dodijeljeniid = "";
     }
     else {
       if (pronadjen == -1) {
@@ -264,7 +264,7 @@ function applyDesniDio() {
           listaDodijeljenihId.splice(pozicijaElementaZaBrisanje, 0, unosIdTrenutnogElementa.value);
         }
         trenutnoOznaceniElement.dataset.dodijeljeniid = unosIdTrenutnogElementa.value;
-        trenutnoOznaceniElement.id=trenutnoOznaceniElement.dataset.dodijeljeniid;
+        trenutnoOznaceniElement.id = trenutnoOznaceniElement.dataset.dodijeljeniid;
       }
       else if (trenutnoOznaceniElement.dataset.dodijeljeniid != unosIdTrenutnogElementa.value) {
         alert("Id already exists!");
@@ -688,7 +688,7 @@ function tabletVersion() {
 
 function desktopVersion() {
   var el = document.getElementById("glavni");
-  el.style.height = 85 + "%";
+  el.style.height = "calc(100% - 66px)";
   el.style.width = 75 + "%";
   el.style.cssFloat = "right"
   el.style.overflow = "scroll";

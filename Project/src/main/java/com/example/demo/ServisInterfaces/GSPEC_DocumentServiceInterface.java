@@ -4,6 +4,11 @@ import com.example.demo.RabbitMQ.MessageRabbitMq;
 import com.example.demo.Models.GSPEC_Document;
 import org.json.JSONException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.sql.SQLException;
 
 public interface GSPEC_DocumentServiceInterface {
 
@@ -14,4 +19,6 @@ public interface GSPEC_DocumentServiceInterface {
     public ResponseEntity getAllGSPECs();
     public ResponseEntity getOneGSPEC(Long id);
     public void deletegspec(MessageRabbitMq msg) throws JSONException;
+
+    public ResponseEntity addGSPECFile(Long id, MultipartFile gspecFajl, String naziv, HttpServletRequest request) throws IOException, SQLException;
 }

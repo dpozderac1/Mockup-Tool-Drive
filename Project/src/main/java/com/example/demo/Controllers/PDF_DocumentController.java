@@ -15,9 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -62,5 +66,12 @@ public class PDF_DocumentController {
     @GetMapping("/pdf_document/{id}")
     ResponseEntity<?> getOnePDF(@PathVariable Long id) {
         return pdf_documentService.getOnePDF(id);
+    }
+
+    @PostMapping(value = "/addPDFFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<?> addPDFFile(@PathVariable Long id, @RequestParam("pdfFile") MultipartFile pdfFajl, @RequestParam("name") String naziv, HttpServletRequest request) throws IOException, SQLException {
+        System.out.println("Usao u kontroler!!!!!!!");
+        System.out.println(request.getParameter("pdfFile"));
+        return pdf_documentService.addPDFFile(pdfFajl,id,naziv);
     }
 }

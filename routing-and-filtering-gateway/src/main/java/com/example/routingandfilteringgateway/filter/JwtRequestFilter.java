@@ -84,9 +84,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            if(parametarUsername!=null && !parametarUsername.equals(userDetails.getUsername())){
+            /*if(parametarUsername!=null && !parametarUsername.equals(userDetails.getUsername())){
                 chain.doFilter(request,response);
-            }
+            }*/
 
             if (jwtUtil.validateToken(jwt, userDetails)) {
 

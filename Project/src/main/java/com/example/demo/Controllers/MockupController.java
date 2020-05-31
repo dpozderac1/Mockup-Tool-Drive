@@ -9,11 +9,16 @@ import com.example.demo.Services.MockupService;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 //@CrossOrigin
@@ -57,4 +62,14 @@ public class MockupController {
         return mockupService.getOneMockup(id);
     }
 
+    @PutMapping(value = "/addOrUpdateFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<?> addOrUpdateFile(@PathVariable Long id,@RequestParam("file") MultipartFile fajl) throws IOException, SQLException {
+        System.out.println("Usao u kontroler!!!!!!!");
+        return mockupService.addOrUpdateFile(fajl,id);
+    }
+
+    @GetMapping("/mockup/file/{id}")
+    ResponseEntity<?> getOneFile(@PathVariable Long id) throws SQLException {
+        return mockupService.getOneFile(id);
+    }
 }

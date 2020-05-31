@@ -27,6 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/interactjs@next/dist/interact.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
     <style id="stil"></style>
     <title>React App</title>
   </head>
@@ -42,10 +43,10 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <div id="zaglavlje">
+    <!--<div id="zaglavlje" style="display: none;">
       <h1 id="h1Mockup">Mockup tool</h1>
-    </div>
-    <div id="lijevo">
+    </div>-->
+    <div id="lijevo" style="display: none;">
       <ul id="listaMockupa">
         <li id="searchLi">
           <div class="searchBox">
@@ -61,7 +62,7 @@
         </li>
         <li>
           <div id="dugme" class="dugmeKlasa" title="Button">
-            <p>Button</p>
+            <p style="margin-top: 1rem;">Button</p>
           </div>
         </li>
         <li>
@@ -224,11 +225,11 @@
         </li>
       </ul>
     </div>
-    <div id="glavni"></div>
-    <div id="strelicaToolbara">
+    <div id="glavni" style="display: none;"></div>
+    <div id="strelicaToolbara" style="display: none;">
       <button>&lt;&lt;</button>
     </div>
-    <div id="desniToolbar">
+    <div id="desniToolbar" style="display: none;">
       <ul id="desniToolbarOpcije">
         <li>
           <div id="nazivElementaDiv">
@@ -290,7 +291,9 @@
                   checked="checked"
                   onclick="poravnajLijevo()"
                 />
-                <label for="radio1"><img src="/ikonice/left.png" /></label>
+                <label for="radio1" style="display: inline;"
+                  ><img src="/ikonice/left.png"
+                /></label>
                 <input
                   type="radio"
                   id="radio2"
@@ -298,7 +301,9 @@
                   name="radio"
                   onclick="centriraj()"
                 />
-                <label for="radio2"><img src="/ikonice/center.png" /></label>
+                <label for="radio2" style="display: inline;"
+                  ><img src="/ikonice/center.png"
+                /></label>
                 <input
                   type="radio"
                   id="radio3"
@@ -306,7 +311,9 @@
                   name="radio"
                   onclick="poravnajDesno()"
                 />
-                <label for="radio3"><img src="/ikonice/right.png" /></label>
+                <label for="radio3" style="display: inline;"
+                  ><img src="/ikonice/right.png"
+                /></label>
                 <input
                   type="radio"
                   id="radio4"
@@ -314,7 +321,9 @@
                   name="radio"
                   onclick="justify()"
                 />
-                <label for="radio4"><img src="/ikonice/justify.png" /></label>
+                <label for="radio4" style="display: inline;"
+                  ><img src="/ikonice/justify.png"
+                /></label>
               </form>
             </li>
             <li>
@@ -483,11 +492,17 @@
               <span class="zatvoriModalKlasa">&times;</span>
             </div>
           </div>
-          <input type="file" id="importFajlaInput" accept="text/html" />
+          <input
+            type="file"
+            id="importFajlaInput"
+            accept="text/html"
+            style="display: none;"
+          />
           <button
             id="importFajlaDugme"
             onclick="otvoriFajl();"
             title="Allows you to import file from your local computer"
+            style="display: none;"
           >
             Open
           </button>
@@ -528,5 +543,6 @@
     <script src="/js/html2canvas.js"></script>
     <script src="/js/pdf.js"></script>
     <script src="/js/evaluacija.js"></script>
+    <script src="/js/jspdf.min.js"></script>
   </body>
 </html>

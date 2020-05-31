@@ -15,15 +15,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -190,6 +198,56 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
         }
         else
         throw new ObjectNotFoundException("GSPEC document with id " + id + "does not exist!");
+    }
+
+    @Override
+    public ResponseEntity addGSPECFile(Long id, MultipartFile gspecFajl, String naziv, HttpServletRequest httpServletRequest) throws IOException, SQLException {
+        System.out.println("Usao sam u addGPSECFile");
+        Mockup mockup = mockupRepository.findByID(id);
+        if(mockup != null){
+            Blob blob=new SerialBlob(gspecFajl.getBytes());
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date=new Date();
+            GSPEC_Document gspec_document=new GSPEC_Document(mockup,naziv,blob,date,date,date);
+            GSPEC_Document gspec_documentZaOnlineTesting=new GSPEC_Document(mockup,naziv,null,date,date,date);
+
+            HttpEntity<GSPEC_Document> request = new HttpEntity<>(gspec_documentZaOnlineTesting);
+            GSPEC_Document gspec_document11 = restTemplate.postForObject("http://online-testing/addGSPECDocument", request, GSPEC_Document.class);
+
+            Long idOnlineTestiranje=gspec_document11.getID();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, String> fileMap = new LinkedMultiValueMap<>();
+            ContentDisposition contentDisposition = ContentDisposition
+                    .builder("form-data")
+                    .name("gspecFile")
+                    .filename("filename")
+                    .build();
+            fileMap.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
+            HttpEntity<byte[]> fileEntity = new HttpEntity<>(gspecFajl.getBytes(), fileMap);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+
+            body.add("gspecFile",fileEntity);
+            HttpEntity<MultiValueMap<String, Object>> requestEntity =new HttpEntity<>(body, headers);
+            System.out.println(gspecFajl.getBytes().length);
+            restTemplate.put("http://online-testing/changeGSPECFile/"+idOnlineTestiranje.toString(), requestEntity);
+
+            gspec_documentRepository.save(gspec_document);
+
+
+            JSONObject objekat = new JSONObject();
+            try {
+                objekat.put("message","Mockup is successfully updated!");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return new ResponseEntity<>(objekat.toString(), HttpStatus.OK);
+        }
+        else{
+            throw new ObjectNotFoundException("Mockup with id " + id + "does not exist!");
+        }
     }
 
 }

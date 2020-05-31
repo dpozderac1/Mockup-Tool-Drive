@@ -24,7 +24,7 @@ body {
   float: right;
   width: 75%;
   background-color: #f7f7f7;
-  height: 85%;
+  height: calc(100% - 66px);
   display: flex;
   position: relative;
   overflow: scroll;
@@ -58,7 +58,7 @@ body {
   float: left;
   width: 25%;
   background-color: #eeeeee;
-  height: 85%;
+  height: calc(100% - 66px);
   overflow-y: scroll;
   display: flex;
 }
@@ -676,13 +676,14 @@ background-size: 100% 100%;*/
 
 #desniToolbar {
   position: absolute;
-  height: 86%;
+  height: calc(100% - 66px);
   width: 20%;
   /*top: 16%;*/
   right: 0;
   background: #eeeeee;
   border-left: 1px solid black;
   display: none;
+  overflow: scroll;
 }
 
 #desniToolbarOpcije {
@@ -691,7 +692,7 @@ background-size: 100% 100%;*/
 
 #desniToolbarOpcije li {
   background: #eeeeee;
-  padding-top: 0.4em;
+  /*padding-top: 0.4em;*/
   padding-bottom: 0.4em;
 }
 
@@ -701,7 +702,7 @@ background-size: 100% 100%;*/
 
 #desniToolbarOpcije span {
   color: black;
-  padding-left: 1em;
+  /*padding-left: 1em;*/
 }
 
 #nazivOdabranogElementa {
@@ -916,8 +917,8 @@ background-size: 100% 100%;*/
 }
 
 #deleteButton {
-  margin-left: -31.5px;
-  height: 56%;
+  margin-left: -29px;
+  height: 40%;
   margin-top: 1%;
   margin-bottom: 1%;
   background: #eeeeee;
@@ -983,7 +984,7 @@ background-size: 100% 100%;*/
 
 #strelicaToolbara {
   position: absolute;
-  height: 86%;
+  height: calc(100% - 66px);
   width: 2%;
   right: 0;
   background: #eeeeee;
@@ -1017,7 +1018,7 @@ background-size: 100% 100%;*/
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
-  padding-top: 8%; /* Location of the box */
+  padding-top: 5%; /* Location of the box */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -1035,7 +1036,7 @@ background-size: 100% 100%;*/
   border: 1px solid #888;
   width: 60%;
   text-align: center;
-  height: 70%;
+  height: 90%;
 }
 
 /* The Close Button */

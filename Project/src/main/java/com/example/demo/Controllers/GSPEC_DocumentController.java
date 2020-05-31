@@ -9,10 +9,15 @@ import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.sql.SQLException;
 
 @EnableBinding(BindingInterfaceInput.class)
 //@CrossOrigin
@@ -60,6 +65,11 @@ public class GSPEC_DocumentController {
     ResponseEntity<?> getOneGSPEC(@PathVariable Long id) {
         return gspec_documentService.getOneGSPEC(id);
 
+    }
+
+    @PostMapping(value="/addGSPECFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<?> addGSPECFile(@PathVariable Long id, @RequestParam("gspecFile") MultipartFile gspecFajl, @RequestParam("name") String naziv, HttpServletRequest request) throws IOException, SQLException {
+        return gspec_documentService.addGSPECFile(id,gspecFajl,naziv,request);
     }
 
 }

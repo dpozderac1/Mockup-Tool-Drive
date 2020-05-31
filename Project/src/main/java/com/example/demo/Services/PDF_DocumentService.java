@@ -13,7 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -124,6 +131,31 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
             return new ResponseEntity<>(pdf_document, HttpStatus.OK);
         else
             throw new ObjectNotFoundException("PDF document with id " + id + "does not exist!");
+    }
+
+    public ResponseEntity addPDFFile(MultipartFile pdfFajl, Long id, String naziv) throws IOException, SQLException {
+        System.out.println("Usao sam u updatePDFFile");
+        Mockup mockup = mockupRepository.findByID(id);
+        if(mockup != null){
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date=new Date();
+            //String datum=format.format(date);
+            Blob blob=new SerialBlob(pdfFajl.getBytes());
+            PDF_Document pdf=new PDF_Document(mockup,naziv,blob,date,date,date);
+            pdf_documentRepository.save(pdf);
+
+            JSONObject objekat = new JSONObject();
+            try {
+                objekat.put("message","PDF is successfully added!");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return new ResponseEntity<>(objekat.toString(), HttpStatus.OK);
+        }
+        else{
+            //grpcProjectService.action("project-client-service","PUT","/updatePDFFile/{id}","NOT_FOUND", new Timestamp(System.currentTimeMillis()));
+            throw new ObjectNotFoundException("Mockup with id " + id + "does not exist!");
+        }
     }
 
 }

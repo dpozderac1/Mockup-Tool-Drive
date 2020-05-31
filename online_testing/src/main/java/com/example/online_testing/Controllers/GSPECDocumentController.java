@@ -12,8 +12,12 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.sql.SQLException;
 
 @EnableBinding(BindingInterface.class)
 //@CrossOrigin
@@ -55,6 +59,14 @@ public class GSPECDocumentController {
     @PostMapping("/addGSPECDocument")
     ResponseEntity addGSPECDocument(@Valid @RequestBody GSPECDocument gspecDocument) {
         return gspecDocumentService.saveGSPECDocument(gspecDocument);
+    }
+
+    @PutMapping(value="/changeGSPECFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity changeGSPECFile (@RequestParam("gspecFile") MultipartFile gspecFile, @PathVariable Long id, HttpServletRequest httpServletRequest) throws IOException, SQLException {
+        //@RequestParam("gspecFile") MultipartFile gspecFile
+        //MultipartFile gspecFile=null;
+        System.out.println("Usao sam u PUT za changeGSPECFile!!!!!");
+        return gspecDocumentService.changeGSPECFile(gspecFile, id);
     }
 
 }
