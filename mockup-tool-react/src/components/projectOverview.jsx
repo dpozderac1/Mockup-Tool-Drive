@@ -8,6 +8,7 @@ import axios from "axios";
 import "../App.css";
 import {UrlContext} from '../urlContext';
 import CreateNewVersion from './createNewVersion';
+import Collaboration from './collaboration';
 
 class ProjectOverview extends Component {
     constructor(props) {
@@ -16,8 +17,9 @@ class ProjectOverview extends Component {
             values: [{value: "Alphabetical", active: true}, {value: "Date created", active: false}, {value: "Date modified", active: false}],
             title : "Alphabetical",
             listaProjekata: [],
+            listaProjekataPrethodnoStanje: [],
             searchProjectValue: "",
-            listaAktivnih: [true, false, false, false, false, false, false],
+            listaAktivnih: [true, false, false, false, false, false, false, false],
             indeksKlika: "",
             indeksKlikaVerzija: "",
             verzije: [],
@@ -54,10 +56,22 @@ class ProjectOverview extends Component {
     }
 
     searchFiles = (s) =>{
-        if(this.state.listaProjekata != null){
-            this.state.listaProjekata.map((mockup) => {
-                console.log(s);
-            });
+        if(s == "") {
+            let projects = [...this.state.listaProjekataPrethodnoStanje];
+            console.log("projekti: ", projects);
+            this.setState({listaProjekata: projects});
+        }
+        else{
+            if(this.state.listaProjekata != null){
+                let array = [...this.state.listaProjekataPrethodnoStanje];
+                let newArray = []
+                array.filter(project => {
+                    if(project[3].toUpperCase().includes(s.toUpperCase())) {
+                        newArray.push(project);
+                    }
+                });
+                this.setState({listaProjekata: newArray});
+            }
         }
     }
 
@@ -92,33 +106,33 @@ class ProjectOverview extends Component {
     }
  
     handleClick (element) {
-        this.setState({listaAktivnih: [false, false, false, false, false, false, true]});
+        this.setState({listaAktivnih: [false, false, false, false, false, false, true, false]});
     };
 
     backToProjects() {
         if(this.state.isProject === "project") {
             this.getProjectsOfUser();
-            this.setState({listaAktivnih: [true, false, false, false, false, false, false], isProject: "project"});
+            this.setState({listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project", searchProjectValue: ""});
         }
         else if (this.state.isProject === "version") {
             this.udjiUProjekat(this.state.indeksKlika);
-            this.setState({listaAktivnih: [false, true, false, false, false, false, false], isProject: "version"});
+            this.setState({listaAktivnih: [false, true, false, false, false, false, false, false], isProject: "version"});
         }
     }
 
     goBack () {
         if(this.state.isProject === "project") {
-            this.setState({listaAktivnih: [true, false, false, false, false, false, false], isProject: "project"});
+            this.setState({listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project"});
         }
         else if (this.state.isProject === "version") {
-            this.setState({listaAktivnih: [false, true, false, false, false, false, false], isProject: "version"});
+            this.setState({listaAktivnih: [false, true, false, false, false, false, false, false], isProject: "version"});
         }
     }
 
     handleDelete (id) {
         let url = this.context;
         axios.delete(url.project + "/delete/project/" + id).then(res => {
-            let array = [...this.state.listaProjekata];
+            let array = [...this.state.listaProjekataPrethodnoStanje];
             let index = "";
             array.forEach(element => {
                 if (id == element[0]) {
@@ -126,7 +140,8 @@ class ProjectOverview extends Component {
                 }
             });
             array.splice(index, 1);
-            this.setState({listaProjekata: array, deleteSuccess: true, errorVisible: false, hide: true});
+            console.log("daj array: ", array);
+            this.setState({listaProjekata: array, deleteSuccess: true, errorVisible: false, hide: true, listaProjekataPrethodnoStanje: array, searchProjectValue: ""});
             setTimeout(() => {this.setState({hide: false})}, 3000);
         })
         .catch((error) => {
@@ -158,7 +173,8 @@ class ProjectOverview extends Component {
                         var element = [oneProject.data.id, oneProject.data.date_created, oneProject.data.date_modified, oneProject.data.name, oneProject.data.priority];
                         lista.push(element);
                         this.setState(previousState => ({
-                            listaProjekata: [...previousState.listaProjekata, element]
+                            listaProjekata: [...previousState.listaProjekata, element],
+                            listaProjekataPrethodnoStanje: [...previousState.listaProjekata, element]
                         }));
                         console.log("projekti iz state", this.state.listaProjekata);
                     });
@@ -189,7 +205,7 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, false, false, true, false, false, false]
+            listaAktivnih: [false, false, false, true, false, false, false, false]
         });
     };
 
@@ -218,7 +234,7 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, false, false, false, false, true, false]
+            listaAktivnih: [false, false, false, false, false, true, false, false]
         });
 
     }
@@ -249,7 +265,7 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, false, false, false, true, false, false]
+            listaAktivnih: [false, false, false, false, true, false, false, false]
         });
     }
 
@@ -268,7 +284,7 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, true, false, false, false, false, false],
+            listaAktivnih: [false, true, false, false, false, false, false, false],
             indeksKlika: indeks,
             isProject: "version"
         });
@@ -276,7 +292,7 @@ class ProjectOverview extends Component {
 
     udjiUVerziju = (indeks) => {
         this.setState({
-            listaAktivnih: [false, false, true, false, false, false, false],
+            listaAktivnih: [false, false, true, false, false, false, false, false],
             indeksKlikaVerzija: indeks
         });
     }
@@ -290,7 +306,7 @@ class ProjectOverview extends Component {
                 array.splice(indeks, 1)
                 this.setState({ 
                     verzije: array,
-                    listaAktivnih: [false, true, false, false, false, false, false],
+                    listaAktivnih: [false, true, false, false, false, false, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
                     hide: true,
@@ -322,7 +338,7 @@ class ProjectOverview extends Component {
                 array.splice(indeks, 1)
                 this.setState({ 
                     mockupi: array,
-                    listaAktivnih: [false, false, false, true, false, false, false],
+                    listaAktivnih: [false, false, false, true, false, false, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
                     hide: true});
@@ -353,7 +369,7 @@ class ProjectOverview extends Component {
                 array.splice(indeks, 1)
                 this.setState({ 
                     pdfs: array,
-                    listaAktivnih: [false, false, false, false, false, true, false],
+                    listaAktivnih: [false, false, false, false, false, true, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
                     hide: true});
@@ -384,7 +400,7 @@ class ProjectOverview extends Component {
                 array.splice(indeks, 1)
                 this.setState({ 
                     gspecs: array,
-                    listaAktivnih: [false, false, false, false, true, false, false],
+                    listaAktivnih: [false, false, false, false, true, false, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
                     hide: true});
@@ -478,7 +494,7 @@ class ProjectOverview extends Component {
     render() {
         var a = this.state.listaAktivnih;
         return (
-            <Form>{!a[6] &&
+            <Form>{!a[6] && !a[7] &&
             <Row>
                 {a[0] &&
                 <Col xs='2' style={{height:'100vh'}}>
@@ -499,7 +515,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [true, false, false, false, false, false, false],
+                                                listaAktivnih: [true, false, false, false, false, false, false, false],
                                                 isProject: "project"
                                             });
                                         }}>
@@ -509,7 +525,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, true, false, false, false, false, false],
+                                                listaAktivnih: [false, true, false, false, false, false, false, false],
                                                 isProject: "version"
                                             });
                                         }}> 
@@ -519,7 +535,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, false, true, false, false, false, false],
+                                                listaAktivnih: [false, false, true, false, false, false, false, false],
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.verzije[this.state.indeksKlikaVerzija].versionName}</h4>
@@ -528,7 +544,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, false, false, true, false, false, false],
+                                                listaAktivnih: [false, false, false, true, false, false, false, false],
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.tipFilea[0]}</h4>
@@ -537,7 +553,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, false, false, false, false, true, false],
+                                                listaAktivnih: [false, false, false, false, false, true, false, false],
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.tipFilea[2]}</h4>
@@ -546,7 +562,7 @@ class ProjectOverview extends Component {
                                     <BreadcrumbItem tag="a"
                                         onClick = {(e) =>{
                                             this.setState({
-                                                listaAktivnih: [false, false, false, false, true, false, false],
+                                                listaAktivnih: [false, false, false, false, true, false, false, false],
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.tipFilea[1]}</h4>
@@ -554,7 +570,12 @@ class ProjectOverview extends Component {
                                 </Breadcrumb>
                             </Col>
                             {a[1] && <Col md={1}>
-                            <Button 
+                            <Button onClick = {(e) =>{
+                                        this.setState({
+                                            listaAktivnih: [false, false, false, false, false, false, false, true]
+                                        });
+                                    }}
+
                                 outline color="success"
                                 style={{width:'100px'}}>
                                 Share
@@ -568,13 +589,13 @@ class ProjectOverview extends Component {
                                     onClick = {(e) =>{
                                         if (a[0]) {
                                             this.setState({
-                                                listaAktivnih: [false, false, false, false, false, false, true],
+                                                listaAktivnih: [false, false, false, false, false, false, true, false],
                                                 isProject: "project"
                                             });
                                         }
                                         else if (a[1]) {
                                             this.setState({
-                                                listaAktivnih: [false, false, false, false, false, false, true],
+                                                listaAktivnih: [false, false, false, false, false, false, true, false],
                                                 isProject: "version"
                                             });
                                         }
@@ -590,10 +611,10 @@ class ProjectOverview extends Component {
                         {(a[0] || a[3] || a[5] || a[4]) && <Row>
                             <Col md={4}>
                                 <InputGroup>
-                                    <Input placeholder = {a[0] ? "Search projects" : a[3] ? "Search mockups": a[5] ? "Search pdfs" : a[4] ? "Search gspecs": " "} 
+                                    <Input value = {this.state.searchProjectValue} placeholder = {a[0] ? "Search projects" : a[3] ? "Search mockups": a[5] ? "Search pdfs" : a[4] ? "Search gspecs": " "} 
                                         onChange={(e) =>{
                                         this.setState({ searchProjectValue: e.target.value})
-                                        this.searchFiles(e);
+                                        this.searchFiles(e.target.value);
                                     }
                                     } 
                                     />
@@ -638,6 +659,7 @@ class ProjectOverview extends Component {
             </Row>
             }
             {a[6] && <CreateNewVersion data = {this}/>}
+            {a[7] && <Collaboration data = {this}/>}
             </Form>
           );
     }

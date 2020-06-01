@@ -7,9 +7,9 @@ import { Icon } from '@opuscapita/react-icons';
 
 class Collaboration extends Component {
     constructor(props) {
-        super();
+        super(props);
         this.state = {
-            idProjekta: "2",
+            idProjekta: this.props.data.state.listaProjekata[this.props.data.state.indeksKlika][0],
             korisnici: [],
             postojeKorisnici: false,
             idKorisnika: "",
@@ -68,6 +68,7 @@ class Collaboration extends Component {
                     this.setState({
                         uspjesnoDodan: true
                     });
+                    setTimeout(() => this.goBack(), 2000);
                 })
                     .catch((error) => {
                         console.log("Greska u GET!");
@@ -82,6 +83,9 @@ class Collaboration extends Component {
                 });
         }
     }
+    goBack = () => {
+        this.props.data.goBack();
+    }
 
     render() {
         return (
@@ -95,7 +99,7 @@ class Collaboration extends Component {
                     <Row>
                         <Col sm="12">
                             <div className="input-group md-form form-sm form-2 pl-0">
-                                <input className="form-control my-0 py-1 amber-border" type="text" placeholder="Find people" aria-label="Search"
+                                <input className="form-control my-0 py-1 amber-border" type="text" placeholder="Find people (by username)" aria-label="Search"
                                     onChange={(e) =>
                                         this.setState({ usernameNovogKorisnika: e.target.value })
                                     } />
@@ -136,8 +140,13 @@ class Collaboration extends Component {
                         )
                     })}
                     <br />
-                    <Row style={{ paddingRight: "15px" }}>
-                        <Button type="submit" id="submitButton" className="secondary px-3 bg-dark" style={{ marginLeft: "auto" }}>Done</Button>
+                    <Row>
+                        <Col>
+                            <Button outline color = "danger" style = {{float: "left", width: "30%", marginTop: '8%', marginLeft: '0'}} onClick = {(e) =>{
+                                        this.goBack()
+                                    }} >Cancel</Button>
+                            <Button type="submit" id="submitButton" style = {{float: "right", width: "30%", marginTop: '8%'}} className="bg-dark">Done</Button>
+                        </Col>
                     </Row>
                 </Form>
             </Container >

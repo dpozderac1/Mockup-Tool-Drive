@@ -102,6 +102,10 @@ class CreateNewServer extends Component {
         });
     }
 
+    goBack = () => {
+        this.props.data.goBack();
+    }
+
     render() { 
         return (  
             <Container className="col-lg-6" style={{
@@ -157,7 +161,10 @@ class CreateNewServer extends Component {
                     </Row>
                     <Row>
                         <Col>
-                            <Button type="submit" id="submitButton" style = {{float: "right", width: "15%"}} className="bg-dark">Create</Button>
+                        <Button outline color = "danger" style = {{float: "left", width: "30%", marginLeft: '0'}} onClick = {(e) =>{
+                                        this.goBack();
+                                        }} >Cancel</Button>
+                            <Button type="submit" id="submitButton" style = {{float: "right", width: "30%"}} className="bg-dark">Create</Button>
                         </Col>
                     </Row>
                 </Form>
