@@ -19,7 +19,9 @@ class SignUp extends React.Component {
             greskaVisible: "hidden",
             nepodudaranPassword: "hidden",
             errorZahtjev: "",
-            uspjesanZahtjev: false
+            uspjesanZahtjev: false,
+            firstChange : true,
+            previousUsername: ""
         }
         this.posaljiZahtjev = this.posaljiZahtjev.bind(this);
         this.dobaviPodatkeKorisnika = this.dobaviPodatkeKorisnika.bind(this);
@@ -139,6 +141,7 @@ class SignUp extends React.Component {
         const idKorisnika = "1";
         let url = this.context;
         const AuthStr = 'Bearer '.concat(localStorage.getItem('token'));
+        let readPass = document.getElementById("passwordLabel").value;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
             console.log("idddd: ", res.data.id, AuthStr);
             axios.put(url.user + "/updateUser/" + res.data.id, {
@@ -153,23 +156,42 @@ class SignUp extends React.Component {
                 console.log(res.data);
                 this.setState({
                     errorZahtjev: "",
-                    uspjesanZahtjev: true
+                    uspjesanZahtjev: true,
+                    firstChange: true
                 });
+                if(this.state.previousUsername !== "" && (this.state.username !== this.state.previousUsername)) {
+                    localStorage.setItem('token', "");
+                    setTimeout(() => this.props.podaci.hideComponent("showSignIn"), 2000); 
+                }
+                if(readPass !== "") {
+                    localStorage.setItem('token', "");
+                    setTimeout(() => this.props.podaci.hideComponent("showSignIn"), 2000); 
+                }
             })
                 .catch((error) => {
                     console.log("Greska!");
                     console.log(error.response);
-                    if (error.response.status === 403) {
+                    let err = "";
+                    if(error.response == undefined) {
+                        err = "Unknown error!";
                         this.setState({
-                            errorZahtjev: "You are not authorized!",
+                            errorZahtjev: err,
                             uspjesanZahtjev: false
                         });
                     }
                     else {
-                        this.setState({
-                            errorZahtjev: error.response.data.errors,
-                            uspjesanZahtjev: false
-                        });
+                        if (error.response.status === 403) {
+                            this.setState({
+                                errorZahtjev: "You are not authorized!",
+                                uspjesanZahtjev: false
+                            });
+                        }
+                        else {
+                            this.setState({
+                                errorZahtjev: error.response.data.errors,
+                                uspjesanZahtjev: false
+                            });
+                        }
                     }
                 })
         });
@@ -210,9 +232,13 @@ class SignUp extends React.Component {
                             <FormGroup>
                                 <Label for="usernameLabel">Username</Label>
                                 <Input type="text" name="username" id="usernameLabel" minLength={5} maxLength={50}
-                                    onChange={(e) =>
-                                        this.setState({ username: e.target.value })
-                                    } />
+                                    onChange={(e) => {
+                                        if(this.state.firstChange === true) {
+                                            this.setState({previousUsername: this.state.username, firstChange: false}); 
+                                        }
+                                        console.log("username: ", this.state.previousUsername, e.target.value);
+                                        this.setState({ username: e.target.value });
+                                    }} />
                             </FormGroup>
                         </Col>
                         <Col xs="6">

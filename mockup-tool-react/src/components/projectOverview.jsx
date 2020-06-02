@@ -25,8 +25,11 @@ class ProjectOverview extends Component {
             verzije: [],
             tipFilea: ['Mockups', 'Galen tests', 'PDFs'],
             mockupi: [],
+            mockupiPrethodnoStanje: [],
             pdfs: [],
+            pdfsPrethodnoStanje: [],
             gspecs: [], 
+            gspecsPrethodnoStanje: [],
             pdfMockupi: [],
             gspecsMockupi: [],
             pretragaProketi: [],
@@ -35,10 +38,10 @@ class ProjectOverview extends Component {
             errorMessage: "",
             errorVisible: false,
             hide: true,
-            isProject: "project"
+            isProject: "project",
+            filterTitle: "project"
         };
 
-        this.handleClick = this.handleClick.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.backToProjects = this.backToProjects.bind(this);
         this.goBack = this.goBack.bind(this);
@@ -48,71 +51,145 @@ class ProjectOverview extends Component {
         return (
         <DropdownMenu>
             {this.state.values.map(element => 
-                <DropdownItem tag="a" href="#" onClick={() => {this.state.listaAktivnih[0] && this.handleClickFilter(element)}}>
+                <DropdownItem tag="a" href="#" onClick={() => {(this.state.listaAktivnih[0] || this.state.listaAktivnih[3] || this.state.listaAktivnih[4] || this.state.listaAktivnih[5]) && this.handleClickFilter(element, this.state.filterTitle)}}>
                     {element.value}
                 </DropdownItem>) }
         </DropdownMenu>
         );
     }
 
-    searchFiles = (s) =>{
+    searchFiles = (s, filterTitle) => {
         if(s == "") {
-            let projects = [...this.state.listaProjekataPrethodnoStanje];
-            console.log("projekti: ", projects);
-            this.setState({listaProjekata: projects});
+            let projects = [];
+            if(filterTitle == "project"){
+                projects = [...this.state.listaProjekataPrethodnoStanje];
+                this.setState({listaProjekata: projects});
+            }
+            else if(filterTitle == "mockup") {
+                projects = [...this.state.mockupiPrethodnoStanje];
+                this.setState({mockupi: projects});
+            }
+            else if(filterTitle == "gspec") {
+                projects = [...this.state.gspecsPrethodnoStanje];
+                this.setState({gspecs: projects});
+            }
+            else if(filterTitle == "pdf") {
+                projects = [...this.state.pdfsPrethodnoStanje];
+                this.setState({pdfs: projects});
+            }
         }
         else{
-            if(this.state.listaProjekata != null){
-                let array = [...this.state.listaProjekataPrethodnoStanje];
-                let newArray = []
-                array.filter(project => {
-                    if(project[3].toUpperCase().includes(s.toUpperCase())) {
-                        newArray.push(project);
-                    }
-                });
+            let array = []
+            let index = 0;
+            if(filterTitle == "project") {
+                array = [...this.state.listaProjekataPrethodnoStanje];
+                index = 3;
+            }
+            else if(filterTitle == "mockup") {
+                array = [...this.state.mockupiPrethodnoStanje];
+                index = "name";
+            }
+            else if(filterTitle == "gspec") {
+                array = [...this.state.gspecsPrethodnoStanje];
+                index = "name";
+            }
+            else if(filterTitle == "pdf") {
+                array = [...this.state.pdfsPrethodnoStanje];
+                index = "name";
+            }
+            let newArray = []
+            array.filter(project => {
+                if(project[index].toUpperCase().includes(s.toUpperCase())) {
+                    newArray.push(project);
+                }
+            });
+            if(filterTitle == "project") {
                 this.setState({listaProjekata: newArray});
+            }
+            else if(filterTitle == "mockup") {
+                this.setState({mockupi: newArray});
+            }
+            else if(filterTitle == "gspec") {
+                this.setState({gspecs: newArray});
+            }
+            else if(filterTitle == "pdf") {
+                this.setState({pdfs: newArray});
             }
         }
     }
 
-    handleClickFilter = (element) => {
-        let array = [...this.state.listaProjekata];
+    handleClickFilter = (element, filterTitle) => {
+        let array = [];
+        let index_name = 0;
+        let index_date_created = 0;
+        let index_date_modified = 0;
+        if (filterTitle == "project") {
+            array = [...this.state.listaProjekata];
+            index_name = 3;
+            index_date_created = 1;
+            index_date_modified = 2;
+        }
+        else if (filterTitle == "mockup") {
+            array = [...this.state.mockupi];
+            index_name = "name";
+            index_date_created = "date_created";
+            index_date_modified = "date_modified";
+        }
+        else if (filterTitle == "pdf") {
+            array = [...this.state.pdfs];
+            index_name = "name";
+            index_date_created = "date_created";
+            index_date_modified = "date_modified";
+        }
+        else if (filterTitle == "gspec") {
+            array = [...this.state.gspecs];
+            index_name = "name";
+            index_date_created = "date_created";
+            index_date_modified = "date_modified";
+        }
         if(element.value == "Alphabetical") {
             array.sort(function(a, b){
-                if(a[3].toUpperCase() < b[3].toUpperCase()) { return -1; }
-                if(a[3].toUpperCase() > b[3].toUpperCase()) { return 1; }
+                if(a[index_name].toUpperCase() < b[index_name].toUpperCase()) { return -1; }
+                if(a[index_name].toUpperCase() > b[index_name].toUpperCase()) { return 1; }
                 return 0;
             });
         }
         else if (element.value == "Date created") {
             array.sort(function(a, b){
-                if(Date.parse(a[1]) < Date.parse(b[1])) { return -1; }
-                if(Date.parse(a[1]) > Date.parse(b[1])) { return 1; }
+                if(Date.parse(a[index_date_created]) > Date.parse(b[index_date_created])) { return -1; }
+                if(Date.parse(a[index_date_created]) < Date.parse(b[index_date_created])) { return 1; }
                 return 0;
             });
         }
         else if (element.value == "Date modified") {
             array.sort(function(a, b){
-                if(Date.parse(a[2]) < Date.parse(b[2])) { return -1; }
-                if(Date.parse(a[2]) > Date.parse(b[2])) { return 1; }
+                if(Date.parse(a[index_date_modified]) > Date.parse(b[index_date_modified])) { return -1; }
+                if(Date.parse(a[index_date_modified]) < Date.parse(b[index_date_modified])) { return 1; }
                 return 0;
             });
         }
-        this.setState({listaProjekata: array, title: element.value});
+        if (filterTitle == "project") {
+            this.setState({listaProjekata: array, title: element.value});
+        }
+        else if (filterTitle == "mockup") {
+            this.setState({mockupi: array, title: element.value});
+        }
+        else if (filterTitle == "pdf") {
+            this.setState({pdfs: array, title: element.value});
+        }
+        else if (filterTitle == "gspec") {
+            this.setState({gspecs: array, title: element.value});
+        }
     };
 
     componentDidMount() {
         this.getProjectsOfUser();
     }
- 
-    handleClick (element) {
-        this.setState({listaAktivnih: [false, false, false, false, false, false, true, false]});
-    };
 
     backToProjects() {
         if(this.state.isProject === "project") {
             this.getProjectsOfUser();
-            this.setState({listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project", searchProjectValue: ""});
+            this.setState({listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project", searchProjectValue: "", filterTitle: "project"});
         }
         else if (this.state.isProject === "version") {
             this.udjiUProjekat(this.state.indeksKlika);
@@ -122,7 +199,7 @@ class ProjectOverview extends Component {
 
     goBack () {
         if(this.state.isProject === "project") {
-            this.setState({listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project"});
+            this.setState({listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project", filterTitle: "project"});
         }
         else if (this.state.isProject === "version") {
             this.setState({listaAktivnih: [false, true, false, false, false, false, false, false], isProject: "version"});
@@ -140,7 +217,6 @@ class ProjectOverview extends Component {
                 }
             });
             array.splice(index, 1);
-            console.log("daj array: ", array);
             this.setState({listaProjekata: array, deleteSuccess: true, errorVisible: false, hide: true, listaProjekataPrethodnoStanje: array, searchProjectValue: ""});
             setTimeout(() => {this.setState({hide: false})}, 3000);
         })
@@ -197,7 +273,8 @@ class ProjectOverview extends Component {
             axios.get(url.project + "/mockups/version/" + this.state.verzije[this.state.indeksKlikaVerzija].id).then(mockups => {
                 console.log(mockups.data);
                 this.setState({
-                    mockupi: mockups.data
+                    mockupi: mockups.data,
+                    mockupiPrethodnoStanje: mockups.data
                 });
 
                 console.log(this.state.mockupi);
@@ -205,7 +282,10 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, false, false, true, false, false, false, false]
+            listaAktivnih: [false, false, false, true, false, false, false, false],
+            filterTitle: "mockup",
+            title: this.state.values[0].value,
+            searchProjectValue: ""
         });
     };
 
@@ -224,6 +304,7 @@ class ProjectOverview extends Component {
                         pdf.data.map((p) => {
                             this.setState(previousState => ({
                                 pdfs: [...previousState.pdfs, p],
+                                pdfsPrethodnoStanje: [...previousState.pdfs, p],
                                 pdfMockupi:  [...previousState.pdfMockupi, mockup],
                             }));
                             console.log(p);
@@ -234,7 +315,10 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, false, false, false, false, true, false, false]
+            listaAktivnih: [false, false, false, false, false, true, false, false],
+            filterTitle: "pdf",
+            title: this.state.values[0].value,
+            searchProjectValue: ""
         });
 
     }
@@ -255,6 +339,7 @@ class ProjectOverview extends Component {
                         gspec.data.map((p) => {
                             this.setState(previousState => ({
                                 gspecs: [...previousState.gspecs, p],
+                                gspecsPrethodnoStanje: [...previousState.gspecs, p],
                                 gspecsMockupi:  [...previousState.gspecsMockupi, mockup],
                             }));
                             console.log("gspcp ", p);
@@ -265,7 +350,10 @@ class ProjectOverview extends Component {
         }
 
         this.setState({
-            listaAktivnih: [false, false, false, false, true, false, false, false]
+            listaAktivnih: [false, false, false, false, true, false, false, false],
+            filterTitle: "gspec",
+            title: this.state.values[0].value,
+            searchProjectValue: ""
         });
     }
 
@@ -330,18 +418,27 @@ class ProjectOverview extends Component {
     }
 
     deleteMockup = (indeks) => {
+        console.log("indeks za obrisat: ", indeks);
         let url = this.context;
         if(this.state.mockupi != null){
             console.log(this.state.verzije)
+            const elementToDelete = this.state.mockupi[indeks];
             axios.delete(url.project + "/delete/mockup/" + this.state.mockupi[indeks].id).then(res => { 
                 let array = [...this.state.mockupi];
-                array.splice(indeks, 1)
+                array.splice(indeks, 1);
+                let newArray = [...this.state.mockupiPrethodnoStanje];
+                const index = newArray.indexOf(elementToDelete);
+                newArray.splice(index, 1);
                 this.setState({ 
-                    mockupi: array,
+                    mockupi: newArray,
+                    mockupiPrethodnoStanje: newArray,
                     listaAktivnih: [false, false, false, true, false, false, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
-                    hide: true});
+                    hide: true,
+                    filterTitle: "mockup",
+                    searchProjectValue: ""
+                });
                 setTimeout(() => {this.setState({hide: false})}, 3000);
             })
             .catch((error) => {
@@ -363,16 +460,24 @@ class ProjectOverview extends Component {
     deletePDF = (indeks) => {
         let url = this.context;
         if(this.state.pdfs != null){
-            console.log(this.state.pdfs)
+            const elementToDelete = this.state.pdfs[indeks];
+            console.log("pdfovi delete: ", elementToDelete);
             axios.delete(url.project + "/delete/pdf_document/" + this.state.pdfs[indeks].id).then(res => { 
                 let array = [...this.state.pdfs];
                 array.splice(indeks, 1)
+                let newArray = [...this.state.pdfsPrethodnoStanje];
+                const index = newArray.indexOf(elementToDelete);
+                newArray.splice(index, 1);
                 this.setState({ 
-                    pdfs: array,
+                    pdfs: newArray,
+                    pdfsPrethodnoStanje: newArray,
                     listaAktivnih: [false, false, false, false, false, true, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
-                    hide: true});
+                    hide: true,
+                    filterTitle: "pdf",
+                    searchProjectValue: ""
+                });
                 setTimeout(() => {this.setState({hide: false})}, 3000);
             })
             .catch((error) => {
@@ -395,15 +500,23 @@ class ProjectOverview extends Component {
         let url = this.context;
         if(this.state.gspecs != null){
             console.log(this.state.gspecs)
+            const elementToDelete = this.state.gspecs[indeks];
             axios.delete(url.project + "/delete/gspec_document/" + this.state.gspecs[indeks].id).then(res => { 
                 let array = [...this.state.gspecs];
                 array.splice(indeks, 1)
+                let newArray = [...this.state.gspecsPrethodnoStanje];
+                const index = newArray.indexOf(elementToDelete);
+                newArray.splice(index, 1);
                 this.setState({ 
-                    gspecs: array,
+                    gspecs: newArray,
+                    gspecsPrethodnoStanje: newArray,
                     listaAktivnih: [false, false, false, false, true, false, false, false],
                     deleteSuccess: true, 
                     errorVisible: false, 
-                    hide: true});
+                    hide: true,
+                    filterTitle: "gspec",
+                    searchProjectValue: ""
+                });
                 setTimeout(() => {this.setState({hide: false})}, 3000);
             })
             .catch((error) => {
@@ -498,7 +611,7 @@ class ProjectOverview extends Component {
             <Row>
                 {a[0] &&
                 <Col xs='2' style={{height:'100vh'}}>
-                    <SideBar></SideBar>
+                    <SideBar data = {this}></SideBar>
                 </Col>
                 }
                 <Col xs={a[0] ? '10' : '12'}
@@ -516,7 +629,11 @@ class ProjectOverview extends Component {
                                         onClick = {(e) =>{
                                             this.setState({
                                                 listaAktivnih: [true, false, false, false, false, false, false, false],
-                                                isProject: "project"
+                                                isProject: "project",
+                                                filterTitle: "project",
+                                                title: this.state.values[0].value,
+                                                searchProjectValue: "",
+                                                listaProjekata: this.state.listaProjekataPrethodnoStanje
                                             });
                                         }}>
                                         <h4 className="bkItem text-secondary">Projects</h4>
@@ -526,7 +643,9 @@ class ProjectOverview extends Component {
                                         onClick = {(e) =>{
                                             this.setState({
                                                 listaAktivnih: [false, true, false, false, false, false, false, false],
-                                                isProject: "version"
+                                                isProject: "version",
+                                                title: this.state.values[0].value,
+                                                searchProjectValue: ""
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.vratiNaziv(this.state.listaProjekata[this.state.indeksKlika])}</h4>
@@ -536,6 +655,8 @@ class ProjectOverview extends Component {
                                         onClick = {(e) =>{
                                             this.setState({
                                                 listaAktivnih: [false, false, true, false, false, false, false, false],
+                                                title: this.state.values[0].value,
+                                                searchProjectValue: ""
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.verzije[this.state.indeksKlikaVerzija].versionName}</h4>
@@ -545,6 +666,10 @@ class ProjectOverview extends Component {
                                         onClick = {(e) =>{
                                             this.setState({
                                                 listaAktivnih: [false, false, false, true, false, false, false, false],
+                                                filterTitle: "mockup",
+                                                title: this.state.values[0].value,
+                                                searchProjectValue: "",
+                                                mockupi: this.state.mockupiPrethodnoStanje
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.tipFilea[0]}</h4>
@@ -554,6 +679,10 @@ class ProjectOverview extends Component {
                                         onClick = {(e) =>{
                                             this.setState({
                                                 listaAktivnih: [false, false, false, false, false, true, false, false],
+                                                filterTitle: "pdf",
+                                                title: this.state.values[0].value,
+                                                searchProjectValue: "",
+                                                pdfs: this.state.pdfsPrethodnoStanje
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.tipFilea[2]}</h4>
@@ -563,6 +692,10 @@ class ProjectOverview extends Component {
                                         onClick = {(e) =>{
                                             this.setState({
                                                 listaAktivnih: [false, false, false, false, true, false, false, false],
+                                                filterTitle: "gspec",
+                                                title: this.state.values[0].value,
+                                                searchProjectValue: "",
+                                                gspecs: this.state.gspecsPrethodnoStanje
                                             });
                                         }}> 
                                         <h4 className="bkItem text-secondary"> {this.state.tipFilea[1]}</h4>
@@ -614,7 +747,7 @@ class ProjectOverview extends Component {
                                     <Input value = {this.state.searchProjectValue} placeholder = {a[0] ? "Search projects" : a[3] ? "Search mockups": a[5] ? "Search pdfs" : a[4] ? "Search gspecs": " "} 
                                         onChange={(e) =>{
                                         this.setState({ searchProjectValue: e.target.value})
-                                        this.searchFiles(e.target.value);
+                                        this.searchFiles(e.target.value, this.state.filterTitle);
                                     }
                                     } 
                                     />

@@ -52,6 +52,7 @@ class SignIn extends React.Component {
             localStorage.setItem('token', res.data.jwt);
             console.log("Odgovor!")
             console.log(res);
+            this.props.data.setPassword(this.state.password);
             axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(userData => {
                 this.setState({
                     userRole: userData.data.roleID.role_name,

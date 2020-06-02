@@ -38,7 +38,8 @@ class Meni extends Component {
             pdfNaziv: "",
             pdfAlert: "hidden",
             pdfAlertUspjesno: false,
-            pdfAlertTekst: ""
+            pdfAlertTekst: "",
+            password: ""
         };
         this.hideComponent = this.hideComponent.bind(this);
         this.hideAll = this.hideAll.bind(this);
@@ -53,6 +54,10 @@ class Meni extends Component {
         this.toggle = this.toggle.bind(this);
         this.togglePDF = this.togglePDF.bind(this);
     }
+
+    setPassword = (password) => {
+        this.setState({password});
+    };
 
     componentDidMount() {
         console.log("desilo se");
