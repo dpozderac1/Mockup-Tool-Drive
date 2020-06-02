@@ -21,4 +21,6 @@ public interface GSPEC_DocumentServiceInterface {
     public void deletegspec(MessageRabbitMq msg) throws JSONException;
 
     public ResponseEntity addGSPECFile(Long id, MultipartFile gspecFajl, String naziv, HttpServletRequest request) throws IOException, SQLException;
+
+    ResponseEntity<?> getOneGSPECFile(Long id) throws SQLException;
 }

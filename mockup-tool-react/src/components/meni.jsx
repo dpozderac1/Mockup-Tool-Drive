@@ -1,16 +1,12 @@
 import React, { useState, Component } from 'react';
 import {
-    Collapse,
     Navbar,
     NavbarToggler,
     NavbarBrand,
     Nav,
-    NavItem,
     NavLink,
-    NavbarText,
-    ButtonGroup,
     Button,
-    Row, ListGroup, ListGroupItem, Col, Form, FormGroup, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label
+    Row, Form, FormGroup, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label, Spinner
 } from 'reactstrap';
 import SignIn from './signIn';
 import SignUp from './signUp';
@@ -39,7 +35,8 @@ class Meni extends Component {
             pdfAlert: "hidden",
             pdfAlertUspjesno: false,
             pdfAlertTekst: "",
-            password: ""
+            password: "",
+            mockupId: ""
         };
         this.hideComponent = this.hideComponent.bind(this);
         this.hideAll = this.hideAll.bind(this);
@@ -53,10 +50,18 @@ class Meni extends Component {
         this.snimiPDF = this.snimiPDF.bind(this);
         this.toggle = this.toggle.bind(this);
         this.togglePDF = this.togglePDF.bind(this);
+
+        this.ucitajMockupFile = this.ucitajMockupFile.bind(this);
+        this.dajIdMockupa = this.dajIdMockupa.bind(this);
+        this.download = this.download.bind(this);
+
+        this.ucitajPDFFile = this.ucitajPDFFile.bind(this);
+
+        this.ucitajGalenFile = this.ucitajGalenFile.bind(this);
     }
 
     setPassword = (password) => {
-        this.setState({password});
+        this.setState({ password });
     };
 
     componentDidMount() {
@@ -146,7 +151,8 @@ class Meni extends Component {
         document.getElementById('lijevo').style.display = "flex";
         document.getElementById('glavni').style.display = "flex";
         document.getElementById('strelicaToolbara').style.display = "flex";
-        document.getElementById('desniToolbar').style.display = "flex";
+        //document.getElementById('desniToolbar').style.display = "flex";
+        this.ucitajMockupFile();
     }
 
     sakrijMockupTool() {
@@ -161,8 +167,8 @@ class Meni extends Component {
         this.setState({ role });
     }
 
-    goBack () {
-        this.hideComponent("showUpdateAdmin"); 
+    goBack() {
+        this.hideComponent("showUpdateAdmin");
         this.setPodaci("showUpdateAdmin");
     }
 
@@ -214,9 +220,9 @@ class Meni extends Component {
         fajl += document.getElementById("glavni").innerHTML;
         fajl += `</body></html>`;
 
-        let mockupId = 3;
+        //let mockupId = 3;
         let url = this.context;
-        axios.get(url.project + "/mockup/" + mockupId).then(res => {
+        axios.get(url.project + "/mockup/" + this.state.mockupId).then(res => {
             var trenutniMockup = res.data;
             var formData = new FormData();
             console.log("Trenutni mockup je: ", trenutniMockup);
@@ -229,7 +235,7 @@ class Meni extends Component {
             /*for (var key of formData.entries()) {
                 console.log(key[0] + ', ' + key[1]);
             }*/
-            axios.put(url.project + "/addOrUpdateFile/" + mockupId, formData, { headers: { 'content-type': 'multipart/form-data' } }).then(res => {
+            axios.put(url.project + "/addOrUpdateFile/" + this.state.mockupId, formData, { headers: { 'content-type': 'multipart/form-data' } }).then(res => {
                 console.log("Uspjesno");
                 this.toggle();
                 setTimeout(
@@ -237,7 +243,7 @@ class Meni extends Component {
                         this.toggle();
                     }
                         .bind(this),
-                    2000
+                    1000
                 );
             })
                 .catch(error => {
@@ -293,12 +299,7 @@ class Meni extends Component {
 
     snimiPDF(e) {
         e.preventDefault();
-        var quality = 1;
-        let pdf = new jsPDF('landscape');
-        html2canvas(document.querySelector('#glavni'), { scale: quality }).then(function (canvas) {
-            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 30, 250, 130);
-        });
-        let mockupId = 3;
+        //let mockupId = 3;
         let url = this.context;
         console.log("Naziv PDF-a: ", this.state.pdfNaziv);
         if (this.state.pdfNaziv === null || this.state.pdfNaziv.length < 2 || this.state.pdfNaziv.length > 255) {
@@ -309,39 +310,40 @@ class Meni extends Component {
             })
         }
         else {
-            axios.get(url.project + "/mockup/" + mockupId).then(res => {
-                var trenutniMockup = res.data;
-                var formData = new FormData();
-                console.log("Trenutni mockup je: ", trenutniMockup);
+            const input = document.getElementById('glavni');
+            html2canvas(input, {
+                useCORS: true
+            }, { scale: 1 })
+                .then(canvas => {
+                    document.getElementById("spinnerZaPDF").style.display = "flex";
+                    const imgData = canvas.toDataURL('image/png');
 
-                formData.append('pdfFile', new Blob([pdf]));
-                formData.append('name', this.state.pdfNaziv);
-                for (var key of formData.entries()) {
-                    console.log(key[0] + ', ' + key[1]);
-                }
-                axios.post(url.project + "/addPDFFile/" + mockupId, formData, { headers: { 'content-type': 'multipart/form-data' } }).then(res => {
-                    console.log("Trenutno je modal: ", this.state.modal);
-                    console.log("Uspjesno");
-                    this.setState({
-                        pdfAlert: "visible",
-                        pdfAlertUspjesno: true,
-                        pdfAlertTekst: "PDF file is saved successfully!"
+                    var formData = new FormData();
+                    formData.append('pdfFile', new Blob([imgData]));
+                    formData.append('name', this.state.pdfNaziv);
+                    /*for (var key of formData.entries()) {
+                        console.log(key[0] + ', ' + key[1]);
+                    }*/
+                    axios.post(url.project + "/addPDFFile/" + this.state.mockupId, formData, { headers: { 'content-type': 'multipart/form-data' } }).then(res => {
+                        console.log("Uspjesno");
+                        document.getElementById("spinnerZaPDF").style.display = "none";
+                        this.setState({
+                            pdfAlert: "visible",
+                            pdfAlertUspjesno: true,
+                            pdfAlertTekst: "PDF file is saved successfully!"
+                        })
                     })
-                })
-                    .catch(error => {
+                        .catch(error => {
+                            document.getElementById("spinnerZaPDF").style.display = "none";
+                            this.setState({
+                                pdfAlert: "visible",
+                                pdfAlertUspjesno: false,
+                                pdfAlertTekst: "Error occurred!"
+                            })
+                            console.log("Greska u POST kod updatePDFFile/{id}");
+                            console.log(error);
+                        });
 
-                        console.log("Greska u POST kod updatePDFFile/{id}");
-                        console.log(error);
-                    });
-            })
-                .catch(error => {
-                    this.setState({
-                        pdfAlert: "visible",
-                        pdfAlertUspjesno: false,
-                        pdfAlertTekst: "Error occurred!"
-                    })
-                    console.log("Greska u GET kod mockup/{id}");
-                    console.log(error);
                 });
         }
     }
@@ -363,6 +365,218 @@ class Meni extends Component {
     }
 
 
+    ucitajMockupFile(id = 0) {
+        let mockupIdTrenutni = id;
+        if (mockupIdTrenutni === 0) {
+            mockupIdTrenutni = this.state.mockupId;
+        }
+        let url = this.context;
+        axios.get(url.project + "/mockup/file/" + mockupIdTrenutni).then(res => {
+            axios.get(url.project + "/mockup/" + mockupIdTrenutni).then(res1 => {
+                document.getElementById("nepotrebniPDF").setAttribute("name", res1.data.name);
+            })
+                .catch((error) => {
+                    console.log("Greska u /mockup/{id}");
+                });
+            document.getElementById("glavni").click();
+            var content = res.data;
+            //console.log("Content je: ", content);
+
+            if (content !== null && content !== undefined && content !== "" && id === 0) {
+                var prviDio = content.split("</style>")[1];
+                var procitaniFajl = prviDio.split("</body>")[0];
+                if (procitaniFajl != "") {
+                    document.getElementById("glavni").innerHTML = procitaniFajl;
+                    document.getElementById("importFajlaDugme").click();
+                }
+            }
+            else if (id !== 0) {
+                axios.get(url.project + "/mockup/" + mockupIdTrenutni).then(res => {
+                    this.download(content, res.data.name + ".html", ".html");
+                })
+                    .catch((error) => {
+                        console.log("Greska u /mockup/{id}");
+                    });
+            }
+            else {
+                document.getElementById("glavni").innerHTML = "";
+            }
+        })
+            .catch(error => {
+                this.setState({
+                    pdfAlert: "visible",
+                    pdfAlertUspjesno: false,
+                    pdfAlertTekst: "Error occurred!"
+                })
+                console.log("Greska u GET kod /mockup/file/{id}");
+                console.log(error);
+            });
+    }
+
+    dajIdMockupa(idIzKomponente) {
+        console.log("Pozvano dajIdMockupa: ", idIzKomponente);
+        this.setState({
+            mockupId: idIzKomponente
+        });
+        this.hideComponent("showMockupTool");
+    }
+
+
+    download(data, filename, type) {
+        var file = new Blob([data], { type: type });
+        if (window.navigator.msSaveOrOpenBlob) // IE10+
+            window.navigator.msSaveOrOpenBlob(file, filename);
+        else { // Others
+            var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function () {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
+    }
+
+    ucitajPDFFile(id, naziv, snimi = false) {
+        let url = this.context;
+        let pdfIdTrenutni = id;
+
+
+        axios.get(url.project + "/pdf_document/file/" + pdfIdTrenutni).then(res => {
+            const pdf = new jsPDF('landscape');
+            pdf.addImage(res.data, 'PNG', 10, 10);
+            //snimanje pdf-a
+            if (snimi) {
+                pdf.save(naziv);
+            }
+            else {
+                //otvaranje pdf-a u browseru
+                const file = new Blob(
+                    [pdf.output('blob')],
+                    { type: 'application/pdf' });
+
+                //Build a URL from the file
+                const fileURL = URL.createObjectURL(file);
+                //Open the URL on new Window
+                window.open(fileURL);
+            }
+
+            //trenutni datum
+            const today = new Date();
+            let month = today.getMonth().toString();
+            month.length == 1 ? month = "0" + month : month = month;
+            let day = today.getDate().toString();
+            day.length == 1 ? day = "0" + day : day = day;
+            let hours = today.getHours().toString();
+            hours.length == 1 ? hours = "0" + hours : hours = hours;
+            let minutes = today.getMinutes().toString();
+            minutes.length == 1 ? minutes = "0" + minutes : minutes = minutes;
+            let seconds = today.getSeconds().toString();
+            seconds.length == 1 ? seconds = "0" + seconds : seconds = seconds;
+            const date = today.getFullYear() + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "." + today.getMilliseconds() + "Z";
+            axios.put(url.project + "/addOrUpdatePDF_Document/" + pdfIdTrenutni, {
+                id: pdfIdTrenutni,
+                name: naziv,
+                accessed_date: date
+            }).then(res1 => {
+
+            })
+                .catch(error => {
+                    console.log("Greska u PUT kod /addOrUpdatePDF_Document/file/{id}");
+                    console.log(error);
+                });
+        })
+            .catch(error => {
+                console.log("Greska u GET kod /pdf_document/file/{id}");
+                console.log(error);
+            });
+    }
+
+    ucitajGalenFile(id, naziv, snimi = false) {
+        let url = this.context;
+        axios.get(url.project + "/gspec_document/file/" + id).then(res => {
+            //console.log("Content je: ", res.data);
+            if (snimi) {
+                this.download(res.data, naziv + ".gspec", "txt");
+            }
+            else {
+                const file = new Blob(
+                    [res.data],
+                    { type: 'text/plain' });
+
+                //Build a URL from the file
+                const fileURL = URL.createObjectURL(file);
+                //Open the URL on new Window
+                window.open(fileURL);
+            }
+
+            //trenutni datum
+            const today = new Date();
+            let month = today.getMonth().toString();
+            month.length == 1 ? month = "0" + month : month = month;
+            let day = today.getDate().toString();
+            day.length == 1 ? day = "0" + day : day = day;
+            let hours = today.getHours().toString();
+            hours.length == 1 ? hours = "0" + hours : hours = hours;
+            let minutes = today.getMinutes().toString();
+            minutes.length == 1 ? minutes = "0" + minutes : minutes = minutes;
+            let seconds = today.getSeconds().toString();
+            seconds.length == 1 ? seconds = "0" + seconds : seconds = seconds;
+            const date = today.getFullYear() + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "." + today.getMilliseconds() + "Z";
+            axios.put(url.project + "/addOrUpdateGSPEC_Document/" + id, {
+                name: naziv,
+                accessed_date: date
+            }).then(res2 => {
+
+            })
+                .catch(error => {
+                    console.log("Greska u PUT kod /addOrUpdatePDF_Document/file/{id}");
+                    console.log(error);
+                });
+        })
+            .catch(error => {
+                console.log("Greska u GET kod /gspec_document/file/{id}");
+                console.log(error);
+            });
+    }
+
+    velicinaEkrana(velicina) {
+        if (velicina === 0) {
+            //mobileVersion
+            var el = document.getElementById("glavni");
+            el.style.height = 70 + "%";
+            el.style.width = 25 + "%"
+            el.style.cssFloat = "left"
+            el.style.overflow = "hidden";
+            el.style.border = "thick solid #E8E8E8";
+            el.style.borderRadius = 50 + "px";
+        }
+        else if (velicina === 1) {
+            //tabletVersion
+            var el = document.getElementById("glavni");
+            el.style.height = 79 + "%";
+            el.style.width = 50 + "%"
+            el.style.cssFloat = "left"
+            el.style.overflow = "hidden";
+            el.style.border = "thick solid #E8E8E8";
+            el.style.borderRadius = 50 + "px";
+        }
+        else {
+            //desktopVersion
+            var el = document.getElementById("glavni");
+            el.style.height = "calc(100% - 66px)";
+            el.style.width = 75 + "%";
+            el.style.cssFloat = "right"
+            el.style.overflow = "scroll";
+            el.style.border = "none";
+            el.style.borderRadius = 0 + "px";
+        }
+    }
+
+
     render() {
         const { showSignIn, showSignUp, showUpdateAdmin, showUpdateUser } = this.state;
 
@@ -378,15 +592,14 @@ class Meni extends Component {
                         {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignUp"); this.setPodaci("showSignUp"); }}>Sign up</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "ADMIN" ? <NavLink onClick={() => { this.hideComponent("showUpdateAdmin"); this.setPodaci("showUpdateAdmin"); }}>Admin profile</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "USER" ? <NavLink onClick={() => { this.hideComponent("showUpdateUser"); this.setPodaci("showUpdateUser"); }}>User profile</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showMockupTool"); }}>Mockup Tool</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showProjectOverview"); }}>Project Overview</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { localStorage.removeItem('token'); window.location.reload(); }}>Sign out</NavLink> : ""}
+                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { localStorage.removeItem('token'); this.hideComponent("showSignIn") }}>Sign out</NavLink> : ""}
                     </Nav>
                     {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.aktivni[4] ?
                         <Navbar className="navbar-right" style={{ padding: "0px 0px" }} color="light" light expand="md">
                             <Nav className="mr-auto" navbar>
                                 <Button outline color="secondary" style={{ width: "8em", height: "2em", padding: "0px" }} onClick={this.snimiFajl}>Save Mockup</Button>
-                                <Button outline color="secondary" style={{ width: "8em", height: "2em", padding: "0px" }} onClick={this.togglePDF}>Save PDF</Button>
+                                <Button outline color="secondary" style={{ width: "8em", height: "2em", padding: "0px" }} onClick={(e) => { this.snimiFajl(e); this.togglePDF(e) }}>Save PDF</Button>
                             </Nav>
                         </Navbar> : ""}
                 </Navbar>
@@ -412,6 +625,7 @@ class Meni extends Component {
                     <ModalFooter>
                         {this.state.pdfAlert === "visible" && !this.state.pdfAlertUspjesno ? <Alert color="danger">{this.state.pdfAlertTekst}</Alert> : ""}
                         {this.state.pdfAlert === "visible" && this.state.pdfAlertUspjesno ? <Alert color="success">{this.state.pdfAlertTekst}</Alert> : ""}
+                        <Spinner id="spinnerZaPDF" color="success" style={{ display: "none" }} />
                         <Button color="secondary" onClick={this.snimiPDF}>Save</Button>{' '}
                         <Button outline color="danger" onClick={this.togglePDF}>Cancel</Button>
                     </ModalFooter>
@@ -436,6 +650,8 @@ class Meni extends Component {
                     {this.state.aktivni[5] && <CreateNewServer data={this} />}
                     {this.state.aktivni[6] && <ProjectOverview data={this} />}
                 </Form>
+
+                <div id="nepotrebniPDF" name="nepotrebni" style={{ display: "none" }}></div>
             </div>
         );
     }

@@ -667,7 +667,7 @@ group.addEventListener("click", function (event) {
   }
 });
 
-function mobileVersion() {
+/*function mobileVersion() {
   var el = document.getElementById("glavni");
   el.style.height = 70 + "%";
   el.style.width = 25 + "%"
@@ -694,5 +694,5 @@ function desktopVersion() {
   el.style.overflow = "scroll";
   el.style.border = "none";
   el.style.borderRadius = 0 + "px";
-}
+}*/
 

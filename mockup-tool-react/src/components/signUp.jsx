@@ -20,7 +20,7 @@ class SignUp extends React.Component {
             nepodudaranPassword: "hidden",
             errorZahtjev: "",
             uspjesanZahtjev: false,
-            firstChange : true,
+            firstChange: true,
             previousUsername: ""
         }
         this.posaljiZahtjev = this.posaljiZahtjev.bind(this);
@@ -117,10 +117,16 @@ class SignUp extends React.Component {
                             });
                         }
                         else {
-                            console.log(error.response.data.errors[0]);
-                            this.setState({
-                                errorZahtjev: error.response.data.errors
-                            });
+                            if (error.response.data.errors === undefined || error.response.data.errors.length === 0) {
+                                this.setState({
+                                    errorZahtjev: "Unknown error!"
+                                });
+                            }
+                            else {
+                                this.setState({
+                                    errorZahtjev: error.response.data.errors[0]
+                                });
+                            }
                         }
                     })
 
@@ -159,20 +165,20 @@ class SignUp extends React.Component {
                     uspjesanZahtjev: true,
                     firstChange: true
                 });
-                if(this.state.previousUsername !== "" && (this.state.username !== this.state.previousUsername)) {
+                if (this.state.previousUsername !== "" && (this.state.username !== this.state.previousUsername)) {
                     localStorage.setItem('token', "");
-                    setTimeout(() => this.props.podaci.hideComponent("showSignIn"), 2000); 
+                    setTimeout(() => this.props.podaci.hideComponent("showSignIn"), 2000);
                 }
-                if(readPass !== "") {
+                if (readPass !== "") {
                     localStorage.setItem('token', "");
-                    setTimeout(() => this.props.podaci.hideComponent("showSignIn"), 2000); 
+                    setTimeout(() => this.props.podaci.hideComponent("showSignIn"), 2000);
                 }
             })
                 .catch((error) => {
                     console.log("Greska!");
                     console.log(error.response);
                     let err = "";
-                    if(error.response == undefined) {
+                    if (error.response == undefined) {
                         err = "Unknown error!";
                         this.setState({
                             errorZahtjev: err,
@@ -233,8 +239,8 @@ class SignUp extends React.Component {
                                 <Label for="usernameLabel">Username</Label>
                                 <Input type="text" name="username" id="usernameLabel" minLength={5} maxLength={50}
                                     onChange={(e) => {
-                                        if(this.state.firstChange === true) {
-                                            this.setState({previousUsername: this.state.username, firstChange: false}); 
+                                        if (this.state.firstChange === true) {
+                                            this.setState({ previousUsername: this.state.username, firstChange: false });
                                         }
                                         console.log("username: ", this.state.previousUsername, e.target.value);
                                         this.setState({ username: e.target.value });

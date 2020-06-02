@@ -78,7 +78,10 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
             if(gspecDocument.getFile() != null) {
                 newGspecDocument.setFile(gspecDocument.getFile());
             }
-            List<GSPECDocument> gspecDocuments = gspecDocumentRepository.findAll();
+            oldGspecDocument.setName(newGspecDocument.getName());
+            oldGspecDocument.setFile(newGspecDocument.getFile());
+            gspecDocumentRepository.save(oldGspecDocument);
+            /*List<GSPECDocument> gspecDocuments = gspecDocumentRepository.findAll();
             boolean postoji = false;
             for (GSPECDocument g: gspecDocuments) {
                 if(g.getName().equals(newGspecDocument.getName()) && g.getFile() != null && newGspecDocument.getFile() != null && (g.getFile() == newGspecDocument.getFile()))  {
@@ -91,9 +94,10 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
                 gspecDocumentRepository.save(oldGspecDocument);
             }
             else {
-                throw new AlreadyExistsException("GSPEC DOcument already exists!");
-            }
+                throw new AlreadyExistsException("GSPEC Document already exists!");
+            }*/
         }
+        oldGspecDocument.setFile(null);
         return new ResponseEntity(oldGspecDocument, HttpStatus.OK);
     }
 
@@ -113,6 +117,7 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
             throw new AlreadyExistsException("GSPEC Document already exists!");
         }
         jo.put("message", "GSPEC Document is successfully added!");
+        gspecDocument.setFile(null);
         return new ResponseEntity(newGspecDocument, HttpStatus.CREATED);
     }
 

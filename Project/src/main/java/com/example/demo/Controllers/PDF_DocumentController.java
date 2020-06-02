@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -71,7 +72,12 @@ public class PDF_DocumentController {
     @PostMapping(value = "/addPDFFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> addPDFFile(@PathVariable Long id, @RequestParam("pdfFile") MultipartFile pdfFajl, @RequestParam("name") String naziv, HttpServletRequest request) throws IOException, SQLException {
         System.out.println("Usao u kontroler!!!!!!!");
-        System.out.println(request.getParameter("pdfFile"));
+        //System.out.println(request.getParameter("pdfFile"));
         return pdf_documentService.addPDFFile(pdfFajl,id,naziv);
+    }
+
+    @GetMapping("/pdf_document/file/{id}")
+    byte[] getOnePDFFile(@PathVariable Long id) throws SQLException {
+        return pdf_documentService.getOnePDFFile(id);
     }
 }

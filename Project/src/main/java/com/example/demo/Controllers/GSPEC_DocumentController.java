@@ -72,4 +72,8 @@ public class GSPEC_DocumentController {
         return gspec_documentService.addGSPECFile(id,gspecFajl,naziv,request);
     }
 
+    @GetMapping("/gspec_document/file/{id}")
+    ResponseEntity<?> getOneGSPECFile(@PathVariable Long id) throws SQLException {
+        return gspec_documentService.getOneGSPECFile(id);
+    }
 }

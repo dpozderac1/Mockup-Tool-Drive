@@ -341,19 +341,6 @@ jedanDesnoOdDvaGlobalni = [];
 jedanLijevoOdDvaGlobalni = [];
 jedanIspodDvaGlobalni = [];
 jedanIznadDvaGlobalni = [];
-//!!!!!pozivanje galena: cd C:\Users\pc\Documents\Zavrsi Rad\Galen testovi primjeri pocetni
-//galen check pocetniTest.gspec --url file:///C:/Users/pc/Downloads/Mockup%20tool.html --size 1600x900 --htmlreport "Izvjestaj"
-//galen check pocetniTest.gspec --url file:///C:/Users/cico/Downloads/Documents/Zavrsni%20Rad%20Literatura/Mockupi/The%20GTK%20Project.html --size 1600x900 --htmlreport "Izvjestaj"
-//galen check galenTestsDamirov.gspec --url https://www.gtk.org/?fbclid=IwAR3pvUlKcpgC9KoQTxXlf_knNpHXa6-M3qmgODrNDL7c8eIiZgnq9JUBVHU --size 1600x900 --htmlreport "Izvjestaj"
-//galen check galenTestsGTK.gspec --url https://www.gtk.org/?fbclid=IwAR3pvUlKcpgC9KoQTxXlf_knNpHXa6-M3qmgODrNDL7c8eIiZgnq9JUBVHU --size 1600x900 --htmlreport "Izvjestaj"
-
-//Zerinin galen
-//galen check galenTestsZerinin.gspec --url http://bugmenot.com/?fbclid=IwAR1kPL6WG9EmmFvqkPHNB4lQ8Rrt6bYL8_6GpjDAudQ514X8rLe7jrH50H0 --size 1600x900 --htmlreport "Izvjestaj"
-//galen check galenTestsBugMeNot.gspec --url http://bugmenot.com/?fbclid=IwAR1kPL6WG9EmmFvqkPHNB4lQ8Rrt6bYL8_6GpjDAudQ514X8rLe7jrH50H0 --size 1600x900 --htmlreport "Izvjestaj"
-
-//Edinin galen
-//galen check galenTestsEdinin.gspec --url https://cloudconvert.com/?fbclid=IwAR2hB9QhHrz78ojPmPtB94IohW8R8DdlU-8Ma56bYFfouaLhtssLwm7I0N4 --size 1600x900 --htmlreport "Izvjestaj"
-//galen check galenTestsConvertAnythingToAnything.gspec --url https://cloudconvert.com/?fbclid=IwAR2hB9QhHrz78ojPmPtB94IohW8R8DdlU-8Ma56bYFfouaLhtssLwm7I0N4 --size 1600x900 --htmlreport "Izvjestaj"
 
 //napisi Galen pravila i testove
 function napisiGalen(snimiLokalno = true) {

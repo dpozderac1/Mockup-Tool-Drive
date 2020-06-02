@@ -56,7 +56,8 @@ function snimiCitavFajl() {
   }\n`+ stil + `</style>`;
   fajl += glavniDio.innerHTML;
   fajl += `</body></html>`;
-  download(fajl, "nekiFajl.html", ".html");
+  var naziv = document.getElementById("nepotrebniPDF").getAttribute("name");
+  download(fajl, naziv + ".html", ".html");
 
   /*var fajl=`<!DOCTYPE html><html>`;
   fajl+=`<head></head><body>`;
@@ -98,5 +99,25 @@ function napraviCSSBefore(element) {
 
 function otvoriFajl() {
   document.getElementById("glavni").click();
-  document.getElementById("importFajlaInput").click();
+  //document.getElementById("importFajlaInput").click();
+
+
+
+  var sviElementi = document.getElementById("glavni").getElementsByTagName("*");
+  var noviZ = 1;
+  for (var i = 0; i < sviElementi.length; i++) {
+    if (parseInt(sviElementi[i].style.zIndex) > noviZ) {
+      noviZ = parseInt(sviElementi[i].style.zIndex);
+    }
+  }
+  vrijednostZ = noviZ;
+  desniToolbar.style.zIndex = vrijednostZ + 1;
+
+  listaDodijeljenihId = [];
+  var sviElementi = document.getElementById("glavni").getElementsByTagName("*");
+  for (var i = 0; i < sviElementi.length; i++) {
+    if (sviElementi[i].dataset.dodijeljeniid != null && sviElementi[i].dataset.dodijeljeniid != "") {
+      listaDodijeljenihId.push(sviElementi[i].dataset.dodijeljeniid);
+    }
+  }
 }

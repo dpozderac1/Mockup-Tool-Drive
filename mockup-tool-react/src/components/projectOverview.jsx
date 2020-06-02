@@ -1,12 +1,14 @@
-import React, { Component} from 'react';
-import {Form, Alert, FormGroup,  Col,  Row, Container, Label, Button, Input, InputGroup, InputGroupAddon,
-     InputGroupText, DropdownMenu, DropdownItem, UncontrolledDropdown, DropdownToggle, Nav, NavLink, NavItem,
-     Breadcrumb, BreadcrumbItem} from 'reactstrap';
+import React, { Component } from 'react';
+import {
+    Form, Alert, FormGroup, Col, Row, Container, Label, Button, Input, InputGroup, InputGroupAddon,
+    InputGroupText, DropdownMenu, DropdownItem, UncontrolledDropdown, DropdownToggle, Nav, NavLink, NavItem,
+    Breadcrumb, BreadcrumbItem
+} from 'reactstrap';
 import '@trendmicro/react-sidenav/dist/react-sidenav.css';
 import SideBar from './sidebar';
 import axios from "axios";
 import "../App.css";
-import {UrlContext} from '../urlContext';
+import { UrlContext } from '../urlContext';
 import CreateNewVersion from './createNewVersion';
 import Collaboration from './collaboration';
 
@@ -14,8 +16,8 @@ class ProjectOverview extends Component {
     constructor(props) {
         super();
         this.state = {
-            values: [{value: "Alphabetical", active: true}, {value: "Date created", active: false}, {value: "Date modified", active: false}],
-            title : "Alphabetical",
+            values: [{ value: "Alphabetical", active: true }, { value: "Date created", active: false }, { value: "Date modified", active: false }],
+            title: "Alphabetical",
             listaProjekata: [],
             listaProjekataPrethodnoStanje: [],
             searchProjectValue: "",
@@ -28,7 +30,7 @@ class ProjectOverview extends Component {
             mockupiPrethodnoStanje: [],
             pdfs: [],
             pdfsPrethodnoStanje: [],
-            gspecs: [], 
+            gspecs: [],
             gspecsPrethodnoStanje: [],
             pdfMockupi: [],
             gspecsMockupi: [],
@@ -49,71 +51,71 @@ class ProjectOverview extends Component {
 
     renderDropDownItems() {
         return (
-        <DropdownMenu>
-            {this.state.values.map(element => 
-                <DropdownItem tag="a" href="#" onClick={() => {(this.state.listaAktivnih[0] || this.state.listaAktivnih[3] || this.state.listaAktivnih[4] || this.state.listaAktivnih[5]) && this.handleClickFilter(element, this.state.filterTitle)}}>
-                    {element.value}
-                </DropdownItem>) }
-        </DropdownMenu>
+            <DropdownMenu>
+                {this.state.values.map(element =>
+                    <DropdownItem tag="a" href="#" onClick={() => { (this.state.listaAktivnih[0] || this.state.listaAktivnih[3] || this.state.listaAktivnih[4] || this.state.listaAktivnih[5]) && this.handleClickFilter(element, this.state.filterTitle) }}>
+                        {element.value}
+                    </DropdownItem>)}
+            </DropdownMenu>
         );
     }
 
     searchFiles = (s, filterTitle) => {
-        if(s == "") {
+        if (s == "") {
             let projects = [];
-            if(filterTitle == "project"){
+            if (filterTitle == "project") {
                 projects = [...this.state.listaProjekataPrethodnoStanje];
-                this.setState({listaProjekata: projects});
+                this.setState({ listaProjekata: projects });
             }
-            else if(filterTitle == "mockup") {
+            else if (filterTitle == "mockup") {
                 projects = [...this.state.mockupiPrethodnoStanje];
-                this.setState({mockupi: projects});
+                this.setState({ mockupi: projects });
             }
-            else if(filterTitle == "gspec") {
+            else if (filterTitle == "gspec") {
                 projects = [...this.state.gspecsPrethodnoStanje];
-                this.setState({gspecs: projects});
+                this.setState({ gspecs: projects });
             }
-            else if(filterTitle == "pdf") {
+            else if (filterTitle == "pdf") {
                 projects = [...this.state.pdfsPrethodnoStanje];
-                this.setState({pdfs: projects});
+                this.setState({ pdfs: projects });
             }
         }
-        else{
+        else {
             let array = []
             let index = 0;
-            if(filterTitle == "project") {
+            if (filterTitle == "project") {
                 array = [...this.state.listaProjekataPrethodnoStanje];
                 index = 3;
             }
-            else if(filterTitle == "mockup") {
+            else if (filterTitle == "mockup") {
                 array = [...this.state.mockupiPrethodnoStanje];
                 index = "name";
             }
-            else if(filterTitle == "gspec") {
+            else if (filterTitle == "gspec") {
                 array = [...this.state.gspecsPrethodnoStanje];
                 index = "name";
             }
-            else if(filterTitle == "pdf") {
+            else if (filterTitle == "pdf") {
                 array = [...this.state.pdfsPrethodnoStanje];
                 index = "name";
             }
             let newArray = []
             array.filter(project => {
-                if(project[index].toUpperCase().includes(s.toUpperCase())) {
+                if (project[index].toUpperCase().includes(s.toUpperCase())) {
                     newArray.push(project);
                 }
             });
-            if(filterTitle == "project") {
-                this.setState({listaProjekata: newArray});
+            if (filterTitle == "project") {
+                this.setState({ listaProjekata: newArray });
             }
-            else if(filterTitle == "mockup") {
-                this.setState({mockupi: newArray});
+            else if (filterTitle == "mockup") {
+                this.setState({ mockupi: newArray });
             }
-            else if(filterTitle == "gspec") {
-                this.setState({gspecs: newArray});
+            else if (filterTitle == "gspec") {
+                this.setState({ gspecs: newArray });
             }
-            else if(filterTitle == "pdf") {
-                this.setState({pdfs: newArray});
+            else if (filterTitle == "pdf") {
+                this.setState({ pdfs: newArray });
             }
         }
     }
@@ -147,38 +149,38 @@ class ProjectOverview extends Component {
             index_date_created = "date_created";
             index_date_modified = "date_modified";
         }
-        if(element.value == "Alphabetical") {
-            array.sort(function(a, b){
-                if(a[index_name].toUpperCase() < b[index_name].toUpperCase()) { return -1; }
-                if(a[index_name].toUpperCase() > b[index_name].toUpperCase()) { return 1; }
+        if (element.value == "Alphabetical") {
+            array.sort(function (a, b) {
+                if (a[index_name].toUpperCase() < b[index_name].toUpperCase()) { return -1; }
+                if (a[index_name].toUpperCase() > b[index_name].toUpperCase()) { return 1; }
                 return 0;
             });
         }
         else if (element.value == "Date created") {
-            array.sort(function(a, b){
-                if(Date.parse(a[index_date_created]) > Date.parse(b[index_date_created])) { return -1; }
-                if(Date.parse(a[index_date_created]) < Date.parse(b[index_date_created])) { return 1; }
+            array.sort(function (a, b) {
+                if (Date.parse(a[index_date_created]) > Date.parse(b[index_date_created])) { return -1; }
+                if (Date.parse(a[index_date_created]) < Date.parse(b[index_date_created])) { return 1; }
                 return 0;
             });
         }
         else if (element.value == "Date modified") {
-            array.sort(function(a, b){
-                if(Date.parse(a[index_date_modified]) > Date.parse(b[index_date_modified])) { return -1; }
-                if(Date.parse(a[index_date_modified]) < Date.parse(b[index_date_modified])) { return 1; }
+            array.sort(function (a, b) {
+                if (Date.parse(a[index_date_modified]) > Date.parse(b[index_date_modified])) { return -1; }
+                if (Date.parse(a[index_date_modified]) < Date.parse(b[index_date_modified])) { return 1; }
                 return 0;
             });
         }
         if (filterTitle == "project") {
-            this.setState({listaProjekata: array, title: element.value});
+            this.setState({ listaProjekata: array, title: element.value });
         }
         else if (filterTitle == "mockup") {
-            this.setState({mockupi: array, title: element.value});
+            this.setState({ mockupi: array, title: element.value });
         }
         else if (filterTitle == "pdf") {
-            this.setState({pdfs: array, title: element.value});
+            this.setState({ pdfs: array, title: element.value });
         }
         else if (filterTitle == "gspec") {
-            this.setState({gspecs: array, title: element.value});
+            this.setState({ gspecs: array, title: element.value });
         }
     };
 
@@ -187,26 +189,29 @@ class ProjectOverview extends Component {
     }
 
     backToProjects() {
-        if(this.state.isProject === "project") {
+        if (this.state.isProject === "project") {
             this.getProjectsOfUser();
-            this.setState({listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project", searchProjectValue: "", filterTitle: "project"});
+            this.setState({ listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project", searchProjectValue: "", filterTitle: "project" });
         }
         else if (this.state.isProject === "version") {
             this.udjiUProjekat(this.state.indeksKlika);
-            this.setState({listaAktivnih: [false, true, false, false, false, false, false, false], isProject: "version"});
+            this.setState({ listaAktivnih: [false, true, false, false, false, false, false, false], isProject: "version" });
         }
     }
 
-    goBack () {
-        if(this.state.isProject === "project") {
-            this.setState({listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project", filterTitle: "project"});
+    goBack() {
+        if (this.state.isProject === "project") {
+            this.setState({ listaAktivnih: [true, false, false, false, false, false, false, false], isProject: "project", filterTitle: "project" });
         }
         else if (this.state.isProject === "version") {
-            this.setState({listaAktivnih: [false, true, false, false, false, false, false, false], isProject: "version"});
+            this.setState({ listaAktivnih: [false, true, false, false, false, false, false, false], isProject: "version" });
+        }
+        else if (this.state.isProject === "mockup") {
+            this.setState({ listaAktivnih: [false, false, false, true, false, false, false], isProject: "mockup" });
         }
     }
 
-    handleDelete (id) {
+    handleDelete(id) {
         let url = this.context;
         axios.delete(url.project + "/delete/project/" + id).then(res => {
             let array = [...this.state.listaProjekataPrethodnoStanje];
@@ -217,21 +222,21 @@ class ProjectOverview extends Component {
                 }
             });
             array.splice(index, 1);
-            this.setState({listaProjekata: array, deleteSuccess: true, errorVisible: false, hide: true, listaProjekataPrethodnoStanje: array, searchProjectValue: ""});
-            setTimeout(() => {this.setState({hide: false})}, 3000);
+            this.setState({ listaProjekata: array, deleteSuccess: true, errorVisible: false, hide: true, listaProjekataPrethodnoStanje: array, searchProjectValue: "" });
+            setTimeout(() => { this.setState({ hide: false }) }, 3000);
         })
-        .catch((error) => {
-            console.log("Greska!");
-            let err = "";
-            if(error.response.data.errors == undefined) {
-                err = "Unknown error!";
-            }
-            else {
-                err = error.response.data.errors[0];
-            }
-            this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
-            setTimeout(() => {this.setState({hide: false})}, 3000);
-        });
+            .catch((error) => {
+                console.log("Greska!");
+                let err = "";
+                if (error.response.data.errors == undefined) {
+                    err = "Unknown error!";
+                }
+                else {
+                    err = error.response.data.errors[0];
+                }
+                this.setState({ deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true });
+                setTimeout(() => { this.setState({ hide: false }) }, 3000);
+            });
     }
 
     getProjectsOfUser = () => {
@@ -244,7 +249,7 @@ class ProjectOverview extends Component {
             axios.get(url.user + "/users/projects/" + userData.data.id).then(projectData => {
                 console.log("project", projectData.data);
                 var lista = [];
-                for(var i = 0; i<projectData.data.length; i++){
+                for (var i = 0; i < projectData.data.length; i++) {
                     axios.get(url.project + "/project/" + projectData.data[i].id).then(oneProject => {
                         var element = [oneProject.data.id, oneProject.data.date_created, oneProject.data.date_modified, oneProject.data.name, oneProject.data.priority];
                         lista.push(element);
@@ -254,22 +259,21 @@ class ProjectOverview extends Component {
                         }));
                         console.log("projekti iz state", this.state.listaProjekata);
                     });
-                    
+
                 }
                 console.log("state", this.state.listaProjekata);
             });
-        });  
+        });
     };
 
-    vratiNaziv(el)
-    {
-        if(el!=null)
+    vratiNaziv(el) {
+        if (el != null)
             return el[3];
     };
 
     udjiUFile = (indeks) => {
         let url = this.context;
-        if(this.state.listaProjekata[indeks] != null){
+        if (this.state.listaProjekata[indeks] != null) {
             axios.get(url.project + "/mockups/version/" + this.state.verzije[this.state.indeksKlikaVerzija].id).then(mockups => {
                 console.log(mockups.data);
                 this.setState({
@@ -296,7 +300,7 @@ class ProjectOverview extends Component {
         });
 
         let url = this.context;
-        if(this.state.verzije[this.state.indeksKlikaVerzija] != null){
+        if (this.state.verzije[this.state.indeksKlikaVerzija] != null) {
             axios.get(url.project + "/mockups/version/" + this.state.verzije[this.state.indeksKlikaVerzija].id).then(mockups => {
                 mockups.data.map((mockup) => {
                     console.log(mockup.id);
@@ -305,12 +309,12 @@ class ProjectOverview extends Component {
                             this.setState(previousState => ({
                                 pdfs: [...previousState.pdfs, p],
                                 pdfsPrethodnoStanje: [...previousState.pdfs, p],
-                                pdfMockupi:  [...previousState.pdfMockupi, mockup],
+                                pdfMockupi: [...previousState.pdfMockupi, mockup],
                             }));
                             console.log(p);
                         });
                     });
-                }); 
+                });
             });
         }
 
@@ -330,9 +334,9 @@ class ProjectOverview extends Component {
         });
 
         let url = this.context;
-        if(this.state.verzije[this.state.indeksKlikaVerzija] != null){
+        if (this.state.verzije[this.state.indeksKlikaVerzija] != null) {
             axios.get(url.project + "/mockups/version/" + this.state.verzije[this.state.indeksKlikaVerzija].id).then(mockups => {
-                
+
                 mockups.data.map((mockup) => {
                     console.log("mockup id ", mockup.id);
                     axios.get(url.project + "/GSPEC_Documents/mockup/" + mockup.id).then(gspec => {
@@ -340,12 +344,12 @@ class ProjectOverview extends Component {
                             this.setState(previousState => ({
                                 gspecs: [...previousState.gspecs, p],
                                 gspecsPrethodnoStanje: [...previousState.gspecs, p],
-                                gspecsMockupi:  [...previousState.gspecsMockupi, mockup],
+                                gspecsMockupi: [...previousState.gspecsMockupi, mockup],
                             }));
                             console.log("gspcp ", p);
                         });
                     });
-                }); 
+                });
             });
         }
 
@@ -360,7 +364,7 @@ class ProjectOverview extends Component {
     udjiUProjekat = (indeks) => {
         console.log(indeks);
         let url = this.context;
-        if(this.state.listaProjekata[indeks] != null){
+        if (this.state.listaProjekata[indeks] != null) {
             axios.get(url.project + "/versions/project/" + this.state.listaProjekata[indeks][0]).then(versions => {
                 console.log(versions.data);
                 this.setState({
@@ -387,220 +391,250 @@ class ProjectOverview extends Component {
 
     deleteVersion = (indeks) => {
         let url = this.context;
-        if(this.state.verzije != null){
+        if (this.state.verzije != null) {
             console.log(this.state.verzije)
-            axios.delete(url.project + "/delete/version/" + this.state.verzije[indeks].id).then(res => { 
+            axios.delete(url.project + "/delete/version/" + this.state.verzije[indeks].id).then(res => {
                 let array = [...this.state.verzije];
                 array.splice(indeks, 1)
-                this.setState({ 
+                this.setState({
                     verzije: array,
                     listaAktivnih: [false, true, false, false, false, false, false, false],
-                    deleteSuccess: true, 
-                    errorVisible: false, 
+                    deleteSuccess: true,
+                    errorVisible: false,
                     hide: true,
-                    isProject:"version"
+                    isProject: "version"
                 });
-                setTimeout(() => {this.setState({hide: false})}, 3000);
+                setTimeout(() => { this.setState({ hide: false }) }, 3000);
             })
-            .catch((error) => {
-                console.log("Greska!");
-                let err = "";
-                if(error.response.data.errors == undefined) {
-                    err = "Unknown error!";
-                }
-                else {
-                    err = error.response.data.errors[0];
-                }
-                this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
-                setTimeout(() => {this.setState({hide: false})}, 3000);
-            });
+                .catch((error) => {
+                    console.log("Greska!");
+                    let err = "";
+                    if (error.response.data.errors == undefined) {
+                        err = "Unknown error!";
+                    }
+                    else {
+                        err = error.response.data.errors[0];
+                    }
+                    this.setState({ deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true });
+                    setTimeout(() => { this.setState({ hide: false }) }, 3000);
+                });
         }
     }
 
     deleteMockup = (indeks) => {
         console.log("indeks za obrisat: ", indeks);
         let url = this.context;
-        if(this.state.mockupi != null){
+        if (this.state.mockupi != null) {
             console.log(this.state.verzije)
             const elementToDelete = this.state.mockupi[indeks];
-            axios.delete(url.project + "/delete/mockup/" + this.state.mockupi[indeks].id).then(res => { 
+            axios.delete(url.project + "/delete/mockup/" + this.state.mockupi[indeks].id).then(res => {
                 let array = [...this.state.mockupi];
                 array.splice(indeks, 1);
                 let newArray = [...this.state.mockupiPrethodnoStanje];
                 const index = newArray.indexOf(elementToDelete);
                 newArray.splice(index, 1);
-                this.setState({ 
+                this.setState({
                     mockupi: newArray,
                     mockupiPrethodnoStanje: newArray,
                     listaAktivnih: [false, false, false, true, false, false, false, false],
-                    deleteSuccess: true, 
-                    errorVisible: false, 
+                    deleteSuccess: true,
+                    errorVisible: false,
                     hide: true,
                     filterTitle: "mockup",
                     searchProjectValue: ""
                 });
-                setTimeout(() => {this.setState({hide: false})}, 3000);
+                setTimeout(() => { this.setState({ hide: false }) }, 3000);
             })
-            .catch((error) => {
-                console.log("Greska!");
-                let err = "";
-                if(error.response.data.errors == undefined) {
-                    err = "Unknown error!";
-                }
-                else {
-                    err = error.response.data.errors[0];
-                }
-                this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
-                setTimeout(() => {this.setState({hide: false})}, 3000);
-            });
+                .catch((error) => {
+                    console.log("Greska!");
+                    let err = "";
+                    if (error.response.data.errors == undefined) {
+                        err = "Unknown error!";
+                    }
+                    else {
+                        err = error.response.data.errors[0];
+                    }
+                    this.setState({ deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true });
+                    setTimeout(() => { this.setState({ hide: false }) }, 3000);
+                });
         }
-    
+
     }
 
     deletePDF = (indeks) => {
         let url = this.context;
-        if(this.state.pdfs != null){
+        if (this.state.pdfs != null) {
             const elementToDelete = this.state.pdfs[indeks];
             console.log("pdfovi delete: ", elementToDelete);
-            axios.delete(url.project + "/delete/pdf_document/" + this.state.pdfs[indeks].id).then(res => { 
+            axios.delete(url.project + "/delete/pdf_document/" + this.state.pdfs[indeks].id).then(res => {
                 let array = [...this.state.pdfs];
                 array.splice(indeks, 1)
                 let newArray = [...this.state.pdfsPrethodnoStanje];
                 const index = newArray.indexOf(elementToDelete);
                 newArray.splice(index, 1);
-                this.setState({ 
+                this.setState({
                     pdfs: newArray,
                     pdfsPrethodnoStanje: newArray,
                     listaAktivnih: [false, false, false, false, false, true, false, false],
-                    deleteSuccess: true, 
-                    errorVisible: false, 
+                    deleteSuccess: true,
+                    errorVisible: false,
                     hide: true,
                     filterTitle: "pdf",
                     searchProjectValue: ""
                 });
-                setTimeout(() => {this.setState({hide: false})}, 3000);
+                setTimeout(() => { this.setState({ hide: false }) }, 3000);
             })
-            .catch((error) => {
-                console.log("Greska!");
-                let err = "";
-                if(error.response.data.errors == undefined) {
-                    err = "Unknown error!";
-                }
-                else {
-                    err = error.response.data.errors[0];
-                }
-                this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
-                setTimeout(() => {this.setState({hide: false})}, 3000);
-            });
+                .catch((error) => {
+                    console.log("Greska!");
+                    let err = "";
+                    if (error.response.data.errors == undefined) {
+                        err = "Unknown error!";
+                    }
+                    else {
+                        err = error.response.data.errors[0];
+                    }
+                    this.setState({ deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true });
+                    setTimeout(() => { this.setState({ hide: false }) }, 3000);
+                });
         }
-    
+
     }
 
     deleteGSPEC = (indeks) => {
         let url = this.context;
-        if(this.state.gspecs != null){
+        if (this.state.gspecs != null) {
             console.log(this.state.gspecs)
             const elementToDelete = this.state.gspecs[indeks];
-            axios.delete(url.project + "/delete/gspec_document/" + this.state.gspecs[indeks].id).then(res => { 
+            axios.delete(url.project + "/delete/gspec_document/" + this.state.gspecs[indeks].id).then(res => {
                 let array = [...this.state.gspecs];
                 array.splice(indeks, 1)
                 let newArray = [...this.state.gspecsPrethodnoStanje];
                 const index = newArray.indexOf(elementToDelete);
                 newArray.splice(index, 1);
-                this.setState({ 
+                this.setState({
                     gspecs: newArray,
                     gspecsPrethodnoStanje: newArray,
                     listaAktivnih: [false, false, false, false, true, false, false, false],
-                    deleteSuccess: true, 
-                    errorVisible: false, 
+                    deleteSuccess: true,
+                    errorVisible: false,
                     hide: true,
                     filterTitle: "gspec",
                     searchProjectValue: ""
                 });
-                setTimeout(() => {this.setState({hide: false})}, 3000);
+                setTimeout(() => { this.setState({ hide: false }) }, 3000);
             })
-            .catch((error) => {
-                console.log("Greska!");
-                let err = "";
-                if(error.response.data.errors == undefined) {
-                    err = "Unknown error!";
-                }
-                else {
-                    err = error.response.data.errors[0];
-                }
-                this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
-                setTimeout(() => {this.setState({hide: false})}, 3000);
-            });
+                .catch((error) => {
+                    console.log("Greska!");
+                    let err = "";
+                    if (error.response.data.errors == undefined) {
+                        err = "Unknown error!";
+                    }
+                    else {
+                        err = error.response.data.errors[0];
+                    }
+                    this.setState({ deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true });
+                    setTimeout(() => { this.setState({ hide: false }) }, 3000);
+                });
         }
-    
+
     }
 
     dinamickiDodajElementeNiza = (niz, a) => {
-        return(
+        return (
             <Row>
-            {niz.map((el, indeks) => (
-            <Col 
-            style={{textAlign:'center'}}
-                 md={2}
-                >
-                {a[0] && <Input addon type="checkbox" aria-label="Priority"  defaultChecked={el[4]} disabled/>}
-                <br/>
-                <Button 
-                
-                onClick={(e) => {
-                    e.preventDefault();
-                    a[0] && this.udjiUProjekat(indeks);
-                    a[1] && this.udjiUVerziju(indeks);
-                    a[2] && indeks == 0 && this.udjiUFile(indeks);
-                    a[2] && indeks == 1 && this.udjiUGSPEC();
-                    a[2] && indeks == 2 && this.udjiUPDF();
-                    }} 
-                color="white">
-                <svg class="bi bi-folder" width="7em" height="7em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.828 4a3 3 0 0 1-2.12-.879l-.83-.828A1 1 0 0 0 6.173 2H2.5a1 1 0 0 0-1 .981L1.546 4h-1L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3v1z"/>
-                <path fill-rule="evenodd" d="M13.81 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zM2.19 3A2 2 0 0 0 .198 5.181l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H2.19z"/>
-                </svg>
-                </Button>
-                <Nav vertical>
+                {niz.map((el, indeks) => (
+                    <Col
+                        style={{ textAlign: 'center' }}
+                        md={2}
+                    >
+                        {a[0] && <Input addon type="checkbox" aria-label="Priority" defaultChecked={el[4]} disabled />}
+                        <br />
+                        <Button
 
-                {a[3] && <NavItem>
-                    <NavLink  href="#">Download</NavLink>
-                </NavItem>}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                a[0] && this.udjiUProjekat(indeks);
+                                a[1] && this.udjiUVerziju(indeks);
+                                a[2] && indeks == 0 && this.udjiUFile(indeks);
+                                a[2] && indeks == 1 && this.udjiUGSPEC();
+                                a[2] && indeks == 2 && this.udjiUPDF();
+                                a[3] && this.props.data.dajIdMockupa(this.state.mockupi[indeks].id);
+                                if (a[3]) {
+                                    var nazivVerzije = this.state.verzije[this.state.indeksKlikaVerzija].versionName;
+                                    var velicina = 2;
+                                    if (nazivVerzije == "MOBILE") {
+                                        velicina = 0;
+                                    }
+                                    else if (nazivVerzije == "TABLET") {
+                                        velicina = 1;
+                                    }
+                                    this.props.data.velicinaEkrana(velicina);
+                                }
+                                a[4] && this.props.data.ucitajGalenFile(this.state.gspecs[indeks].id, this.state.gspecs[indeks].name);
+                                a[5] && this.props.data.ucitajPDFFile(this.state.pdfs[indeks].id, this.state.pdfs[indeks].name);
+                            }}
+                            color="white">
+                            {(a[4] || a[5]) ?
+                                <svg class="bi bi-file-earmark" width="7em" height="7em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 1h5v1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6h1v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2z" />
+                                    <path d="M9 4.5V1l5 5h-3.5A1.5 1.5 0 0 1 9 4.5z" />
+                                </svg> :
+                                <svg class="bi bi-folder" width="7em" height="7em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9.828 4a3 3 0 0 1-2.12-.879l-.83-.828A1 1 0 0 0 6.173 2H2.5a1 1 0 0 0-1 .981L1.546 4h-1L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3v1z" />
+                                    <path fill-rule="evenodd" d="M13.81 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zM2.19 3A2 2 0 0 0 .198 5.181l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H2.19z" />
+                                </svg>
+                            }
+                        </Button>
+                        <Nav vertical>
 
-                {!a[2] && <NavItem>
-                    <NavLink id = {a[0] ? el[0] : " "} 
-                            onClick = {(e) =>{
-                            if(a[0])  
-                                this.handleDelete(e.target.id);
-                            if(a[1])
-                                this.deleteVersion(indeks);
-                            if(a[3])
-                                this.deleteMockup(indeks);
-                            if(a[4])
-                                this.deleteGSPEC(indeks);
-                            if(a[5])
-                                this.deletePDF(indeks);
-                            }} 
-                            className="" href="#">
-                    Delete
+                            {(a[3] || a[4] || a[5]) && <NavItem>
+                                <NavLink onClick={(e) => {
+                                    if (a[3]) {
+                                        this.props.data.ucitajMockupFile(this.state.mockupi[indeks].id);
+                                    }
+                                    if (a[4]) {
+                                        this.props.data.ucitajGalenFile(this.state.gspecs[indeks].id, this.state.gspecs[indeks].name, true);
+                                    }
+                                    if (a[5]) {
+                                        this.props.data.ucitajPDFFile(this.state.pdfs[indeks].id, this.state.pdfs[indeks].name, true);
+                                    }
+                                }} href="#">Download</NavLink>
+                            </NavItem>}
+
+                            {!a[2] && <NavItem>
+                                <NavLink id={a[0] ? el[0] : " "}
+                                    onClick={(e) => {
+                                        if (a[0])
+                                            this.handleDelete(e.target.id);
+                                        if (a[1])
+                                            this.deleteVersion(indeks);
+                                        if (a[3])
+                                            this.deleteMockup(indeks);
+                                        if (a[4])
+                                            this.deleteGSPEC(indeks);
+                                        if (a[5])
+                                            this.deletePDF(indeks);
+                                    }}
+                                    className="" href="#">
+                                    Delete
                     </NavLink>
-                </NavItem>}
-                <NavItem>
-                <Label>
-                    {a[0] && el[3]}
-                    {a[1] && el.versionName}
-                    {a[2] && el}
-                    {a[3] && el.name}
-                    {a[5] && el.name}
-                    {a[4] && el.name}
-                    {a[4] && " - " + this.state.gspecsMockupi[indeks].name}
-                    {a[5] && " - " + this.state.pdfMockupi[indeks].name}
-                </Label>
-                </NavItem>
-            </Nav>
-            </Col>
-            ))}
-        </Row>
+                            </NavItem>}
+                            <NavItem>
+                                <Label>
+                                    {a[0] && el[3]}
+                                    {a[1] && el.versionName}
+                                    {a[2] && el}
+                                    {a[3] && el.name}
+                                    {a[5] && el.name}
+                                    {a[4] && el.name}
+                                    {a[4] && " - " + this.state.gspecsMockupi[indeks].name}
+                                    {a[5] && " - " + this.state.pdfMockupi[indeks].name}
+                                </Label>
+                            </NavItem>
+                        </Nav>
+                    </Col>
+                ))}
+            </Row>
         );
     };
 
@@ -608,196 +642,204 @@ class ProjectOverview extends Component {
         var a = this.state.listaAktivnih;
         return (
             <Form>{!a[6] && !a[7] &&
-            <Row>
-                {a[0] &&
-                <Col xs='2' style={{height:'100vh'}}>
-                    <SideBar data = {this}></SideBar>
-                </Col>
-                }
-                <Col xs={a[0] ? '10' : '12'}
-                    style = { {paddingLeft:'3%',
-                    paddingRight:'3%'
-                }}   
-                >
-                    <br/>
-                    <Form>
-                        <FormGroup/>
-                        <Row>
-                            <Col md={!a[2] ? 9 : 12}>        
-                                <Breadcrumb  className="breadcrumb">
-                                    <BreadcrumbItem tag="a"
-                                        onClick = {(e) =>{
-                                            this.setState({
-                                                listaAktivnih: [true, false, false, false, false, false, false, false],
-                                                isProject: "project",
-                                                filterTitle: "project",
-                                                title: this.state.values[0].value,
-                                                searchProjectValue: "",
-                                                listaProjekata: this.state.listaProjekataPrethodnoStanje
-                                            });
-                                        }}>
-                                        <h4 className="bkItem text-secondary">Projects</h4>
-                                    </BreadcrumbItem>
-                                    {(!a[0]) && 
-                                    <BreadcrumbItem tag="a"
-                                        onClick = {(e) =>{
-                                            this.setState({
-                                                listaAktivnih: [false, true, false, false, false, false, false, false],
-                                                isProject: "version",
-                                                title: this.state.values[0].value,
-                                                searchProjectValue: ""
-                                            });
-                                        }}> 
-                                        <h4 className="bkItem text-secondary"> {this.vratiNaziv(this.state.listaProjekata[this.state.indeksKlika])}</h4>
-                                    </BreadcrumbItem>}
-                                    {(a[2] || a[3] || a[5] || a[4]) && 
-                                    <BreadcrumbItem tag="a"
-                                        onClick = {(e) =>{
-                                            this.setState({
-                                                listaAktivnih: [false, false, true, false, false, false, false, false],
-                                                title: this.state.values[0].value,
-                                                searchProjectValue: ""
-                                            });
-                                        }}> 
-                                        <h4 className="bkItem text-secondary"> {this.state.verzije[this.state.indeksKlikaVerzija].versionName}</h4>
-                                    </BreadcrumbItem>}
-                                    {(a[3]) && 
-                                    <BreadcrumbItem tag="a"
-                                        onClick = {(e) =>{
-                                            this.setState({
-                                                listaAktivnih: [false, false, false, true, false, false, false, false],
-                                                filterTitle: "mockup",
-                                                title: this.state.values[0].value,
-                                                searchProjectValue: "",
-                                                mockupi: this.state.mockupiPrethodnoStanje
-                                            });
-                                        }}> 
-                                        <h4 className="bkItem text-secondary"> {this.state.tipFilea[0]}</h4>
-                                    </BreadcrumbItem>}
-                                    {(a[5]) && 
-                                    <BreadcrumbItem tag="a"
-                                        onClick = {(e) =>{
-                                            this.setState({
-                                                listaAktivnih: [false, false, false, false, false, true, false, false],
-                                                filterTitle: "pdf",
-                                                title: this.state.values[0].value,
-                                                searchProjectValue: "",
-                                                pdfs: this.state.pdfsPrethodnoStanje
-                                            });
-                                        }}> 
-                                        <h4 className="bkItem text-secondary"> {this.state.tipFilea[2]}</h4>
-                                    </BreadcrumbItem>}
-                                    {(a[4]) && 
-                                    <BreadcrumbItem tag="a"
-                                        onClick = {(e) =>{
-                                            this.setState({
-                                                listaAktivnih: [false, false, false, false, true, false, false, false],
-                                                filterTitle: "gspec",
-                                                title: this.state.values[0].value,
-                                                searchProjectValue: "",
-                                                gspecs: this.state.gspecsPrethodnoStanje
-                                            });
-                                        }}> 
-                                        <h4 className="bkItem text-secondary"> {this.state.tipFilea[1]}</h4>
-                                    </BreadcrumbItem>}
-                                </Breadcrumb>
-                            </Col>
-                            {a[1] && <Col md={1}>
-                            <Button onClick = {(e) =>{
+                <Row>
+                    {a[0] &&
+                        <Col xs='2' style={{ height: '100vh' }}>
+                            <SideBar data={this}></SideBar>
+                        </Col>
+                    }
+                    <Col xs={a[0] ? '10' : '12'}
+                        style={{
+                            paddingLeft: '3%',
+                            paddingRight: '3%'
+                        }}
+                    >
+                        <br />
+                        <Form>
+                            <FormGroup />
+                            <Row>
+                                <Col md={!a[2] ? 9 : 12}>
+                                    <Breadcrumb className="breadcrumb">
+                                        <BreadcrumbItem tag="a"
+                                            onClick={(e) => {
+                                                this.setState({
+                                                    listaAktivnih: [true, false, false, false, false, false, false, false],
+                                                    isProject: "project",
+                                                    filterTitle: "project",
+                                                    title: this.state.values[0].value,
+                                                    searchProjectValue: "",
+                                                    listaProjekata: this.state.listaProjekataPrethodnoStanje
+                                                });
+                                            }}>
+                                            <h4 className="bkItem text-secondary">Projects</h4>
+                                        </BreadcrumbItem>
+                                        {(!a[0]) &&
+                                            <BreadcrumbItem tag="a"
+                                                onClick={(e) => {
+                                                    this.setState({
+                                                        listaAktivnih: [false, true, false, false, false, false, false, false],
+                                                        isProject: "version",
+                                                        title: this.state.values[0].value,
+                                                        searchProjectValue: ""
+                                                    });
+                                                }}>
+                                                <h4 className="bkItem text-secondary"> {this.vratiNaziv(this.state.listaProjekata[this.state.indeksKlika])}</h4>
+                                            </BreadcrumbItem>}
+                                        {(a[2] || a[3] || a[5] || a[4]) &&
+                                            <BreadcrumbItem tag="a"
+                                                onClick={(e) => {
+                                                    this.setState({
+                                                        listaAktivnih: [false, false, true, false, false, false, false, false],
+                                                        title: this.state.values[0].value,
+                                                        searchProjectValue: ""
+                                                    });
+                                                }}>
+                                                <h4 className="bkItem text-secondary"> {this.state.verzije[this.state.indeksKlikaVerzija].versionName}</h4>
+                                            </BreadcrumbItem>}
+                                        {(a[3]) &&
+                                            <BreadcrumbItem tag="a"
+                                                onClick={(e) => {
+                                                    this.setState({
+                                                        listaAktivnih: [false, false, false, true, false, false, false, false],
+                                                        filterTitle: "mockup",
+                                                        title: this.state.values[0].value,
+                                                        searchProjectValue: "",
+                                                        mockupi: this.state.mockupiPrethodnoStanje
+                                                    });
+                                                }}>
+                                                <h4 className="bkItem text-secondary"> {this.state.tipFilea[0]}</h4>
+                                            </BreadcrumbItem>}
+                                        {(a[5]) &&
+                                            <BreadcrumbItem tag="a"
+                                                onClick={(e) => {
+                                                    this.setState({
+                                                        listaAktivnih: [false, false, false, false, false, true, false, false],
+                                                        filterTitle: "pdf",
+                                                        title: this.state.values[0].value,
+                                                        searchProjectValue: "",
+                                                        pdfs: this.state.pdfsPrethodnoStanje
+                                                    });
+                                                }}>
+                                                <h4 className="bkItem text-secondary"> {this.state.tipFilea[2]}</h4>
+                                            </BreadcrumbItem>}
+                                        {(a[4]) &&
+                                            <BreadcrumbItem tag="a"
+                                                onClick={(e) => {
+                                                    this.setState({
+                                                        listaAktivnih: [false, false, false, false, true, false, false, false],
+                                                        filterTitle: "gspec",
+                                                        title: this.state.values[0].value,
+                                                        searchProjectValue: "",
+                                                        gspecs: this.state.gspecsPrethodnoStanje
+                                                    });
+                                                }}>
+                                                <h4 className="bkItem text-secondary"> {this.state.tipFilea[1]}</h4>
+                                            </BreadcrumbItem>}
+                                    </Breadcrumb>
+                                </Col>
+                                {a[1] && <Col md={1}>
+                                    <Button onClick={(e) => {
                                         this.setState({
                                             listaAktivnih: [false, false, false, false, false, false, false, true]
                                         });
                                     }}
 
-                                outline color="success"
-                                style={{width:'100px'}}>
-                                Share
+                                        outline color="success"
+                                        style={{ width: '100px' }}>
+                                        Share
                             </Button>
-                            </Col>}
-                            {(!a[2] && !a[5] && !a[4]) &&
-                            <Col md={a[1] ? 2 : 3}>
-                                <FormGroup className="float-sm-right"
-                                style={{paddingRight:'15%'}}>
-                                    <Button 
-                                    onClick = {(e) =>{
-                                        if (a[0]) {
-                                            this.setState({
-                                                listaAktivnih: [false, false, false, false, false, false, true, false],
-                                                isProject: "project"
-                                            });
-                                        }
-                                        else if (a[1]) {
-                                            this.setState({
-                                                listaAktivnih: [false, false, false, false, false, false, true, false],
-                                                isProject: "version"
-                                            });
-                                        }
-                                    }}
-                                    className="bg-dark btn form-control">
-                                    {a[0] ? "Create project" : a[1] ? "Create new version" : "Create new mockup"}
-                                    </Button>
-                                </FormGroup>
-                            </Col>
-                            }
-                        </Row>
-                        <hr className="my-2"></hr>
-                        {(a[0] || a[3] || a[5] || a[4]) && <Row>
-                            <Col md={4}>
-                                <InputGroup>
-                                    <Input value = {this.state.searchProjectValue} placeholder = {a[0] ? "Search projects" : a[3] ? "Search mockups": a[5] ? "Search pdfs" : a[4] ? "Search gspecs": " "} 
-                                        onChange={(e) =>{
-                                        this.setState({ searchProjectValue: e.target.value})
-                                        this.searchFiles(e.target.value, this.state.filterTitle);
-                                    }
-                                    } 
-                                    />
-                                    <InputGroupAddon addonType="prepend">
-                                    <InputGroupText>
-                                    <svg class="bi bi-search" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
-                                    <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
-                                    </svg>
-                                    </InputGroupText>
-                                    </InputGroupAddon>
-                                </InputGroup>
-                            </Col>
-                            <Col md={8}>
-                                <FormGroup className="float-sm-right"
-                                style={{ paddingRight:'5%'}}>
-                                    <UncontrolledDropdown>
-                                            <DropdownToggle id = "toggle" tag="a" className="nav-link" caret className = "align-left">
+                                </Col>}
+                                {(!a[2] && !a[5] && !a[4]) &&
+                                    <Col md={a[1] ? 2 : 3}>
+                                        <FormGroup className="float-sm-right"
+                                            style={{ paddingRight: '15%' }}>
+                                            <Button
+                                                onClick={(e) => {
+                                                    if (a[0]) {
+                                                        this.setState({
+                                                            listaAktivnih: [false, false, false, false, false, false, true],
+                                                            isProject: "project"
+                                                        });
+                                                    }
+                                                    else if (a[1]) {
+                                                        this.setState({
+                                                            listaAktivnih: [false, false, false, false, false, false, true],
+                                                            isProject: "version"
+                                                        });
+                                                    }
+                                                    else if (a[3]) {
+                                                        console.log("Kliknuto za kreiranje novog mockupa");
+                                                        this.setState({
+                                                            listaAktivnih: [false, false, false, false, false, false, true],
+                                                            isProject: "mockup"
+                                                        });
+                                                    }
+                                                }}
+                                                className="bg-dark btn form-control">
+                                                {a[0] ? "Create project" : a[1] ? "Create new version" : "Create new mockup"}
+                                            </Button>
+                                        </FormGroup>
+                                    </Col>
+                                }
+                            </Row>
+                            <hr className="my-2"></hr>
+                            {(a[0] || a[3] || a[5] || a[4]) && <Row>
+                                <Col md={4}>
+                                    <InputGroup>
+                                        <Input value={this.state.searchProjectValue} placeholder={a[0] ? "Search projects" : a[3] ? "Search mockups" : a[5] ? "Search pdfs" : a[4] ? "Search gspecs" : " "}
+                                            onChange={(e) => {
+                                                this.setState({ searchProjectValue: e.target.value })
+                                                this.searchFiles(e.target.value, this.state.filterTitle);
+                                            }
+                                            }
+                                        />
+                                        <InputGroupAddon addonType="prepend">
+                                            <InputGroupText>
+                                                <svg class="bi bi-search" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z" />
+                                                    <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z" />
+                                                </svg>
+                                            </InputGroupText>
+                                        </InputGroupAddon>
+                                    </InputGroup>
+                                </Col>
+                                <Col md={8}>
+                                    <FormGroup className="float-sm-right"
+                                        style={{ paddingRight: '5%' }}>
+                                        <UncontrolledDropdown>
+                                            <DropdownToggle id="toggle" tag="a" className="nav-link" caret className="align-left">
                                                 {this.state.title}
                                             </DropdownToggle>
                                             {this.renderDropDownItems()}
-                                    </UncontrolledDropdown>
-                                </FormGroup>
+                                        </UncontrolledDropdown>
+                                    </FormGroup>
+                                </Col>
+                            </Row>}
+                            <br />
+
+                            <Col xs={12} style={{ padding: '0' }}>
+                                {this.state.deleteSuccess == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none" }} color="success">Successfully deleted!</Alert> : ""}
+                                {this.state.errorVisible == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none" }} color="danger">{this.state.errorMessage}</Alert> : ""}
                             </Col>
-                        </Row>}
-                        <br/>
-                        
-                            <Col xs = {12} style = {{padding: '0'}}>
-                                {this.state.deleteSuccess == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none"}} color = "success">Successfully deleted!</Alert> : ""}
-                                {this.state.errorVisible == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none"}} color = "danger">{this.state.errorMessage}</Alert> : ""}
-                            </Col>
-                        
-                        <br/>
-                        {a[0] && this.dinamickiDodajElementeNiza(this.state.listaProjekata, a)}
-                        {a[1] && this.dinamickiDodajElementeNiza(this.state.verzije, a)}
-                        {a[2] && this.dinamickiDodajElementeNiza(this.state.tipFilea, a)}
-                        {a[3] && this.dinamickiDodajElementeNiza(this.state.mockupi, a)}
-                        {a[4] && this.dinamickiDodajElementeNiza(this.state.gspecs, a)}
-                        {a[5] && this.dinamickiDodajElementeNiza(this.state.pdfs, a)}
-                    </Form>
-                </Col>
-            </Row>
+
+                            <br />
+                            {a[0] && this.dinamickiDodajElementeNiza(this.state.listaProjekata, a)}
+                            {a[1] && this.dinamickiDodajElementeNiza(this.state.verzije, a)}
+                            {a[2] && this.dinamickiDodajElementeNiza(this.state.tipFilea, a)}
+                            {a[3] && this.dinamickiDodajElementeNiza(this.state.mockupi, a)}
+                            {a[4] && this.dinamickiDodajElementeNiza(this.state.gspecs, a)}
+                            {a[5] && this.dinamickiDodajElementeNiza(this.state.pdfs, a)}
+                        </Form>
+                    </Col>
+                </Row>
             }
-            {a[6] && <CreateNewVersion data = {this}/>}
-            {a[7] && <Collaboration data = {this}/>}
+                {a[6] && <CreateNewVersion data={this} />}
+                {a[7] && <Collaboration data={this} />}
             </Form>
-          );
+        );
     }
 }
- 
+
 ProjectOverview.contextType = UrlContext;
 
 export default ProjectOverview;

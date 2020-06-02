@@ -23,4 +23,5 @@ public interface PDF_DocumentServiceInterface {
 
     public ResponseEntity addPDFFile(MultipartFile pdfFajl, Long id, String naziv) throws IOException, SQLException;
 
+    public byte[] getOnePDFFile(Long id) throws SQLException;
 }

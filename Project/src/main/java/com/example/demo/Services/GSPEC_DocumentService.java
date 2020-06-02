@@ -28,8 +28,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -69,9 +71,11 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
         HttpEntity<GSPEC_Document> request = new HttpEntity<>(newGspec);
         restTemplate.put("http://online-testing/updateGSPECDocument/{id}", request, id);
         if(gspec_document != null) {
-            Mockup mockup = mockupRepository.findByID(newGspec.getMockupId().getID());
+            Mockup mockup = mockupRepository.findByID(gspec_document.getMockupId().getID());
             if(mockup != null) {
-                gspec_document.setMockupId(mockup);
+                if (newGspec.getMockupId() != null && mockupRepository.findByID(newGspec.getMockupId().getID()) != null) {
+                    gspec_document.setMockupId(mockup);
+                }
 
                 if (!newGspec.getName().equals("")) gspec_document.setName(newGspec.getName());
 
@@ -81,6 +85,8 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
                 if (newGspec.getAccessed_date() != null) gspec_document.setAccessed_date(newGspec.getAccessed_date());
 
                 gspec_documentRepository.save(gspec_document);
+                gspec_document.setFile(null);
+                gspec_document.getMockupId().setFile(null);
                 return new ResponseEntity<>(gspec_document, HttpStatus.OK);
             }
             else
@@ -92,6 +98,8 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
                 newGspec.setMockupId(mockup);
                 newGspec.setID(id);
                 gspec_documentRepository.save(newGspec);
+                newGspec.setFile(null);
+                newGspec.getMockupId().setFile(null);
                 return new ResponseEntity<>(newGspec, HttpStatus.OK);
             }
             else
@@ -104,6 +112,10 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
         Mockup mockup = mockupRepository.findByID(id);
         if(mockup != null) {
             List<GSPEC_Document> gspec_documents = gspec_documentRepository.findAllBymockupID(mockup);
+            for(GSPEC_Document gspec:gspec_documents){
+                gspec.setFile(null);
+                gspec.getMockupId().setFile(null);
+            }
             if(gspec_documents != null){
                 return new ResponseEntity<>(gspec_documents, HttpStatus.OK);
             }
@@ -172,6 +184,8 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
             Mockup mockup = mockupRepository.findByID(newGspec.getMockupId().getID());
             if(mockup != null) {
                 GSPEC_Document gspec_document = gspec_documentRepository.save(newGspec);
+                gspec_document.setFile(null);
+                gspec_document.getMockupId().setFile(null);
                 return new ResponseEntity<>(gspec_document, HttpStatus.CREATED);
             }
             else
@@ -184,8 +198,13 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
     @Override
     public ResponseEntity getAllGSPECs(){
         List<GSPEC_Document> gspec_documents = gspec_documentRepository.findAll();
-        if(gspec_documents != null)
+        if(gspec_documents != null) {
+            for(GSPEC_Document gspec:gspec_documents){
+                gspec.setFile(null);
+                gspec.getMockupId().setFile(null);
+            }
             return new ResponseEntity<>(gspec_documents, HttpStatus.OK);
+        }
         else
             throw new ObjectNotFoundException("GSPEC documents do not exist!");
     }
@@ -194,10 +213,12 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
     public ResponseEntity getOneGSPEC(Long id) {
         GSPEC_Document gspec_document = gspec_documentRepository.findByID(id);
         if(gspec_document != null){
+            gspec_document.setFile(null);
+            gspec_document.getMockupId().setFile(null);
             return new ResponseEntity<>(gspec_document, HttpStatus.OK);
         }
         else
-        throw new ObjectNotFoundException("GSPEC document with id " + id + "does not exist!");
+            throw new ObjectNotFoundException("GSPEC document with id " + id + "does not exist!");
     }
 
     @Override
@@ -211,6 +232,8 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
             GSPEC_Document gspec_document=new GSPEC_Document(mockup,naziv,blob,date,date,date);
             GSPEC_Document gspec_documentZaOnlineTesting=new GSPEC_Document(mockup,naziv,null,date,date,date);
 
+            System.out.println("Prije /addGspecDocument");
+            gspec_documentZaOnlineTesting.getMockupId().setFile(null);
             HttpEntity<GSPEC_Document> request = new HttpEntity<>(gspec_documentZaOnlineTesting);
             GSPEC_Document gspec_document11 = restTemplate.postForObject("http://online-testing/addGSPECDocument", request, GSPEC_Document.class);
 
@@ -239,7 +262,7 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
 
             JSONObject objekat = new JSONObject();
             try {
-                objekat.put("message","Mockup is successfully updated!");
+                objekat.put("message","GSPEC file is successfully updated!");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -248,6 +271,23 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
         else{
             throw new ObjectNotFoundException("Mockup with id " + id + "does not exist!");
         }
+    }
+
+    @Override
+    public ResponseEntity<?> getOneGSPECFile(Long id) throws SQLException {
+        GSPEC_Document gspec_document = gspec_documentRepository.findByID(id);
+        if(gspec_document != null){
+            Blob blob=gspec_document.getFile();
+            String rezultat="";
+            if(blob!=null) {
+                byte[] niz = blob.getBytes(1l, (int) blob.length());
+                blob.free();
+                rezultat = new String(niz, StandardCharsets.UTF_8);
+            }
+            return new ResponseEntity<>(rezultat, HttpStatus.OK);
+        }
+        else
+            throw new ObjectNotFoundException("GSPEC document with id " + id + "does not exist!");
     }
 
 }
