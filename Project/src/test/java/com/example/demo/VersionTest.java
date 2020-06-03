@@ -84,7 +84,7 @@ public class VersionTest {
 
     @Test
     public void testGetVersionsOfProject() throws Exception{
-        Project project = new Project(null, null, null, 1);
+        Project project = new Project(null, null, null, 1, 1);
         project.setID(1L);
 
         Version version = new Version(project, VersionNames.DESKTOP);

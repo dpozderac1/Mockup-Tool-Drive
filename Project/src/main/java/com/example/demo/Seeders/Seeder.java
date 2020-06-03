@@ -43,6 +43,7 @@ public class Seeder {
         projekt1.setDate_created(format.parse( "2020-3-17" ));
         projekt1.setDate_modified(format.parse( "2020-3-17" ));
         projekt1.setName("Mockup tool");
+        projekt1.setUserID(2);
         projekt1.setPriority(1);
 
         if(!projectRepository.existsByName(projekt1.getName()))
@@ -52,6 +53,7 @@ public class Seeder {
         projekt2.setDate_created(format.parse( "2020-3-16" ));
         projekt2.setDate_modified(format.parse( "2020-3-16" ));
         projekt2.setName("Projekat 2");
+        projekt2.setUserID(2);
         projekt2.setPriority(1);
 
         if(!projectRepository.existsByName(projekt2.getName()))

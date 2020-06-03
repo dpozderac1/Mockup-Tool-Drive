@@ -50,7 +50,7 @@ public class ProjectTest {
     @Test
     public void testGetProjects() throws Exception{
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
 
         List<Project> projekti = Arrays.asList(project);
         given(projectService.getAllProjects()).willReturn(new ResponseEntity<>(projekti, HttpStatus.OK));
@@ -66,7 +66,7 @@ public class ProjectTest {
     @Test
     public void testGetProjectByID() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
 
         given(projectService.getOneProject(Long.valueOf(1))).willReturn(new ResponseEntity<>(project, HttpStatus.OK));
 
@@ -93,7 +93,7 @@ public class ProjectTest {
     public void testPostProject() throws Exception {
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
 
         given(projectService.newProject(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(project, HttpStatus.CREATED));
 
@@ -118,7 +118,7 @@ public class ProjectTest {
     public void updateProject() throws Exception
     {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse("2020-3-17" ), format.parse("2020-3-17") , 1);
+        Project project = new Project("Mockup tool", format.parse("2020-3-17" ), format.parse("2020-3-17") , 1, 2);
         project.setID(1L);
         given(projectService.addOrReplace(ArgumentMatchers.any(Project.class), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(project, HttpStatus.OK));
         project.setID(Long.valueOf(1));
@@ -139,7 +139,7 @@ public class ProjectTest {
     public void renameProject() throws Exception
     {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
 
         given(projectService.renameProject(ArgumentMatchers.anyString(), ArgumentMatchers.anyLong())).willReturn(new ResponseEntity<>(project, HttpStatus.OK));
 
@@ -158,7 +158,7 @@ public class ProjectTest {
     public void handleMethodArgumentNotValid() throws Exception {
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-5-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-5-17" ), format.parse( "2020-3-17" ), 1, 2);
 
         mvc.perform(MockMvcRequestBuilders
                 .put("/addOrUpdateProject/{id}", 1)
@@ -193,10 +193,10 @@ public class ProjectTest {
     @Test
     public void handleObjectAlreadyExistsException() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
         project.setID(Long.valueOf(1));
 
-        Project project1 = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project1 = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
         project1.setID(Long.valueOf(1));
 
         List<String> errors = new ArrayList<>();
@@ -233,7 +233,7 @@ public class ProjectTest {
     @Test
     public void testGetAllUserFiles() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1, 2);
         project.setID(1L);
         Version version = new Version(project, VersionNames.DESKTOP);
         version.setID(1L);
@@ -262,7 +262,7 @@ public class ProjectTest {
     @Test
     public void testGetRecentUserFiles() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1, 2);
         project.setID(1L);
         Version version = new Version(project, VersionNames.DESKTOP);
         version.setID(1L);
@@ -290,7 +290,7 @@ public class ProjectTest {
     @Test
     public void addProjectRestTemplate() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -315,7 +315,7 @@ public class ProjectTest {
     @Test
     public void addProjectRestTemplateErrorHandling() throws Exception{
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -369,7 +369,7 @@ public class ProjectTest {
     @Test
     public void filterFilesRestTemplate() throws Exception{
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1, 2);
         project.setID(1L);
         Version version = new Version(project, VersionNames.DESKTOP);
         version.setID(1L);
@@ -403,7 +403,7 @@ public class ProjectTest {
     @Test
     public void filterFilesRestTemplateErrorHandling() throws Exception{
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1, 2);
         project.setID(1L);
         Version version = new Version(project, VersionNames.DESKTOP);
         version.setID(1L);
@@ -437,7 +437,7 @@ public class ProjectTest {
     @Test
     public void searchFilesByNameRestTemplate() throws Exception{
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1, 2);
         project.setID(1L);
         Version version = new Version(project, VersionNames.DESKTOP);
         version.setID(1L);
@@ -466,7 +466,7 @@ public class ProjectTest {
     @Test
     public void searchFilesByNameRestTemplateErrorHandling() throws Exception{
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1);
+        Project project = new Project("Mockup tool", format.parse("2020-3-17"), format.parse("2020-3-17"), 1, 2);
         project.setID(1L);
         Version version = new Version(project, VersionNames.DESKTOP);
         version.setID(1L);
@@ -495,7 +495,7 @@ public class ProjectTest {
     @Test
     public void testGetProjectsRestTemplate() throws Exception{
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
 
         List<Project> projekti = Arrays.asList(project);
         restTemplate.getForEntity("http://user/users/projects/"+project.getID(), Project[].class);
@@ -513,7 +513,7 @@ public class ProjectTest {
     @Test
     public void testGetUserProjectsErrorHandling() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1);
+        Project project = new Project("Mockup tool", format.parse( "2020-3-17" ), format.parse( "2020-3-17" ), 1, 2);
         project.setID(1L);
         restTemplate.getForEntity("http://user/users/projects/"+project.getID(), Project[].class);
         List<String> errors=new ArrayList<>();

@@ -6,8 +6,8 @@ import {
     Nav,
     NavLink,
     Button,
-    Row, Form, FormGroup, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label, Spinner
-} from 'reactstrap';
+    Row, Form, FormGroup, Alert, Modal, ModalHeader, ModalBody, ModalFooter, 
+    Input, Label, Spinner, Col} from 'reactstrap';
 import SignIn from './signIn';
 import SignUp from './signUp';
 import CreateNewServer from './createNewServer';
@@ -582,10 +582,10 @@ class Meni extends Component {
 
         return (
             <div>
-                {/*<Row xs={12}>
-                    <Col>*/}
                 <Navbar color="light" light expand="md">
-                    <NavbarBrand href="/">Mockup tool drive</NavbarBrand>
+                    <Col xs = {2}>
+                    <NavbarBrand style={{fontSize:"150%"}} href="/">Mockup tool drive</NavbarBrand>
+                    </Col>
                     <NavbarToggler />
                     <Nav className="mr-auto" navbar>
                         {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignIn") }}>Sign in</NavLink> : ""}
@@ -603,14 +603,10 @@ class Meni extends Component {
                             </Nav>
                         </Navbar> : ""}
                 </Navbar>
-                {/*</Col>
-                </Row>*/}
-
-
+                
                 <Modal isOpen={this.state.modal} toggle={this.state.toggle} className="modal-sm text-center">
                     <Alert style={{ marginBottom: "0px" }}>All changes are saved successfully!</Alert>
                 </Modal>
-
                 <Modal isOpen={this.state.modalPDF} toggle={this.togglePDF} className="modal-m">
                     <ModalHeader toggle={this.toggle.PDF}>Save PDF</ModalHeader>
                     <ModalBody>

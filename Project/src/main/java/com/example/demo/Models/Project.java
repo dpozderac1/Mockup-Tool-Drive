@@ -14,11 +14,20 @@ public class Project {
     public Project() {
     }
 
-    public Project(String name, Date date_created, Date date_modified, Integer priority) {
+    public Project(String name, Date date_created, Date date_modified, Integer priority, Integer userID) {
         this.name = name;
         this.date_created = date_created;
         this.date_modified = date_modified;
         this.priority = priority;
+        this.userID = userID;
+    }
+
+    public Integer getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Integer userID) {
+        this.userID = userID;
     }
 
     public Long getID() {
@@ -83,5 +92,9 @@ public class Project {
     @Column(name = "Priority")
     @NotNull
     private Integer priority;
+
+    @Column(name = "UserID")
+    @NotNull
+    private Integer userID;
 
 }

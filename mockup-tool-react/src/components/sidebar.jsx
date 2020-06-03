@@ -24,9 +24,34 @@ class SideBar extends Component{
                     paddingTop:'10%',
                     width: '100%'
                 }}
-                    onSelect={(selected) => {
-                        const to = '/' + selected;
-                    }}
+                onSelect={(selected) => {
+                    const to = '/' + selected;
+                    if(selected == "project"){
+                        this.props.data.setState({
+                            listaAktivnih: [true, false, false, false, false, false, false, false, false]
+                        });
+                        this.props.data.getProjectsOfUser();
+                    }
+                    else if(selected == "priority"){
+                        this.props.data.setState({
+                            listaAktivnih: [true, false, false, false, false, false, false, false, false]
+                        });
+                        this.props.data.ucitajPrioritetne();
+                    }
+                    else if(selected == "shared"){
+                        this.props.data.setState({
+                            listaAktivnih: [true, false, false, false, false, false, false, false, false]
+                        });
+                        this.props.data.sharedProjects();
+                    }
+                    else if(selected == "recent")
+                    {
+                        this.props.data.setState({
+                            listaAktivnih: [false, false, false, false, false, false, false, false, true]
+                        });
+                        this.props.data.recentProjects();
+                    }
+                }}
                 >
                     <SideNav.Nav defaultSelected="project" 
                     
@@ -45,18 +70,18 @@ class SideBar extends Component{
                                 Priority
                             </NavText>
                         </NavItem>
-                        <NavItem eventKey="recent">
-                            <NavText
-                            style={this.style}  
-                            >
-                                Recent
-                            </NavText>
-                        </NavItem>
                         <NavItem eventKey="shared">
                             <NavText
                                 style={this.style}  
                             >
                                 Shared
+                            </NavText>
+                        </NavItem>
+                        <NavItem eventKey="recent">
+                            <NavText
+                            style={this.style}  
+                            >
+                                Recent
                             </NavText>
                         </NavItem>
                     </SideNav.Nav>

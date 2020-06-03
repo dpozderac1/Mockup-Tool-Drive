@@ -51,6 +51,7 @@ public class ProjectService implements ProjectServiceInterface {
             if(newProject.getDate_created() != null) project.setDate_created(newProject.getDate_created());
             if(newProject.getDate_modified() != null) project.setDate_modified(newProject.getDate_modified());
             if(!newProject.getPriority().equals("")) project.setPriority(newProject.getPriority());
+            if(!newProject.getUserID().equals("")) project.setUserID(newProject.getUserID());
             projectRepository.save(project);
             return new ResponseEntity<>(project, HttpStatus.OK);
         }

@@ -35,7 +35,7 @@ class CreateNewVersion extends Component {
             project: this.props.data.state.isProject,
             date_created: "",
             date_modified: "",
-            priority: 1,
+            priority: 0,
             errorVisible: false,
             successProject: false,
             successVersion: false,
@@ -79,7 +79,8 @@ class CreateNewVersion extends Component {
                 name: this.state.projectName,
                 date_created: date,
                 date_modified: date,
-                priority: this.state.priority
+                priority: this.state.priority,
+                userID: res.data.id
             })
                 .then(res => {
                     axios.post(url.project + "/addVersion", {
@@ -88,7 +89,8 @@ class CreateNewVersion extends Component {
                             date_modified: date,
                             id: res.data.id,
                             name: this.state.projectName,
-                            priority: this.state.priority
+                            priority: this.state.priority,
+                            userID: res.data.id
                         },
                         versionName: this.state.checked.name.toLocaleUpperCase()
                     })
@@ -136,7 +138,8 @@ class CreateNewVersion extends Component {
                 date_modified: project[2],
                 id: project[0],
                 name: project[3],
-                priority: project[4]
+                priority: project[4],
+                userID: project[5]
             },
             versionName: this.state.checked.name.toLocaleUpperCase()
         })
@@ -186,9 +189,10 @@ class CreateNewVersion extends Component {
                     date_modified: project[2],
                     id: project[0],
                     name: project[3],
-                    priority: project[4]
+                    priority: project[4],
+                    userID: project[5]
                 },
-                versionName: version.versioName,
+                versionName: version.versionName,
                 id: version.id
             },
             name: this.state.mockupName,
