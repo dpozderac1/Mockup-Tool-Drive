@@ -43,12 +43,19 @@ class UpdateAndDeleteUser extends Component {
                             <h5 style = {{ float: 'left' }} className = "text-secondary">Delete account</h5>
                         </Col>
                     </Row>
-                    <Row>
+                    <Row style={{ paddingRight: "0px" }}>
                         <Col xs = {9}>
                             <Label style = {{float: 'left', paddingTop: '1%'}}>If you delete your account, you will lose all saved data</Label>
                         </Col>
                         <Col>
-                            <Button onClick = {this.handleClick} className = "row justify-content-center" color = "danger" style = { {width: '100%'} }>Delete</Button>
+                            <Button onClick = {this.handleClick} 
+                            className = "row justify-content-center" 
+                            color = "danger" 
+                            style={
+                                {
+                                    width:'170px'
+                                }
+                            }>Delete</Button>
                         </Col>
                     </Row>
                 </Form>

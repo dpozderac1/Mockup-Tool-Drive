@@ -21,7 +21,7 @@ class AdvancedOptions extends Component {
                     <hr className="my-2"></hr>
                     <h5 class="text-secondary">Advanced options</h5>
                     <FormGroup/>
-                    <Row form>
+                    <Row form style={{ paddingRight: "15px" }}>
                         <Col md={6}>
                             <FormGroup>
                                 <Label type="serverL" name="serverL" id="serverL">Create new server</Label>
@@ -35,7 +35,7 @@ class AdvancedOptions extends Component {
                                     className="bg-dark btn form-control"
                                     style={
                                         {
-                                            width:'200px'
+                                            marginLeft: "auto", width:"170px" 
                                         }
                                     }
                                 >
@@ -46,7 +46,7 @@ class AdvancedOptions extends Component {
                         </Col>
                     </Row>
 
-                    <Row form>
+                    <Row form style={{ paddingRight: "15px" }}>
                         <Col md={6}>
                             <FormGroup>
                                 <Label type="browserL" name="browserL" id="browserL">Create new browser</Label>
@@ -59,7 +59,7 @@ class AdvancedOptions extends Component {
                                     className="bg-dark btn form-control"
                                     style={
                                         {
-                                            width:'200px'
+                                            marginLeft: "auto", width:"170px" 
                                         }
                                     }
                                 >
