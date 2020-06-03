@@ -613,7 +613,7 @@ function napisiGalen(snimiLokalno = true) {
     download(galen, nazivGalenDokumenta, "txt");
   }
   else {
-    var mockupId = 1;
+    var mockupId = document.getElementById("nepotrebniMockupId").getAttribute("name");
     axios.get("http://localhost:8080/project-client-service" + "/mockup/" + mockupId, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } }).then(res => {
       var trenutniMockup = res.data;
       var formData = new FormData();

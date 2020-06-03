@@ -374,6 +374,7 @@ class Meni extends Component {
         axios.get(url.project + "/mockup/file/" + mockupIdTrenutni).then(res => {
             axios.get(url.project + "/mockup/" + mockupIdTrenutni).then(res1 => {
                 document.getElementById("nepotrebniPDF").setAttribute("name", res1.data.name);
+                document.getElementById("nepotrebniMockupId").setAttribute("name", res1.data.id);
             })
                 .catch((error) => {
                     console.log("Greska u /mockup/{id}");
@@ -648,6 +649,7 @@ class Meni extends Component {
                 </Form>
 
                 <div id="nepotrebniPDF" name="nepotrebni" style={{ display: "none" }}></div>
+                <div id="nepotrebniMockupId" name="nepotrebniId" style={{ display: "none" }}></div>
             </div>
         );
     }

@@ -43,7 +43,7 @@ class ProjectOverview extends Component {
             isProject: "project",
             filterTitle: "project",
             recentFiles: false,
-            listaRecent: []
+            listaRecent: [], 
         };
 
         this.handleDelete = this.handleDelete.bind(this);
@@ -209,6 +209,7 @@ class ProjectOverview extends Component {
             this.setState({ listaAktivnih: [false, true, false, false, false, false, false, false, false], isProject: "version" });
         }
         else if (this.state.isProject === "mockup") {
+            this.udjiUFile(this.state.indeksKlikaVerzija);
             this.setState({ listaAktivnih: [false, false, false, true, false, false, false, false, false], isProject: "mockup" });
         }
     }
@@ -336,7 +337,7 @@ class ProjectOverview extends Component {
         });
 
         let url = this.context;
-        if (this.state.verzije[this.state.indeksKlikaVerzija] != null) {
+        if (this.state.verzije != null) {
             axios.get(url.project + "/mockups/version/" + this.state.verzije[this.state.indeksKlikaVerzija].id).then(mockups => {
 
                 mockups.data.map((mockup) => {

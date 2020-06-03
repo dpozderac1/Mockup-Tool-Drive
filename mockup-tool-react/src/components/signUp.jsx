@@ -206,7 +206,7 @@ class SignUp extends React.Component {
     render() {
         return (
             <Container className="col-lg-6" style={{
-                position: 'absolute', left: '50%', top: '52%',
+                position: 'absolute', left: '50%', top: '53%',
                 transform: 'translate(-50%, -50%)'
             }}>
                 <h1 className="text-secondary" style={{ textAlign: "left" }}>{(this.props.podaci.state.forma === "signup") ? "Sign Up" : this.props.podaci.state.forma === "admin" ? "Good afternoon, ".concat(this.state.username) : "Good afternoon, ".concat(this.state.username)}</h1>

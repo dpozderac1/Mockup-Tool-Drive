@@ -202,8 +202,8 @@ class CreateNewVersion extends Component {
         })
             .then(res => {
                 console.log("odg verzija: ", res.data);
-                this.setState({ errorVisible: false, successVersion: true, checked: this.state.versions[0] });
-                setTimeout(() => this.props.data.backToProjects(), 2000);
+                this.setState({ errorVisible: false, successMockup: true});
+                setTimeout(() => this.props.data.goBack(), 2000);
             })
             .catch((error) => {
                 console.log("Greska!");
@@ -214,7 +214,7 @@ class CreateNewVersion extends Component {
                 else {
                     err = error.response.data.errors[0];
                 }
-                this.setState({ errorMessage: err, errorVisible: true, successVersion: false });
+                this.setState({ errorMessage: err, errorVisible: true, successMockup: false });
                 console.log(error.response);
             });
     }
