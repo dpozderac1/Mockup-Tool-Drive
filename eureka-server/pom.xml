@@ -57,6 +57,9 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+
+		<finalName>eureka</finalName>
+
 	</build>
 
 </project>

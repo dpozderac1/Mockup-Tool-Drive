@@ -221,6 +221,7 @@
 
 		</plugins>
 
+		<finalName>user</finalName>
 
 	</build>
 

@@ -1,0 +1,101 @@
+  version: '3'
+
+  services:
+
+    mysql-system-events:
+      image: mysql:latest
+      command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      volumes:
+        - ./:/docker-entrypoint-initdb.d
+      environment:
+        - MYSQL_ROOT_PASSWORD=password
+        - MYSQL_USER=us
+        - MYSQL_PASSWORD=password
+      ports:
+        - 3306:3306
+
+    eureka-server:
+      image: eureka
+      restart: on-failure
+      ports:
+        - 8761:8761
+
+    routing-and-filtering-gateway:
+      image: zuul
+      restart: on-failure
+      depends_on:
+        - eureka-server
+      ports:
+        - 8080:8080
+
+    system-events:
+      image: system-events
+      restart: on-failure
+      depends_on:
+        - mysql-system-events
+        - eureka-server
+        - routing-and-filtering-gateway
+      links:
+        - mysql-system-events
+      ports:
+        - 8085:8085
+      environment:
+        - DATABASE_HOST=mysql-system-events
+        - DATABASE_USER=us
+        - DATABASE_PASSWORD=password
+        - DATABASE_NAME=system_events
+        - DATABASE_PORT=3306
+
+    user:
+      image: user
+      restart: on-failure
+      depends_on:
+        - mysql-system-events
+        - eureka-server
+        - routing-and-filtering-gateway
+      links:
+        - mysql-system-events
+      ports:
+        - 8081:8081
+      environment:
+        - DATABASE_HOST=mysql-system-events
+        - DATABASE_USER=us
+        - DATABASE_PASSWORD=password
+        - DATABASE_NAME=nwtproba
+        - DATABASE_PORT=3306
+
+    project-client-service:
+      image: project
+      restart: on-failure
+      depends_on:
+        - mysql-system-events
+        - eureka-server
+        - routing-and-filtering-gateway
+      links:
+        - mysql-system-events
+      ports:
+        - 8083:8083
+      environment:
+        - DATABASE_HOST=mysql-system-events
+        - DATABASE_USER=us
+        - DATABASE_PASSWORD=password
+        - DATABASE_NAME=projectdb
+        - DATABASE_PORT=3306
+
+    online-testing:
+      image: online-testing
+      restart: on-failure
+      depends_on:
+        - mysql-system-events
+        - eureka-server
+        - routing-and-filtering-gateway
+      links:
+        - mysql-system-events
+      ports:
+        - 8082:8082
+      environment:
+        - DATABASE_HOST=mysql-system-events
+        - DATABASE_USER=us
+        - DATABASE_PASSWORD=password
+        - DATABASE_NAME=online_testing
+        - DATABASE_PORT=3306
