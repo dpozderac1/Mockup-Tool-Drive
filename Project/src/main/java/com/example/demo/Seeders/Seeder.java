@@ -43,7 +43,7 @@ public class Seeder {
         projekt1.setDate_created(format.parse( "2020-3-17" ));
         projekt1.setDate_modified(format.parse( "2020-3-17" ));
         projekt1.setName("Mockup tool");
-        projekt1.setUserID(2);
+        projekt1.setUserID(1);
         projekt1.setPriority(1);
 
         if(!projectRepository.existsByName(projekt1.getName()))

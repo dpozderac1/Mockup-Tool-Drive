@@ -391,13 +391,17 @@ public class ProjectService implements ProjectServiceInterface {
             mapa.put("html", new ArrayList<Mockup>());
         }
         if(galeni.size()!=0) {
-            mapa.put("galen", galeni.get(0));
+            GSPEC_Document gspec_document = galeni.get(0);
+            gspec_document.setFile(null);
+            mapa.put("galen", gspec_document);
         }
         else{
             mapa.put("galen", new ArrayList<GSPEC_Document>());
         }
         if(pdfovi.size()!=0) {
-            mapa.put("pdf", pdfovi.get(0));
+            PDF_Document pdf_document = pdfovi.get(0);
+            pdf_document.setFile(null);
+            mapa.put("pdf", pdf_document);
         }
         else{
             mapa.put("pdf", new ArrayList<PDF_Document>());

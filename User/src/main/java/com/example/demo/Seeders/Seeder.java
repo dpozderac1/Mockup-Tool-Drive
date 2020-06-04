@@ -42,8 +42,7 @@ public class Seeder {
         Role uloga=roleRepository.findByroleName(RoleNames.ADMIN);
         BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
         User korisnik=new User(uloga,"Damir","Pozderac","dpozderac1",passwordEncoder.encode("Password1!"),"dpozderac1@etf.unsa.ba");
-        if(!userRepository.existsByUsername(korisnik.getUsername()))
-            userRepository.save(korisnik);
+
 
         /*Role uloga1=roleRepository.findByroleName(RoleNames.USER);
         User korisnik1=new User(uloga1,"Edina","Kovac","ekovac2","Sifra22+","ekovac2@etf.unsa.ba");
@@ -66,12 +65,14 @@ public class Seeder {
         projectRepository.save(projekat);
         projectRepository.save(projekat1);
 
-        korisnik2.getProjects().add(projekat);
+        korisnik.getProjects().add(projekat);
         korisnik2.getProjects().add(projekat1);
 
-        projekat.getUsers().add(korisnik2);
+        projekat.getUsers().add(korisnik);
         projekat1.getUsers().add(korisnik2);
 
+        if(!userRepository.existsByUsername(korisnik.getUsername()))
+            userRepository.save(korisnik);
         userRepository.save(korisnik2);
     }
 }
