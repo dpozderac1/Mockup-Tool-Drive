@@ -99,3 +99,16 @@
         - DATABASE_PASSWORD=password
         - DATABASE_NAME=online_testing
         - DATABASE_PORT=3306
+
+    mockup-tool-react:
+      image: mockup-tool-react
+      restart: on-failure
+      depends_on:
+        - mysql-system-events
+        - eureka-server
+        - routing-and-filtering-gateway
+        - user
+        - project-client-service
+        - online-testing
+      ports:
+        - 3000:3000
