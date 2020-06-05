@@ -59,7 +59,7 @@ class SignIn extends React.Component {
                     //aktivni: [false, true]
                 });
                 this.props.data.setRole(userData.data.roleID.role_name);
-                if(userData.data.roleID.role_name == "ADMIN"){
+                if(userData.data.roleID.role_name === "ADMIN"){
                     this.setState({
                         forma: "admin"
                     });
@@ -91,6 +91,7 @@ class SignIn extends React.Component {
 
     displaySignUp() {
         this.props.data.hideComponent("showSignUp");
+        this.props.data.setPodaci("showSignUp");
     }
 
     render() {

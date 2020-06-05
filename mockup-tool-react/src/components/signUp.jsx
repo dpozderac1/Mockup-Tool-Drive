@@ -178,7 +178,7 @@ class SignUp extends React.Component {
                     console.log("Greska!");
                     console.log(error.response);
                     let err = "";
-                    if (error.response == undefined) {
+                    if (error.response === undefined) {
                         err = "Unknown error!";
                         this.setState({
                             errorZahtjev: err,

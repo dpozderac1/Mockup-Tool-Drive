@@ -26,25 +26,25 @@ class SideBar extends Component{
                 }}
                 onSelect={(selected) => {
                     const to = '/' + selected;
-                    if(selected == "project"){
+                    if(selected === "project"){
                         this.props.data.setState({
                             listaAktivnih: [true, false, false, false, false, false, false, false, false]
                         });
                         this.props.data.getProjectsOfUser();
                     }
-                    else if(selected == "priority"){
+                    else if(selected === "priority"){
                         this.props.data.setState({
                             listaAktivnih: [true, false, false, false, false, false, false, false, false]
                         });
                         this.props.data.ucitajPrioritetne();
                     }
-                    else if(selected == "shared"){
+                    else if(selected === "shared"){
                         this.props.data.setState({
                             listaAktivnih: [true, false, false, false, false, false, false, false, false]
                         });
                         this.props.data.sharedProjects();
                     }
-                    else if(selected == "recent")
+                    else if(selected === "recent")
                     {
                         this.props.data.setState({
                             listaAktivnih: [false, false, false, false, false, false, false, false, true]

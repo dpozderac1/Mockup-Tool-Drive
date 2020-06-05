@@ -65,15 +65,15 @@ class CreateNewVersion extends Component {
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
             const today = new Date();
             let month = today.getMonth().toString();
-            month.length == 1 ? month = "0" + month : month = month;
+            month.length === 1 ? month = "0" + month : month = month;
             let day = today.getDate().toString();
-            day.length == 1 ? day = "0" + day : day = day;
+            day.length === 1 ? day = "0" + day : day = day;
             let hours = today.getHours().toString();
-            hours.length == 1 ? hours = "0" + hours : hours = hours;
+            hours.length === 1 ? hours = "0" + hours : hours = hours;
             let minutes = today.getMinutes().toString();
-            minutes.length == 1 ? minutes = "0" + minutes : minutes = minutes;
+            minutes.length === 1 ? minutes = "0" + minutes : minutes = minutes;
             let seconds = today.getSeconds().toString();
-            seconds.length == 1 ? seconds = "0" + seconds : seconds = seconds;
+            seconds.length === 1 ? seconds = "0" + seconds : seconds = seconds;
             const date = today.getFullYear() + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "." + today.getMilliseconds() + "Z";
             axios.post(url.project + "/addProject/" + res.data.id, {
                 name: this.state.projectName,
@@ -103,7 +103,7 @@ class CreateNewVersion extends Component {
                         .catch((error) => {
                             console.log("Greska!");
                             let err = "";
-                            if (error.response.data.errors == undefined) {
+                            if (error.response.data.errors === undefined) {
                                 err = "Unknown error!";
                             }
                             else {
@@ -116,7 +116,7 @@ class CreateNewVersion extends Component {
                 .catch((error) => {
                     console.log("Greska!");
                     let err = "";
-                    if (error.response.data.errors == undefined) {
+                    if (error.response.data.errors === undefined) {
                         err = "Unknown error!";
                     }
                     else {
@@ -151,7 +151,7 @@ class CreateNewVersion extends Component {
             .catch((error) => {
                 console.log("Greska!");
                 let err = "";
-                if (error.response.data.errors == undefined) {
+                if (error.response.data.errors === undefined) {
                     err = "Unknown error!";
                 }
                 else {
@@ -170,15 +170,15 @@ class CreateNewVersion extends Component {
         const version = this.props.data.state.verzije[this.props.data.state.indeksKlikaVerzija];
         const today = new Date();
         let month = today.getMonth().toString();
-        month.length == 1 ? month = "0" + month : month = month;
+        month.length === 1 ? month = "0" + month : month = month;
         let day = today.getDate().toString();
-        day.length == 1 ? day = "0" + day : day = day;
+        day.length === 1 ? day = "0" + day : day = day;
         let hours = today.getHours().toString();
-        hours.length == 1 ? hours = "0" + hours : hours = hours;
+        hours.length === 1 ? hours = "0" + hours : hours = hours;
         let minutes = today.getMinutes().toString();
-        minutes.length == 1 ? minutes = "0" + minutes : minutes = minutes;
+        minutes.length === 1 ? minutes = "0" + minutes : minutes = minutes;
         let seconds = today.getSeconds().toString();
-        seconds.length == 1 ? seconds = "0" + seconds : seconds = seconds;
+        seconds.length === 1 ? seconds = "0" + seconds : seconds = seconds;
         const date = today.getFullYear() + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "." + today.getMilliseconds() + "Z";
         console.log("Projekat je: ", project);
         console.log("Verzija je: ", version);
@@ -208,7 +208,7 @@ class CreateNewVersion extends Component {
             .catch((error) => {
                 console.log("Greska!");
                 let err = "";
-                if (error.response.data.errors == undefined) {
+                if (error.response.data.errors === undefined) {
                     err = "Unknown error!";
                 }
                 else {
@@ -225,7 +225,7 @@ class CreateNewVersion extends Component {
 
     render() {
         return (
-            <Form onSubmit={this.state.project == "project" ? this.addProject : this.state.project == "version" ? this.addVersion : this.addMockup}>
+            <Form onSubmit={this.state.project === "project" ? this.addProject : this.state.project === "version" ? this.addVersion : this.addMockup}>
                 <Container className="col-log-6" style={
                     {
                         position: 'absolute', left: '50%', top: '50%',
@@ -234,15 +234,15 @@ class CreateNewVersion extends Component {
                 }>
                     <Form className="row align-items-center row justify-content-center">
                         <Form className="col-md-5 my-auto">
-                            <h1 className="text-secondary" style={{ textAlign: "left" }}>{this.state.project == "project" ? "Create project" : this.state.project == "version" ? "Create new version" : "Create mockup"}</h1>
+                            <h1 className="text-secondary" style={{ textAlign: "left" }}>{this.state.project === "project" ? "Create project" : this.state.project == "version" ? "Create new version" : "Create mockup"}</h1>
                             <hr className="my-2" />
-                            <FormGroup style={{ display: (this.state.project == "project") ? "block" : "none" }}>
+                            <FormGroup style={{ display: (this.state.project === "project") ? "block" : "none" }}>
                                 <Label for="projectNameLabel">Project name</Label>
                                 <Input type="text" name="projectName" id="projectName" placeholder="Enter project name" onChange={(e) =>
                                     this.setState({ projectName: e.target.value })
                                 } />
                             </FormGroup>
-                            <FormGroup style={{ height: '6em', display: (this.state.project == "project" || this.state.project == "version") ? "block" : "none" }}>
+                            <FormGroup style={{ height: '6em', display: (this.state.project === "project" || this.state.project === "version") ? "block" : "none" }}>
                                 <Label for="versionLable">Project version</Label>
                                 <Navbar color="faded" light className="block-example border border-secondary" expand="md" style={{ height: '100%' }}>
                                     <Nav className="ml-auto" navbar className="align-left">
@@ -258,7 +258,7 @@ class CreateNewVersion extends Component {
                             </FormGroup>
 
 
-                            <FormGroup style={{ height: '6em', display: (this.state.project == "mockup") ? "block" : "none" }}>
+                            <FormGroup style={{ height: '6em', display: (this.state.project === "mockup") ? "block" : "none" }}>
                                 <Label for="mockupNameLabel">Mockup name</Label>
                                 <Input type="text" name="mockupName" id="mockupName" placeholder="Enter mockup name" onChange={(e) =>
                                     this.setState({ mockupName: e.target.value })
@@ -268,10 +268,10 @@ class CreateNewVersion extends Component {
 
                             <Row>
                                 <Col>
-                                    {this.state.successProject == true && this.state.project == "project" ? <Alert style={{ marginTop: '8%' }} color="success">Project successfully added!</Alert> : ""}
-                                    {this.state.successVersion == true && this.state.project == "version" ? <Alert style={{ marginTop: '8%' }} color="success">New project version successfully added!</Alert> : ""}
-                                    {this.state.successMockup == true && this.state.project == "mockup" ? <Alert style={{ marginTop: '8%' }} color="success">New mockup successfully added!</Alert> : ""}
-                                    {this.state.errorVisible == true ? <Alert style={{ marginTop: '8%' }} color="danger">{this.state.errorMessage}</Alert> : ""}
+                                    {this.state.successProject === true && this.state.project === "project" ? <Alert style={{ marginTop: '8%' }} color="success">Project successfully added!</Alert> : ""}
+                                    {this.state.successVersion === true && this.state.project === "version" ? <Alert style={{ marginTop: '8%' }} color="success">New project version successfully added!</Alert> : ""}
+                                    {this.state.successMockup === true && this.state.project === "mockup" ? <Alert style={{ marginTop: '8%' }} color="success">New mockup successfully added!</Alert> : ""}
+                                    {this.state.errorVisible === true ? <Alert style={{ marginTop: '8%' }} color="danger">{this.state.errorMessage}</Alert> : ""}
                                 </Col>
                             </Row>
                             <Row>

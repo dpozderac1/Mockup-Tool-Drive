@@ -63,21 +63,21 @@ class ProjectOverview extends Component {
     }
 
     searchFiles = (s, filterTitle) => {
-        if (s == "") {
+        if (s === "") {
             let projects = [];
-            if (filterTitle == "project") {
+            if (filterTitle === "project") {
                 projects = [...this.state.listaProjekataPrethodnoStanje];
                 this.setState({ listaProjekata: projects });
             }
-            else if (filterTitle == "mockup") {
+            else if (filterTitle === "mockup") {
                 projects = [...this.state.mockupiPrethodnoStanje];
                 this.setState({ mockupi: projects });
             }
-            else if (filterTitle == "gspec") {
+            else if (filterTitle === "gspec") {
                 projects = [...this.state.gspecsPrethodnoStanje];
                 this.setState({ gspecs: projects });
             }
-            else if (filterTitle == "pdf") {
+            else if (filterTitle === "pdf") {
                 projects = [...this.state.pdfsPrethodnoStanje];
                 this.setState({ pdfs: projects });
             }
@@ -85,19 +85,19 @@ class ProjectOverview extends Component {
         else {
             let array = []
             let index = 0;
-            if (filterTitle == "project") {
+            if (filterTitle === "project") {
                 array = [...this.state.listaProjekataPrethodnoStanje];
                 index = 3;
             }
-            else if (filterTitle == "mockup") {
+            else if (filterTitle === "mockup") {
                 array = [...this.state.mockupiPrethodnoStanje];
                 index = "name";
             }
-            else if (filterTitle == "gspec") {
+            else if (filterTitle === "gspec") {
                 array = [...this.state.gspecsPrethodnoStanje];
                 index = "name";
             }
-            else if (filterTitle == "pdf") {
+            else if (filterTitle === "pdf") {
                 array = [...this.state.pdfsPrethodnoStanje];
                 index = "name";
             }
@@ -107,16 +107,16 @@ class ProjectOverview extends Component {
                     newArray.push(project);
                 }
             });
-            if (filterTitle == "project") {
+            if (filterTitle === "project") {
                 this.setState({ listaProjekata: newArray });
             }
-            else if (filterTitle == "mockup") {
+            else if (filterTitle === "mockup") {
                 this.setState({ mockupi: newArray });
             }
-            else if (filterTitle == "gspec") {
+            else if (filterTitle === "gspec") {
                 this.setState({ gspecs: newArray });
             }
-            else if (filterTitle == "pdf") {
+            else if (filterTitle === "pdf") {
                 this.setState({ pdfs: newArray });
             }
         }
@@ -127,61 +127,61 @@ class ProjectOverview extends Component {
         let index_name = 0;
         let index_date_created = 0;
         let index_date_modified = 0;
-        if (filterTitle == "project") {
+        if (filterTitle === "project") {
             array = [...this.state.listaProjekata];
             index_name = 3;
             index_date_created = 1;
             index_date_modified = 2;
         }
-        else if (filterTitle == "mockup") {
+        else if (filterTitle === "mockup") {
             array = [...this.state.mockupi];
             index_name = "name";
             index_date_created = "date_created";
             index_date_modified = "date_modified";
         }
-        else if (filterTitle == "pdf") {
+        else if (filterTitle === "pdf") {
             array = [...this.state.pdfs];
             index_name = "name";
             index_date_created = "date_created";
             index_date_modified = "date_modified";
         }
-        else if (filterTitle == "gspec") {
+        else if (filterTitle === "gspec") {
             array = [...this.state.gspecs];
             index_name = "name";
             index_date_created = "date_created";
             index_date_modified = "date_modified";
         }
-        if (element.value == "Alphabetical") {
+        if (element.value === "Alphabetical") {
             array.sort(function (a, b) {
                 if (a[index_name].toUpperCase() < b[index_name].toUpperCase()) { return -1; }
                 if (a[index_name].toUpperCase() > b[index_name].toUpperCase()) { return 1; }
                 return 0;
             });
         }
-        else if (element.value == "Date created") {
+        else if (element.value === "Date created") {
             array.sort(function (a, b) {
                 if (Date.parse(a[index_date_created]) > Date.parse(b[index_date_created])) { return -1; }
                 if (Date.parse(a[index_date_created]) < Date.parse(b[index_date_created])) { return 1; }
                 return 0;
             });
         }
-        else if (element.value == "Date modified") {
+        else if (element.value === "Date modified") {
             array.sort(function (a, b) {
                 if (Date.parse(a[index_date_modified]) > Date.parse(b[index_date_modified])) { return -1; }
                 if (Date.parse(a[index_date_modified]) < Date.parse(b[index_date_modified])) { return 1; }
                 return 0;
             });
         }
-        if (filterTitle == "project") {
+        if (filterTitle === "project") {
             this.setState({ listaProjekata: array, title: element.value });
         }
-        else if (filterTitle == "mockup") {
+        else if (filterTitle === "mockup") {
             this.setState({ mockupi: array, title: element.value });
         }
-        else if (filterTitle == "pdf") {
+        else if (filterTitle === "pdf") {
             this.setState({ pdfs: array, title: element.value });
         }
-        else if (filterTitle == "gspec") {
+        else if (filterTitle === "gspec") {
             this.setState({ gspecs: array, title: element.value });
         }
     };
@@ -214,16 +214,12 @@ class ProjectOverview extends Component {
         }
     }
 
-    handleDelete(id) {
+    handleDelete(indeks) {
         let url = this.context;
-        axios.delete(url.project + "/delete/project/" + id).then(res => {
+        const elementToDelete = this.state.listaProjekata[indeks];
+        axios.delete(url.project + "/delete/project/" + elementToDelete[0]).then(res => {
             let array = [...this.state.listaProjekataPrethodnoStanje];
-            let index = "";
-            array.forEach(element => {
-                if (id == element[0]) {
-                    index = array.indexOf(element);
-                }
-            });
+            const index = array.indexOf(elementToDelete);
             array.splice(index, 1);
             this.setState({ listaProjekata: array, deleteSuccess: true, errorVisible: false, hide: true, listaProjekataPrethodnoStanje: array, searchProjectValue: "" });
             setTimeout(() => { this.setState({ hide: false }) }, 3000);
@@ -231,7 +227,7 @@ class ProjectOverview extends Component {
             .catch((error) => {
                 console.log("Greska!");
                 let err = "";
-                if (error.response.data.errors == undefined) {
+                if (error.response.data.errors === undefined) {
                     err = "Unknown error!";
                 }
                 else {
@@ -412,7 +408,7 @@ class ProjectOverview extends Component {
                 .catch((error) => {
                     console.log("Greska!");
                     let err = "";
-                    if (error.response.data.errors == undefined) {
+                    if (error.response.data.errors === undefined) {
                         err = "Unknown error!";
                     }
                     else {
@@ -451,7 +447,7 @@ class ProjectOverview extends Component {
                 .catch((error) => {
                     console.log("Greska!");
                     let err = "";
-                    if (error.response.data.errors == undefined) {
+                    if (error.response.data.errors === undefined) {
                         err = "Unknown error!";
                     }
                     else {
@@ -490,7 +486,7 @@ class ProjectOverview extends Component {
                 .catch((error) => {
                     console.log("Greska!");
                     let err = "";
-                    if (error.response.data.errors == undefined) {
+                    if (error.response.data.errors === undefined) {
                         err = "Unknown error!";
                     }
                     else {
@@ -529,7 +525,7 @@ class ProjectOverview extends Component {
                 .catch((error) => {
                     console.log("Greska!");
                     let err = "";
-                    if (error.response.data.errors == undefined) {
+                    if (error.response.data.errors === undefined) {
                         err = "Unknown error!";
                     }
                     else {
@@ -545,15 +541,15 @@ class ProjectOverview extends Component {
     datumUSpringDatum = () => {
         const today = new Date();
         let month = today.getMonth().toString();
-        month.length == 1 ? month = "0" + month : month = month;
+        month.length === 1 ? month = "0" + month : month = month;
         let day = today.getDate().toString();
-        day.length == 1 ? day = "0" + day : day = day;
+        day.length === 1 ? day = "0" + day : day = day;
         let hours = today.getHours().toString();
-        hours.length == 1 ? hours = "0" + hours : hours = hours;
+        hours.length === 1 ? hours = "0" + hours : hours = hours;
         let minutes = today.getMinutes().toString();
-        minutes.length == 1 ? minutes = "0" + minutes : minutes = minutes;
+        minutes.length === 1 ? minutes = "0" + minutes : minutes = minutes;
         let seconds = today.getSeconds().toString();
-        seconds.length == 1 ? seconds = "0" + seconds : seconds = seconds;
+        seconds.length === 1 ? seconds = "0" + seconds : seconds = seconds;
         const date = today.getFullYear() + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "." + today.getMilliseconds() + "Z";
         return date;
     }
@@ -577,7 +573,7 @@ class ProjectOverview extends Component {
             .catch((error) => {
                 console.log("Greska!");
                 let err = "";
-                if(error.response.data.errors == undefined) {
+                if(error.response.data.errors === undefined) {
                     err = "Unknown error!";
                 }
                 else {
@@ -603,15 +599,15 @@ class ProjectOverview extends Component {
                 var lista = [];
                 for(var i = 0; i<projectData.data.length; i++){
                     axios.get(url.project + "/project/" + projectData.data[i].id).then(oneProject => {
-                        if(oneProject.data.priority == 1){
+                        if(oneProject.data.priority === 1){
                             var array = "";
                             var array2 = ""
                             var zapamti = -1
                             for(var k = 0; k< oneProject.data.date_created.length; k++){
-                                if(oneProject.data.date_created[k] == "+"){
+                                if(oneProject.data.date_created[k] === "+"){
                                     zapamti = k
                                 }
-                                if(zapamti == -1)
+                                if(zapamti === -1)
                                     array += oneProject.data.date_created[k];
                             }
                             zapamti = -1;
@@ -619,7 +615,7 @@ class ProjectOverview extends Component {
                                 if(oneProject.data.date_modified[k] == "+"){
                                     zapamti = k
                                 }
-                                if(zapamti == -1)
+                                if(zapamti === -1)
                                     array2 += oneProject.data.date_modified[k];
                             }
                             array += "Z";
@@ -659,18 +655,18 @@ class ProjectOverview extends Component {
                             var array2 = ""
                             var zapamti = -1
                             for(var k = 0; k< oneProject.data.date_created.length; k++){
-                                if(oneProject.data.date_created[k] == "+"){
+                                if(oneProject.data.date_created[k] === "+"){
                                     zapamti = k
                                 }
-                                if(zapamti == -1)
+                                if(zapamti === -1)
                                     array += oneProject.data.date_created[k];
                             }
                             zapamti = -1;
                             for(var k = 0; k< oneProject.data.date_modified.length; k++){
-                                if(oneProject.data.date_modified[k] == "+"){
+                                if(oneProject.data.date_modified[k] === "+"){
                                     zapamti = k
                                 }
-                                if(zapamti == -1)
+                                if(zapamti === -1)
                                     array2 += oneProject.data.date_modified[k];
                             }
                             array += "Z";
@@ -754,7 +750,7 @@ class ProjectOverview extends Component {
         .catch((error) => {
             console.log("Greska!");
             let err = "";
-            if(error.response.data.errors == undefined) {
+            if(error.response.data.errors === undefined) {
                 err = "Unknown error!";
             }
             else {
@@ -783,7 +779,7 @@ class ProjectOverview extends Component {
         .catch((error) => {
             console.log("Greska!");
             let err = "";
-            if(error.response.data.errors == undefined) {
+            if(error.response.data.errors === undefined) {
                 err = "Unknown error!";
             }
             else {
@@ -815,18 +811,18 @@ class ProjectOverview extends Component {
                                 console.log("pritisnuto");
                                 a[0] && this.udjiUProjekat(indeks);
                                 a[1] && this.udjiUVerziju(indeks);
-                                a[2] && indeks == 0 && this.udjiUFile(indeks);
-                                a[2] && indeks == 1 && this.udjiUGSPEC();
-                                a[2] && indeks == 2 && this.udjiUPDF();
+                                a[2] && indeks === 0 && this.udjiUFile(indeks);
+                                a[2] && indeks === 1 && this.udjiUGSPEC();
+                                a[2] && indeks === 2 && this.udjiUPDF();
                                 a[3] && this.props.data.dajIdMockupa(this.state.mockupi[indeks].id);
                                 if (a[3]) {
                                     this.azurirajMockup(el);
                                     var nazivVerzije = this.state.verzije[this.state.indeksKlikaVerzija].versionName;
                                     var velicina = 2;
-                                    if (nazivVerzije == "MOBILE") {
+                                    if (nazivVerzije === "MOBILE") {
                                         velicina = 0;
                                     }
-                                    else if (nazivVerzije == "TABLET") {
+                                    else if (nazivVerzije === "TABLET") {
                                         velicina = 1;
                                     }
                                     this.props.data.velicinaEkrana(velicina);
@@ -842,23 +838,23 @@ class ProjectOverview extends Component {
                                 if(a[8]){
                                     console.log("pritisnuto 2, hehe", el, indeks)
                                     var velicina = 2;
-                                    if(el.tip == "html"){
+                                    if(el.tip === "html"){
                                         this.azurirajMockup(el);
                                         this.props.data.dajIdMockupa(el.id);
                                         var nazivVerzije = el.versionId.versionName;
-                                        if (nazivVerzije == "MOBILE") {
+                                        if (nazivVerzije === "MOBILE") {
                                             velicina = 0;
                                         }
-                                        else if (nazivVerzije == "TABLET") {
+                                        else if (nazivVerzije === "TABLET") {
                                             velicina = 1;
                                         }
                                         this.props.data.velicinaEkrana(velicina);                                        
                                     }
-                                    else if(e.tip == "galen") {
+                                    else if(e.tip === "galen") {
                                         this.azurirajFile("GSPEC_Document", el) 
                                         this.props.data.ucitajGalenFile(el.id, el.name);
                                     }
-                                    else if(e.tip == "pdf"){
+                                    else if(e.tip === "pdf"){
                                         this.azurirajFile("PDF_Document", el)
                                         this.props.data.ucitajPDFFile(el.id, el.name);
                                     }
@@ -890,13 +886,13 @@ class ProjectOverview extends Component {
                                         this.props.data.ucitajPDFFile(this.state.pdfs[indeks].id, this.state.pdfs[indeks].name, true);
                                     }
                                     if(a[8]){
-                                        if(el.tip == "html"){
+                                        if(el.tip === "html"){
                                             this.props.data.ucitajMockupFile(el.id);
                                         }
-                                        else if(el.tip == "galen"){
+                                        else if(el.tip === "galen"){
                                             this.props.data.ucitajGalenFile(el.id, el.name, true);
                                         }
-                                        else if(el.tip == "pdf"){
+                                        else if(el.tip === "pdf"){
                                             this.props.data.ucitajPDFFile(el.id, el.name, true);
                                         }
                                     }
@@ -907,7 +903,7 @@ class ProjectOverview extends Component {
                                 <NavLink id={a[0] ? el[0] : " "}
                                     onClick={(e) => {
                                         if (a[0])
-                                            this.handleDelete(e.target.id);
+                                            this.handleDelete(indeks);
                                         if (a[1])
                                             this.deleteVersion(indeks);
                                         if (a[3])
@@ -1121,8 +1117,8 @@ class ProjectOverview extends Component {
                             <br />
 
                             <Col xs={12} style={{ padding: '0' }}>
-                                {this.state.deleteSuccess == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none" }} color="success">Successfully deleted!</Alert> : ""}
-                                {this.state.errorVisible == true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none" }} color="danger">{this.state.errorMessage}</Alert> : ""}
+                                {this.state.deleteSuccess === true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none" }} color="success">Successfully deleted!</Alert> : ""}
+                                {this.state.errorVisible === true ? <Alert style={{ display: (this.state.hide === true) ? "block" : "none" }} color="danger">{this.state.errorMessage}</Alert> : ""}
                             </Col>
 
                             <br />

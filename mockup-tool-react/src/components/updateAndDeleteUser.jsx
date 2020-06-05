@@ -22,7 +22,7 @@ class UpdateAndDeleteUser extends Component {
             .catch((error) => {
                 console.log("Greska!");
                 let err = "";
-                if(error.response.data.errors == undefined) {
+                if(error.response.data.errors === undefined) {
                     err = "Unknown error!";
                 }
                 else {

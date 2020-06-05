@@ -110,7 +110,7 @@ class Meni extends Component {
     }
 
     hideAll(name) {
-        if (name == "browser") {
+        if (name === "browser") {
             let url = this.context;
             axios.get(url.onlineTesting + "/servers").then(res => {
                 let servers = [];
@@ -128,17 +128,17 @@ class Meni extends Component {
     }
 
     setPodaci = (param) => {
-        if (param == "showSignUp") {
+        if (param === "showSignUp") {
             this.setState({
                 forma: "signup"
             });
         }
-        if (param == "showUpdateAdmin") {
+        if (param === "showUpdateAdmin") {
             this.setState({
                 forma: "admin"
             });
         }
-        if (param == "showUpdateUser") {
+        if (param === "showUpdateUser") {
             this.setState({
                 forma: "user"
             });
@@ -468,15 +468,15 @@ class Meni extends Component {
             //trenutni datum
             const today = new Date();
             let month = today.getMonth().toString();
-            month.length == 1 ? month = "0" + month : month = month;
+            month.length === 1 ? month = "0" + month : month = month;
             let day = today.getDate().toString();
-            day.length == 1 ? day = "0" + day : day = day;
+            day.length === 1 ? day = "0" + day : day = day;
             let hours = today.getHours().toString();
-            hours.length == 1 ? hours = "0" + hours : hours = hours;
+            hours.length === 1 ? hours = "0" + hours : hours = hours;
             let minutes = today.getMinutes().toString();
-            minutes.length == 1 ? minutes = "0" + minutes : minutes = minutes;
+            minutes.length === 1 ? minutes = "0" + minutes : minutes = minutes;
             let seconds = today.getSeconds().toString();
-            seconds.length == 1 ? seconds = "0" + seconds : seconds = seconds;
+            seconds.length === 1 ? seconds = "0" + seconds : seconds = seconds;
             const date = today.getFullYear() + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "." + today.getMilliseconds() + "Z";
             axios.put(url.project + "/addOrUpdatePDF_Document/" + pdfIdTrenutni, {
                 id: pdfIdTrenutni,
@@ -517,15 +517,15 @@ class Meni extends Component {
             //trenutni datum
             const today = new Date();
             let month = today.getMonth().toString();
-            month.length == 1 ? month = "0" + month : month = month;
+            month.length === 1 ? month = "0" + month : month = month;
             let day = today.getDate().toString();
-            day.length == 1 ? day = "0" + day : day = day;
+            day.length === 1 ? day = "0" + day : day = day;
             let hours = today.getHours().toString();
-            hours.length == 1 ? hours = "0" + hours : hours = hours;
+            hours.length === 1 ? hours = "0" + hours : hours = hours;
             let minutes = today.getMinutes().toString();
-            minutes.length == 1 ? minutes = "0" + minutes : minutes = minutes;
+            minutes.length === 1 ? minutes = "0" + minutes : minutes = minutes;
             let seconds = today.getSeconds().toString();
-            seconds.length == 1 ? seconds = "0" + seconds : seconds = seconds;
+            seconds.length === 1 ? seconds = "0" + seconds : seconds = seconds;
             const date = today.getFullYear() + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "." + today.getMilliseconds() + "Z";
             axios.put(url.project + "/addOrUpdateGSPEC_Document/" + id, {
                 name: naziv,
@@ -591,8 +591,8 @@ class Meni extends Component {
                     <Nav className="mr-auto" navbar>
                         {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignIn") }}>Sign in</NavLink> : ""}
                         {localStorage.getItem("token") === null || localStorage.getItem("token") === "" ? <NavLink onClick={() => { this.hideComponent("showSignUp"); this.setPodaci("showSignUp"); }}>Sign up</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "ADMIN" ? <NavLink onClick={() => { this.hideComponent("showUpdateAdmin"); this.setPodaci("showUpdateAdmin"); }}>Admin profile</NavLink> : ""}
-                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role == "USER" ? <NavLink onClick={() => { this.hideComponent("showUpdateUser"); this.setPodaci("showUpdateUser"); }}>User profile</NavLink> : ""}
+                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role === "ADMIN" ? <NavLink onClick={() => { this.hideComponent("showUpdateAdmin"); this.setPodaci("showUpdateAdmin"); }}>Admin profile</NavLink> : ""}
+                        {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" && this.state.role === "USER" ? <NavLink onClick={() => { this.hideComponent("showUpdateUser"); this.setPodaci("showUpdateUser"); }}>User profile</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { this.hideComponent("showProjectOverview"); }}>Project Overview</NavLink> : ""}
                         {localStorage.getItem("token") !== null && localStorage.getItem("token") !== "" ? <NavLink onClick={() => { localStorage.removeItem('token'); this.hideComponent("showSignIn") }}>Sign out</NavLink> : ""}
                     </Nav>

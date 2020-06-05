@@ -25,11 +25,11 @@ class CreateNewServer extends Component {
     }
 
     handleClick = (element) => {
-        this.props.data.state.serverOrBrowser == "server" ? this.setState({titleServer: element.value}) : this.setState({titleBrowser: element});
+        this.props.data.state.serverOrBrowser === "server" ? this.setState({titleServer: element.value}) : this.setState({titleBrowser: element});
     };
 
     renderDropDownItems() {
-        if(this.props.data.state.serverOrBrowser == "server"){
+        if(this.props.data.state.serverOrBrowser === "server"){
             return <DropdownMenu>{ this.state.values.map(element => <DropdownItem tag="a" href="#" onClick={() => this.handleClick(element)}>{ element.value }</DropdownItem>) }</DropdownMenu>;
         }
         else {
@@ -41,7 +41,7 @@ class CreateNewServer extends Component {
         e.preventDefault();
         const server = this.state.titleBrowser;
         const found = this.props.data.state.servers.find(function (element) {
-            if (element.name == server) {
+            if (element.name === server) {
                 return element;
             }
         });
@@ -61,7 +61,7 @@ class CreateNewServer extends Component {
         .catch((error) => {
             console.log("Greska!");
             let err = "";
-            if(error.response.data.errors == undefined) {
+            if(error.response.data.errors === undefined) {
                 err = "Unknown error!";
             }
             else {
@@ -74,7 +74,7 @@ class CreateNewServer extends Component {
 
     addServer(e) {
         e.preventDefault();
-        const status = this.state.titleServer == "1 - Active" ? 1 : 0;
+        const status = this.state.titleServer === "1 - Active" ? 1 : 0;
         console.log(this.state.url, this.state.port, status);
         let url = this.context;
         axios.post(url.onlineTesting + "/addServer", {
@@ -91,7 +91,7 @@ class CreateNewServer extends Component {
         .catch((error) => {
             console.log("Greska!");
             let err = "";
-            if(error.response.data.errors == undefined) {
+            if(error.response.data.errors === undefined) {
                 err = "Unknown error!";
             }
             else {
@@ -112,23 +112,23 @@ class CreateNewServer extends Component {
                 position: 'absolute', left: '50%', top: '50%',
                 transform: 'translate(-50%, -50%)'
             }}>
-                <h1 className="text-secondary" style={{ textAlign: "left" }}>{this.props.data.state.serverOrBrowser == "server" ? "Create new server" : "Create new browser"}</h1>
+                <h1 className="text-secondary" style={{ textAlign: "left" }}>{this.props.data.state.serverOrBrowser === "server" ? "Create new server" : "Create new browser"}</h1>
                 <hr className="my-2" />
-                <Form onSubmit={this.props.data.state.serverOrBrowser == "server" ? this.addServer : this.addBrowser}>
+                <Form onSubmit={this.props.data.state.serverOrBrowser === "server" ? this.addServer : this.addBrowser}>
                     <Row>
                         <Col xs = {6}>
                             <FormGroup>
-                                <Label for="urlLabel">{this.props.data.state.serverOrBrowser == "server" ? "URL" : "Name"}</Label>
+                                <Label for="urlLabel">{this.props.data.state.serverOrBrowser === "server" ? "URL" : "Name"}</Label>
                                 <Input type="text" name="url" id="url" onChange={(e) =>
-                                    this.props.data.state.serverOrBrowser == "server" ? this.setState({ url: e.target.value }) : this.setState({ name: e.target.value })
+                                    this.props.data.state.serverOrBrowser === "server" ? this.setState({ url: e.target.value }) : this.setState({ name: e.target.value })
                                 } />
                             </FormGroup>
                         </Col>
                         <Col xs = {6}>
                             <FormGroup>
-                                <Label for="portLabel">{this.props.data.state.serverOrBrowser == "server" ? "Port" : "Version"}</Label>
+                                <Label for="portLabel">{this.props.data.state.serverOrBrowser === "server" ? "Port" : "Version"}</Label>
                                 <Input type="text" name="port" id="port" onChange={(e) =>
-                                    this.props.data.state.serverOrBrowser == "server" ? this.setState({ port: e.target.value }) : this.setState({ version: e.target.value })
+                                    this.props.data.state.serverOrBrowser === "server" ? this.setState({ port: e.target.value }) : this.setState({ version: e.target.value })
                                 } />
                             </FormGroup>
                         </Col>
@@ -136,12 +136,12 @@ class CreateNewServer extends Component {
                     <Row>
                         <Col xs = {6}>
                             <FormGroup>
-                                <Label for="statusLabel">{this.props.data.state.serverOrBrowser == "server" ? "Status" : "Server"}</Label>
+                                <Label for="statusLabel">{this.props.data.state.serverOrBrowser === "server" ? "Status" : "Server"}</Label>
                                 <Navbar color="light" light expand="md">
                                     <Nav className="ml-auto" navbar className = "align-left" style = {{margin: "auto"}}>
                                         <UncontrolledDropdown>
                                             <DropdownToggle id = "toggle" tag="a" className="nav-link" caret className = "align-left">
-                                                {this.props.data.state.serverOrBrowser == "server" ? this.state.titleServer : this.state.titleBrowser}
+                                                {this.props.data.state.serverOrBrowser === "server" ? this.state.titleServer : this.state.titleBrowser}
                                             </DropdownToggle>
                                             {this.renderDropDownItems()}
                                         </UncontrolledDropdown>
@@ -154,9 +154,9 @@ class CreateNewServer extends Component {
                         <Col xs = {6}>
                         </Col>
                         <Col>   
-                            {this.state.errorVisible == true ? <Alert color = "danger">{this.state.errorMessage}</Alert> : ""}
-                            {this.state.successServer == true && this.state.successBrowser == false ? <Alert color = "success">Server successfully added!</Alert> : ""}
-                            {this.state.successBrowser == true && this.state.successServer == false ? <Alert color = "success">Browser successfully added!</Alert> : ""}
+                            {this.state.errorVisible === true ? <Alert color = "danger">{this.state.errorMessage}</Alert> : ""}
+                            {this.state.successServer === true && this.state.successBrowser === false ? <Alert color = "success">Server successfully added!</Alert> : ""}
+                            {this.state.successBrowser === true && this.state.successServer === false ? <Alert color = "success">Browser successfully added!</Alert> : ""}
                         </Col>
                     </Row>
                     <Row>
