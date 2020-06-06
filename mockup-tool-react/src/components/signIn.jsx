@@ -4,7 +4,7 @@ import { Button, Form, FormGroup, Input, Container, Nav, NavItem, NavLink, Alert
 import { getAllByAltText } from '@testing-library/react';
 import axios from "axios";
 import SignUp from './signUp';
-import {UrlContext} from '../urlContext';
+import { UrlContext } from '../urlContext';
 
 class SignIn extends React.Component {
     constructor(props) {
@@ -12,8 +12,8 @@ class SignIn extends React.Component {
         this.state = {
             username: " ",
             password: " ",
-            goodParameters: "hidden", 
-            userRole: "", 
+            goodParameters: "hidden",
+            userRole: "",
             forma: "signin",
             aktivni: [true, false]
         };
@@ -42,16 +42,12 @@ class SignIn extends React.Component {
     };
 
     handleClick = () => {
-        console.log(this.state.username);
-        console.log(this.state.password);
         let url = this.context;
         axios.post(url.gateway + "/authenticate", {
             username: this.state.username,
             password: this.state.password
         }).then(res => {
             localStorage.setItem('token', res.data.jwt);
-            console.log("Odgovor!")
-            console.log(res);
             this.props.data.setPassword(this.state.password);
             axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(userData => {
                 this.setState({
@@ -59,20 +55,17 @@ class SignIn extends React.Component {
                     //aktivni: [false, true]
                 });
                 this.props.data.setRole(userData.data.roleID.role_name);
-                if(userData.data.roleID.role_name === "ADMIN"){
+                if (userData.data.roleID.role_name === "ADMIN") {
                     this.setState({
                         forma: "admin"
                     });
                 }
-                else if(userData.data.roleID.role_name){
+                else if (userData.data.roleID.role_name) {
                     this.setState({
                         forma: "user"
                     });
                 }
-                
-                console.log(userData.data.roleID.role_name);
             });
-            console.log(res.data);
             this.setState({
                 goodParameters: "hidden"
             });
@@ -96,64 +89,64 @@ class SignIn extends React.Component {
 
     render() {
         return (
-        <Form>
-            {this.state.aktivni[0] && 
-            <Container className="col-log-6" style={
-                {
-                    position: 'absolute', left: '50%', top: '50%',
-                    transform: 'translate(-50%, -50%)'
-                }
-            }>
-                <Form className="row align-items-center row justify-content-center">
-                    <Form className="col-md-5 my-auto">
-                        <h1 class="row justify-content-center text-secondary">Sign In </h1>
-                        <hr className="my-2"></hr>
-                        <FormGroup />
-                        <FormGroup>
-                            <Input type="username" name="username" id="username" placeholder="username"
-                                onChange={this.handleChange} />
-                        </FormGroup>
-                        <FormGroup>
-                            <Input type="password" name="password" id="password" placeholder="password"
-                                onChange={this.handleChange} />
-                        </FormGroup >
-                        <FormGroup>
-                        <Alert color="danger" style={{ visibility: this.state.goodParameters}}>
-                            Username or password are invalid!
+            <Form>
+                {this.state.aktivni[0] &&
+                    <Container className="col-log-6" style={
+                        {
+                            position: 'absolute', left: '50%', top: '50%',
+                            transform: 'translate(-50%, -50%)'
+                        }
+                    }>
+                        <Form className="row align-items-center row justify-content-center">
+                            <Form className="col-md-5 my-auto">
+                                <h1 class="row justify-content-center text-secondary">Sign In </h1>
+                                <hr className="my-2"></hr>
+                                <FormGroup />
+                                <FormGroup>
+                                    <Input type="username" name="username" id="username" placeholder="username"
+                                        onChange={this.handleChange} />
+                                </FormGroup>
+                                <FormGroup>
+                                    <Input type="password" name="password" id="password" placeholder="password"
+                                        onChange={this.handleChange} />
+                                </FormGroup >
+                                <FormGroup>
+                                    <Alert color="danger" style={{ visibility: this.state.goodParameters }}>
+                                        Username or password are invalid!
                         </Alert>
-                        </FormGroup>
-                        <b class="row justify-content-center">
-                            <Button
-                                className="bg-dark"
-                                onClick={this.handleClick}
-                                style={
-                                    {
-                                        width: '30%',
-                                        margin: "auto"
-                                    }
-                                }
-                            >
-                                Sign in
+                                </FormGroup>
+                                <b class="row justify-content-center">
+                                    <Button
+                                        className="bg-dark"
+                                        onClick={this.handleClick}
+                                        style={
+                                            {
+                                                width: '30%',
+                                                margin: "auto"
+                                            }
+                                        }
+                                    >
+                                        Sign in
                                 </Button>
-                        </b>
-                        <FormGroup className="row justify-content-center">
-                            <Nav>
-                                {/*<NavItem>
+                                </b>
+                                <FormGroup className="row justify-content-center">
+                                    <Nav>
+                                        {/*<NavItem>
                                     <NavLink className="text-secondary" href="#">Forgot password?</NavLink>
                                 </NavItem>*/}
-                                <NavItem className="row justify-content-center" style = {{margin: "auto"}}>
-                                    <NavLink  onClick = {this.displaySignUp}  className="text-secondary row justify-content-center" href="#">Not member yet?</NavLink>
-                                </NavItem>
-                            </Nav>
-                        </FormGroup>
-                    </Form>
-                </Form>
-            </Container>
-            }
-            {
-                this.state.aktivni[1] && <SignUp podaci = {this}/>
-            }
-        </Form>
+                                        <NavItem className="row justify-content-center" style={{ margin: "auto" }}>
+                                            <NavLink onClick={this.displaySignUp} className="text-secondary row justify-content-center" href="#">Not member yet?</NavLink>
+                                        </NavItem>
+                                    </Nav>
+                                </FormGroup>
+                            </Form>
+                        </Form>
+                    </Container>
+                }
+                {
+                    this.state.aktivni[1] && <SignUp podaci={this} />
+                }
+            </Form>
         );
     }
 }

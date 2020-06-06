@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    Form, Alert, FormGroup, Col, Row, Container, Label, Button, Input, InputGroup, InputGroupAddon,
+    Form, Alert, FormGroup, Col, Row, Label, Button, Input, InputGroup, InputGroupAddon,
     InputGroupText, DropdownMenu, DropdownItem, UncontrolledDropdown, DropdownToggle, Nav, NavLink, NavItem,
     Breadcrumb, BreadcrumbItem
 } from 'reactstrap';
@@ -43,7 +43,7 @@ class ProjectOverview extends Component {
             isProject: "project",
             filterTitle: "project",
             recentFiles: false,
-            listaRecent: [], 
+            listaRecent: [],
         };
 
         this.handleDelete = this.handleDelete.bind(this);
@@ -244,9 +244,7 @@ class ProjectOverview extends Component {
         });
         let url = this.context;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(userData => {
-            console.log("user", userData.data.id);
             axios.get(url.user + "/users/projects/" + userData.data.id).then(projectData => {
-                console.log("project", projectData.data);
                 var lista = [];
                 for (var i = 0; i < projectData.data.length; i++) {
                     axios.get(url.project + "/project/" + projectData.data[i].id).then(oneProject => {
@@ -256,11 +254,9 @@ class ProjectOverview extends Component {
                             listaProjekata: [...previousState.listaProjekata, element],
                             listaProjekataPrethodnoStanje: [...previousState.listaProjekata, element]
                         }));
-                        console.log("projekti iz state", this.state.listaProjekata);
                     });
 
                 }
-                console.log("state", this.state.listaProjekata);
             });
         });
     };
@@ -274,13 +270,10 @@ class ProjectOverview extends Component {
         let url = this.context;
         if (this.state.listaProjekata[indeks] != null) {
             axios.get(url.project + "/mockups/version/" + this.state.verzije[this.state.indeksKlikaVerzija].id).then(mockups => {
-                console.log(mockups.data);
                 this.setState({
                     mockupi: mockups.data,
                     mockupiPrethodnoStanje: mockups.data
                 });
-
-                console.log(this.state.mockupi);
             });
         }
 
@@ -302,7 +295,6 @@ class ProjectOverview extends Component {
         if (this.state.verzije[this.state.indeksKlikaVerzija] != null) {
             axios.get(url.project + "/mockups/version/" + this.state.verzije[this.state.indeksKlikaVerzija].id).then(mockups => {
                 mockups.data.map((mockup) => {
-                    console.log(mockup.id);
                     axios.get(url.project + "/PDF_Documents/mockup/" + mockup.id).then(pdf => {
                         pdf.data.map((p) => {
                             this.setState(previousState => ({
@@ -310,7 +302,6 @@ class ProjectOverview extends Component {
                                 pdfsPrethodnoStanje: [...previousState.pdfs, p],
                                 pdfMockupi: [...previousState.pdfMockupi, mockup],
                             }));
-                            console.log(p);
                         });
                     });
                 });
@@ -337,7 +328,6 @@ class ProjectOverview extends Component {
             axios.get(url.project + "/mockups/version/" + this.state.verzije[this.state.indeksKlikaVerzija].id).then(mockups => {
 
                 mockups.data.map((mockup) => {
-                    console.log("mockup id ", mockup.id);
                     axios.get(url.project + "/GSPEC_Documents/mockup/" + mockup.id).then(gspec => {
                         gspec.data.map((p) => {
                             this.setState(previousState => ({
@@ -345,7 +335,6 @@ class ProjectOverview extends Component {
                                 gspecsPrethodnoStanje: [...previousState.gspecs, p],
                                 gspecsMockupi: [...previousState.gspecsMockupi, mockup],
                             }));
-                            console.log("gspcp ", p);
                         });
                     });
                 });
@@ -361,16 +350,12 @@ class ProjectOverview extends Component {
     }
 
     udjiUProjekat = (indeks) => {
-        console.log(indeks);
         let url = this.context;
         if (this.state.listaProjekata[indeks] != null) {
             axios.get(url.project + "/versions/project/" + this.state.listaProjekata[indeks][0]).then(versions => {
-                console.log(versions.data);
                 this.setState({
                     verzije: versions.data
                 });
-
-                console.log("ta verzija: ", this.state.verzije[0]);
             });
         }
 
@@ -391,7 +376,6 @@ class ProjectOverview extends Component {
     deleteVersion = (indeks) => {
         let url = this.context;
         if (this.state.verzije != null) {
-            console.log(this.state.verzije)
             axios.delete(url.project + "/delete/version/" + this.state.verzije[indeks].id).then(res => {
                 let array = [...this.state.verzije];
                 array.splice(indeks, 1)
@@ -421,10 +405,8 @@ class ProjectOverview extends Component {
     }
 
     deleteMockup = (indeks) => {
-        console.log("indeks za obrisat: ", indeks);
         let url = this.context;
         if (this.state.mockupi != null) {
-            console.log(this.state.verzije)
             const elementToDelete = this.state.mockupi[indeks];
             axios.delete(url.project + "/delete/mockup/" + this.state.mockupi[indeks].id).then(res => {
                 let array = [...this.state.mockupi];
@@ -464,7 +446,6 @@ class ProjectOverview extends Component {
         let url = this.context;
         if (this.state.pdfs != null) {
             const elementToDelete = this.state.pdfs[indeks];
-            console.log("pdfovi delete: ", elementToDelete);
             axios.delete(url.project + "/delete/pdf_document/" + this.state.pdfs[indeks].id).then(res => {
                 let array = [...this.state.pdfs];
                 array.splice(indeks, 1)
@@ -502,7 +483,6 @@ class ProjectOverview extends Component {
     deleteGSPEC = (indeks) => {
         let url = this.context;
         if (this.state.gspecs != null) {
-            console.log(this.state.gspecs)
             const elementToDelete = this.state.gspecs[indeks];
             axios.delete(url.project + "/delete/gspec_document/" + this.state.gspecs[indeks].id).then(res => {
                 let array = [...this.state.gspecs];
@@ -555,33 +535,30 @@ class ProjectOverview extends Component {
     }
 
     promijeniPrioritet = (indeks, event) => {
-        
+
         let url = this.context;
-        if(this.state.listaProjekata != null){
-            console.log(this.state.listaProjekata)
+        if (this.state.listaProjekata != null) {
             axios.put(url.project + "/addOrUpdateProject/" + this.state.listaProjekata[indeks][0], {
                 date_created: this.state.listaProjekata[indeks][1],
-                date_modified:  this.datumUSpringDatum(),
+                date_modified: this.datumUSpringDatum(),
                 name: this.state.listaProjekata[indeks][3],
                 priority: event.target.checked ? 1 : 0,
                 userID: this.state.listaProjekata[indeks][5]
             }).then(res => {
                 console.log("Odgovor!");
-                console.log(res);
-                console.log(res.data);
             })
-            .catch((error) => {
-                console.log("Greska!");
-                let err = "";
-                if(error.response.data.errors === undefined) {
-                    err = "Unknown error!";
-                }
-                else {
-                    err = error.response.data.errors[0];
-                }
-                this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
-                setTimeout(() => {this.setState({hide: false})}, 3000);
-            });
+                .catch((error) => {
+                    console.log("Greska!");
+                    let err = "";
+                    if (error.response.data.errors === undefined) {
+                        err = "Unknown error!";
+                    }
+                    else {
+                        err = error.response.data.errors[0];
+                    }
+                    this.setState({ deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true });
+                    setTimeout(() => { this.setState({ hide: false }) }, 3000);
+                });
         }
     }
 
@@ -593,47 +570,43 @@ class ProjectOverview extends Component {
 
         let url = this.context;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(userData => {
-            console.log("user", userData.data.id);
             axios.get(url.user + "/users/projects/" + userData.data.id).then(projectData => {
-                console.log("project", projectData.data);
                 var lista = [];
-                for(var i = 0; i<projectData.data.length; i++){
+                for (var i = 0; i < projectData.data.length; i++) {
                     axios.get(url.project + "/project/" + projectData.data[i].id).then(oneProject => {
-                        if(oneProject.data.priority === 1){
+                        if (oneProject.data.priority === 1) {
                             var array = "";
                             var array2 = ""
                             var zapamti = -1
-                            for(var k = 0; k< oneProject.data.date_created.length; k++){
-                                if(oneProject.data.date_created[k] === "+"){
+                            for (var k = 0; k < oneProject.data.date_created.length; k++) {
+                                if (oneProject.data.date_created[k] === "+") {
                                     zapamti = k
                                 }
-                                if(zapamti === -1)
+                                if (zapamti === -1)
                                     array += oneProject.data.date_created[k];
                             }
                             zapamti = -1;
-                            for(var k = 0; k< oneProject.data.date_modified.length; k++){
-                                if(oneProject.data.date_modified[k] == "+"){
+                            for (var k = 0; k < oneProject.data.date_modified.length; k++) {
+                                if (oneProject.data.date_modified[k] === "+") {
                                     zapamti = k
                                 }
-                                if(zapamti === -1)
+                                if (zapamti === -1)
                                     array2 += oneProject.data.date_modified[k];
                             }
                             array += "Z";
                             array2 += "Z";
                             var element = [oneProject.data.id, array, array2, oneProject.data.name, oneProject.data.priority, oneProject.data.userID];
                             lista.push(element);
-                            console.log(element);
                             this.setState(previousState => ({
                                 listaProjekata: [...previousState.listaProjekata, element],
                                 listaProjekataPrethodnoStanje: [...previousState.listaProjekataPrethodnoStanje, element]
                             }));
-                            console.log("projekti iz state", oneProject);
                         }
                     });
-                    
+
                 }
             });
-        }); 
+        });
     }
 
     sharedProjects = () => {
@@ -644,92 +617,82 @@ class ProjectOverview extends Component {
 
         let url = this.context;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(userData => {
-            console.log("user", userData.data.id);
             axios.get(url.user + "/users/projects/" + userData.data.id).then(projectData => {
-                console.log("project", projectData.data);
                 var lista = [];
-                for(var i = 0; i<projectData.data.length; i++){
+                for (var i = 0; i < projectData.data.length; i++) {
                     axios.get(url.project + "/project/" + projectData.data[i].id).then(oneProject => {
-                        if(oneProject.data.userID != userData.data.id){
+                        if (oneProject.data.userID !== userData.data.id) {
                             var array = "";
                             var array2 = ""
                             var zapamti = -1
-                            for(var k = 0; k< oneProject.data.date_created.length; k++){
-                                if(oneProject.data.date_created[k] === "+"){
+                            for (var k = 0; k < oneProject.data.date_created.length; k++) {
+                                if (oneProject.data.date_created[k] === "+") {
                                     zapamti = k
                                 }
-                                if(zapamti === -1)
+                                if (zapamti === -1)
                                     array += oneProject.data.date_created[k];
                             }
                             zapamti = -1;
-                            for(var k = 0; k< oneProject.data.date_modified.length; k++){
-                                if(oneProject.data.date_modified[k] === "+"){
+                            for (var k = 0; k < oneProject.data.date_modified.length; k++) {
+                                if (oneProject.data.date_modified[k] === "+") {
                                     zapamti = k
                                 }
-                                if(zapamti === -1)
+                                if (zapamti === -1)
                                     array2 += oneProject.data.date_modified[k];
                             }
                             array += "Z";
                             array2 += "Z";
                             var element = [oneProject.data.id, array, array2, oneProject.data.name, oneProject.data.priority, oneProject.data.userID];
                             lista.push(element);
-                            console.log(element);
                             this.setState(previousState => ({
                                 listaProjekata: [...previousState.listaProjekata, element],
                                 listaProjekataPrethodnoStanje: [...previousState.listaProjekataPrethodnoStanje, element]
                             }));
-                            console.log("projekti iz state", oneProject);
                         }
                     });
-                    
+
                 }
             });
-        }); 
+        });
     }
 
     recentProjects = () => {
-        console.log("tutut")
         this.setState({
             listaAktivnih: [false, false, false, false, false, false, false, false, true],
         });
         let url = this.context;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(userData => {
-            console.log("user", userData.data.id);
             axios.get(url.project + "/recentFiles/" + userData.data.id).then(projectData => {
-                console.log(projectData.data.pdf);
-                console.log(projectData.data.galen);
-                console.log(projectData.data.html);
-                var lista = []
-                console.log(projectData.data)
-                /*projectData.data.map((el) => {
-                    console.log(el)
-                })*/
-                
-                if(projectData.data.html.length != 0){
+                var lista = [];
+                if (projectData.data.html.length !== 0) {
                     let h = projectData.data.html;
-                    lista.push({tip:"html", versionId: h.versionId, name: h.name, file: h.file, 
-                                date_modified: h.date_modified, date_created: h.date_created, 
-                                accessed_date: h.accessed_date, id: h.id})
+                    lista.push({
+                        tip: "html", versionId: h.versionId, name: h.name, file: h.file,
+                        date_modified: h.date_modified, date_created: h.date_created,
+                        accessed_date: h.accessed_date, id: h.id
+                    })
                 }
-                if(projectData.data.galen.length != 0){
+                if (projectData.data.galen.length !== 0) {
                     let h = projectData.data.galen;
-                    lista.push({tip:"galen", mockupId: h.mockupId, name: h.name, file: h.file, 
-                                date_modified: h.date_modified, date_created: h.date_created, 
-                                accessed_date: h.accessed_date, id: h.id})
+                    lista.push({
+                        tip: "galen", mockupId: h.mockupId, name: h.name, file: h.file,
+                        date_modified: h.date_modified, date_created: h.date_created,
+                        accessed_date: h.accessed_date, id: h.id
+                    })
                 }
-                if(projectData.data.pdf.length != 0){
+                if (projectData.data.pdf.length !== 0) {
                     let h = projectData.data.pdf;
-                    lista.push({tip:"pdf", mockupId: h.mockupId, name: h.name, file: h.file, 
-                                date_modified: h.date_modified, date_created: h.date_created, 
-                                accessed_date: h.accessed_date, id: h.id})
+                    lista.push({
+                        tip: "pdf", mockupId: h.mockupId, name: h.name, file: h.file,
+                        date_modified: h.date_modified, date_created: h.date_created,
+                        accessed_date: h.accessed_date, id: h.id
+                    })
                 }
-
-                console.log(lista);
                 this.setState({
                     listaRecent: lista
                 });
             });
-        }); 
+        });
 
     }
 
@@ -744,25 +707,23 @@ class ProjectOverview extends Component {
             versionId: m.versionId
         }).then(res => {
             console.log("Odgovor!");
-            console.log(res);
-            console.log(res.data);
         })
-        .catch((error) => {
-            console.log("Greska!");
-            let err = "";
-            if(error.response.data.errors === undefined) {
-                err = "Unknown error!";
-            }
-            else {
-                err = error.response.data.errors[0];
-            }
-            this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
-            setTimeout(() => {this.setState({hide: false})}, 3000);
-        });
+            .catch((error) => {
+                console.log("Greska!");
+                let err = "";
+                if (error.response.data.errors === undefined) {
+                    err = "Unknown error!";
+                }
+                else {
+                    err = error.response.data.errors[0];
+                }
+                this.setState({ deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true });
+                setTimeout(() => { this.setState({ hide: false }) }, 3000);
+            });
     }
 
     azurirajFile = (name, m) => {
-        
+
         let url = this.context;
         axios.put(url.project + "/addOrUpdate" + name + "/" + m.id, {
             accessed_date: this.datumUSpringDatum(),
@@ -773,21 +734,19 @@ class ProjectOverview extends Component {
             mockupId: m.mockupId
         }).then(res => {
             console.log("Odgovor!");
-            console.log(res);
-            console.log(res.data);
         })
-        .catch((error) => {
-            console.log("Greska!");
-            let err = "";
-            if(error.response.data.errors === undefined) {
-                err = "Unknown error!";
-            }
-            else {
-                err = error.response.data.errors[0];
-            }
-            this.setState({deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true});
-            setTimeout(() => {this.setState({hide: false})}, 3000);
-        });
+            .catch((error) => {
+                console.log("Greska!");
+                let err = "";
+                if (error.response.data.errors === undefined) {
+                    err = "Unknown error!";
+                }
+                else {
+                    err = error.response.data.errors[0];
+                }
+                this.setState({ deleteSuccess: false, errorMessage: err, errorVisible: true, hide: true });
+                setTimeout(() => { this.setState({ hide: false }) }, 3000);
+            });
     }
 
     dinamickiDodajElementeNiza = (niz, a) => {
@@ -798,17 +757,16 @@ class ProjectOverview extends Component {
                         style={{ textAlign: 'center' }}
                         md={2}
                     >
-                    {a[0] && 
-                    <Input addon type="checkbox" aria-label="Priority"
-                           defaultChecked = {this.state.listaProjekata[indeks][4]} 
-                           onChange =  {(event) => this.promijeniPrioritet(indeks, event)}
-                    />}
+                        {a[0] &&
+                            <Input addon type="checkbox" aria-label="Priority"
+                                defaultChecked={this.state.listaProjekata[indeks][4]}
+                                onChange={(event) => this.promijeniPrioritet(indeks, event)}
+                            />}
                         <br />
-                        
+
                         <Button
                             onClick={(e) => {
                                 e.preventDefault();
-                                console.log("pritisnuto");
                                 a[0] && this.udjiUProjekat(indeks);
                                 a[1] && this.udjiUVerziju(indeks);
                                 a[2] && indeks === 0 && this.udjiUFile(indeks);
@@ -827,18 +785,17 @@ class ProjectOverview extends Component {
                                     }
                                     this.props.data.velicinaEkrana(velicina);
                                 }
-                                if(a[4]){
+                                if (a[4]) {
                                     this.props.data.ucitajGalenFile(this.state.gspecs[indeks].id, this.state.gspecs[indeks].name);
-                                    this.azurirajFile("GSPEC_Document", el) 
+                                    this.azurirajFile("GSPEC_Document", el)
                                 }
-                                if(a[5]){ 
+                                if (a[5]) {
                                     this.props.data.ucitajPDFFile(this.state.pdfs[indeks].id, this.state.pdfs[indeks].name);
                                     this.azurirajFile("PDF_Document", el)
                                 }
-                                if(a[8]){
-                                    console.log("pritisnuto 2, hehe", el, indeks)
+                                if (a[8]) {
                                     var velicina = 2;
-                                    if(el.tip === "html"){
+                                    if (el.tip === "html") {
                                         this.azurirajMockup(el);
                                         this.props.data.dajIdMockupa(el.id);
                                         var nazivVerzije = el.versionId.versionName;
@@ -848,13 +805,13 @@ class ProjectOverview extends Component {
                                         else if (nazivVerzije === "TABLET") {
                                             velicina = 1;
                                         }
-                                        this.props.data.velicinaEkrana(velicina);                                        
+                                        this.props.data.velicinaEkrana(velicina);
                                     }
-                                    else if(e.tip === "galen") {
-                                        this.azurirajFile("GSPEC_Document", el) 
+                                    else if (e.tip === "galen") {
+                                        this.azurirajFile("GSPEC_Document", el)
                                         this.props.data.ucitajGalenFile(el.id, el.name);
                                     }
-                                    else if(e.tip === "pdf"){
+                                    else if (e.tip === "pdf") {
                                         this.azurirajFile("PDF_Document", el)
                                         this.props.data.ucitajPDFFile(el.id, el.name);
                                     }
@@ -885,14 +842,14 @@ class ProjectOverview extends Component {
                                     if (a[5]) {
                                         this.props.data.ucitajPDFFile(this.state.pdfs[indeks].id, this.state.pdfs[indeks].name, true);
                                     }
-                                    if(a[8]){
-                                        if(el.tip === "html"){
+                                    if (a[8]) {
+                                        if (el.tip === "html") {
                                             this.props.data.ucitajMockupFile(el.id);
                                         }
-                                        else if(el.tip === "galen"){
+                                        else if (el.tip === "galen") {
                                             this.props.data.ucitajGalenFile(el.id, el.name, true);
                                         }
-                                        else if(el.tip === "pdf"){
+                                        else if (el.tip === "pdf") {
                                             this.props.data.ucitajPDFFile(el.id, el.name, true);
                                         }
                                     }
@@ -927,7 +884,7 @@ class ProjectOverview extends Component {
                                     {a[4] && el.name}
                                     {a[4] && " - " + this.state.gspecsMockupi[indeks].name}
                                     {a[5] && " - " + this.state.pdfMockupi[indeks].name}
-                                    {a[8] && (el.tip != "html" ? (el.name + " - " + el.mockupId.name): el.name)}
+                                    {a[8] && (el.tip != "html" ? (el.name + " - " + el.mockupId.name) : el.name)}
                                 </Label>
                             </NavItem>
                         </Nav>
@@ -936,17 +893,17 @@ class ProjectOverview extends Component {
             </Row>
         );
     };
- 
+
     render() {
         var a = this.state.listaAktivnih;
         return (
             <Form>{!a[6] && !a[7] &&
                 <Row>
                     {(a[0] || a[8]) &&
-                    <Col xs='2' style={{ height: '100vh' }}>
-                        <SideBar data={this}></SideBar>
-                    </Col>}
-                    <Col xs={(a[0] ||a[8]) ? '10' : '12'}
+                        <Col xs='2' style={{ height: '100vh' }}>
+                            <SideBar data={this}></SideBar>
+                        </Col>}
+                    <Col xs={(a[0] || a[8]) ? '10' : '12'}
                         style={{
                             paddingLeft: '3%',
                             paddingRight: '3%'
@@ -958,19 +915,19 @@ class ProjectOverview extends Component {
                                 <Col md={!a[2] ? 9 : 12}>
                                     <Breadcrumb className="breadcrumb">
                                         {!a[8] &&
-                                        <BreadcrumbItem tag="a"
-                                            onClick={(e) => {
-                                                this.setState({
-                                                    listaAktivnih: [true, false, false, false, false, false, false, false, false],
-                                                    isProject: "project",
-                                                    filterTitle: "project",
-                                                    title: this.state.values[0].value,
-                                                    searchProjectValue: "",
-                                                    listaProjekata: this.state.listaProjekataPrethodnoStanje
-                                                });
-                                            }}>
-                                            <h4 className="bkItem text-secondary">Projects</h4>
-                                        </BreadcrumbItem>}
+                                            <BreadcrumbItem tag="a"
+                                                onClick={(e) => {
+                                                    this.setState({
+                                                        listaAktivnih: [true, false, false, false, false, false, false, false, false],
+                                                        isProject: "project",
+                                                        filterTitle: "project",
+                                                        title: this.state.values[0].value,
+                                                        searchProjectValue: "",
+                                                        listaProjekata: this.state.listaProjekataPrethodnoStanje
+                                                    });
+                                                }}>
+                                                <h4 className="bkItem text-secondary">Projects</h4>
+                                            </BreadcrumbItem>}
                                         {a[8] && <h4 className="bkItem text-secondary">Recent files</h4>}
                                         {(!a[0] && !a[8]) &&
                                             <BreadcrumbItem tag="a"
@@ -1067,7 +1024,6 @@ class ProjectOverview extends Component {
                                                         });
                                                     }
                                                     else if (a[3]) {
-                                                        console.log("Kliknuto za kreiranje novog mockupa");
                                                         this.setState({
                                                             listaAktivnih: [false, false, false, false, false, false, true, false, false],
                                                             isProject: "mockup"
@@ -1075,7 +1031,7 @@ class ProjectOverview extends Component {
                                                     }
                                                 }}
                                                 className="bg-dark btn form-control">
-                                                {a[0] ? "Create project" : a[1] ? "Create new version" : a[3] ? "Create new mockup": ""}
+                                                {a[0] ? "Create project" : a[1] ? "Create new version" : a[3] ? "Create new mockup" : ""}
                                             </Button>
                                         </FormGroup>
                                     </Col>

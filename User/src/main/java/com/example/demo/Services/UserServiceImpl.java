@@ -10,27 +10,17 @@ import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.RoleRepository;
 import com.example.demo.Repositories.UserRepository;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.ribbon.proxy.annotation.Http;
-import org.apache.coyote.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Service

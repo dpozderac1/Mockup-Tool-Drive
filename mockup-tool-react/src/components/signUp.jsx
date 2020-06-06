@@ -29,23 +29,16 @@ class SignUp extends React.Component {
     }
 
     componentDidMount() {
-        console.log("Mount!");
-        console.log(this.props.podaci.state.forma);
         if (this.props.podaci.state.forma === "admin" || this.props.podaci.state.forma === "user") {
-            console.log("Usao");
             this.dobaviPodatkeKorisnika();
         }
     }
 
     dobaviPodatkeKorisnika() {
-        const idKorisnika = "1";
         const AuthStr = 'Bearer '.concat(localStorage.getItem('token'));
-        console.log("token", AuthStr);
         let url = this.context;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
-            axios.get(url.user + "/users/" + res.data.id/*, { headers: { Authorization: AuthStr } }*/).then(res => {
-                console.log(res);
-                console.log(res.data);
+            axios.get(url.user + "/users/" + res.data.id).then(res => {
                 this.setState({
                     firstName: res.data.name,
                     lastName: res.data.surname,
@@ -90,8 +83,6 @@ class SignUp extends React.Component {
                 })
             }
             else {
-                console.log("Zahtjev je: ");
-                console.log(user);
                 axios.post(url.user + "/user", {
                     roleID: {
                         id: 2,
@@ -103,9 +94,6 @@ class SignUp extends React.Component {
                     password: this.state.password,
                     email: this.state.email
                 }).then(res => {
-                    console.log("Odgovor!");
-                    console.log(res);
-                    console.log(res.data);
                     this.props.podaci.hideComponent("showSignIn");
                 })
                     .catch((error) => {
@@ -133,7 +121,6 @@ class SignUp extends React.Component {
             }
         }
         else {
-            console.log("Tu sam");
             this.setState({
                 greskaVisible: "hidden",
                 nepodudaranPassword: "visible",
@@ -144,12 +131,10 @@ class SignUp extends React.Component {
 
     uradiPut(e) {
         e.preventDefault();
-        const idKorisnika = "1";
         let url = this.context;
         const AuthStr = 'Bearer '.concat(localStorage.getItem('token'));
         let readPass = document.getElementById("passwordLabel").value;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
-            console.log("idddd: ", res.data.id, AuthStr);
             axios.put(url.user + "/updateUser/" + res.data.id, {
                 name: this.state.firstName,
                 surname: this.state.lastName,
@@ -157,9 +142,6 @@ class SignUp extends React.Component {
                 password: this.state.password,
                 email: this.state.email
             }).then(res => {
-                console.log("Odgovor!");
-                console.log(res);
-                console.log(res.data);
                 this.setState({
                     errorZahtjev: "",
                     uspjesanZahtjev: true,
@@ -242,7 +224,6 @@ class SignUp extends React.Component {
                                         if (this.state.firstChange === true) {
                                             this.setState({ previousUsername: this.state.username, firstChange: false });
                                         }
-                                        console.log("username: ", this.state.previousUsername, e.target.value);
                                         this.setState({ username: e.target.value });
                                     }} />
                             </FormGroup>
@@ -290,11 +271,11 @@ class SignUp extends React.Component {
                         </Col>
                     </Row>
                     <Row style={{ paddingRight: "15px" }}>
-                        <Button type="submit" id="submitButton" 
-                        className="secondary px-3 bg-dark" 
-                        style={{ marginLeft: "auto", width:"170px" }}>
+                        <Button type="submit" id="submitButton"
+                            className="secondary px-3 bg-dark"
+                            style={{ marginLeft: "auto", width: "170px" }}>
                             {(this.props.podaci.state.forma === "signup") ? "Sign Up" : (this.props.podaci.state.forma === "admin") ? "Save changes" : "Save changes"}
-                            </Button>
+                        </Button>
                     </Row>
                     <Row style={{ display: (this.props.podaci.state.forma === "signup") ? "none" : (this.props.podaci.state.forma === "admin") ? "block" : "none" }}>
                         <AdvancedOptions handler={this.props.podaci.hideAll} />

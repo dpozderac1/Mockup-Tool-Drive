@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -47,25 +46,22 @@ public class GSPECDocumentController {
 
 
     @DeleteMapping(value = "/GSPECDocument/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity deleteGSPECDocument(@PathVariable Long id) {
+    public ResponseEntity deleteGSPECDocument(@PathVariable Long id) {
         return gspecDocumentService.deleteGSPECDocumentByID(id);
     }
 
     @PutMapping("/updateGSPECDocument/{id}")
-    ResponseEntity updateGSPECDocument (@Valid @RequestBody GSPECDocument gspecDocument, @PathVariable Long id) {
+    public ResponseEntity updateGSPECDocument (@Valid @RequestBody GSPECDocument gspecDocument, @PathVariable Long id) {
         return gspecDocumentService.updateGSPECDocument(gspecDocument, id);
     }
 
     @PostMapping("/addGSPECDocument")
-    ResponseEntity addGSPECDocument(@Valid @RequestBody GSPECDocument gspecDocument) {
+    public ResponseEntity addGSPECDocument(@Valid @RequestBody GSPECDocument gspecDocument) {
         return gspecDocumentService.saveGSPECDocument(gspecDocument);
     }
 
     @PutMapping(value="/changeGSPECFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity changeGSPECFile (@RequestParam("gspecFile") MultipartFile gspecFile, @PathVariable Long id, HttpServletRequest httpServletRequest) throws IOException, SQLException {
-        //@RequestParam("gspecFile") MultipartFile gspecFile
-        //MultipartFile gspecFile=null;
-        System.out.println("Usao sam u PUT za changeGSPECFile!!!!!");
+    public ResponseEntity changeGSPECFile (@RequestParam("gspecFile") MultipartFile gspecFile, @PathVariable Long id) throws IOException, SQLException {
         return gspecDocumentService.changeGSPECFile(gspecFile, id);
     }
 

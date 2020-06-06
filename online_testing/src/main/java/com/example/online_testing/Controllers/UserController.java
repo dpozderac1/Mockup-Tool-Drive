@@ -18,17 +18,17 @@ public class UserController {
     private UserService userService;
 
     @DeleteMapping(value="/deleteUser/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity deleteUser(@PathVariable Long id) {
+    public ResponseEntity deleteUser(@PathVariable Long id) {
         return userService.deleteUser(id);
     }
 
     @PutMapping(value="/updateUser/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity updateUser(@Valid @PathVariable Long id, @RequestBody User user){
+    public ResponseEntity updateUser(@Valid @PathVariable Long id, @RequestBody User user){
         return userService.updateUser(id,user);
     }
 
     @PostMapping(value="/user")
-    ResponseEntity newUser(@Valid @RequestBody User newUser){
+    public ResponseEntity newUser(@Valid @RequestBody User newUser){
         return userService.saveUser(newUser);
     }
 

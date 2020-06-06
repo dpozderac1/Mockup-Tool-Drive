@@ -1,7 +1,6 @@
 package com.example.online_testing.Services;
 
 import com.example.online_testing.Models.GSPECDocument;
-import com.example.online_testing.RabbitMQ.MessageRabbitMq;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 

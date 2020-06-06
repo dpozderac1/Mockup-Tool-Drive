@@ -31,8 +31,6 @@ class Collaboration extends Component {
             this.setState({
                 idKorisnika: res.data.id
             });
-            console.log("Moj id je: ");
-            console.log(res.data.id);
             axios.get(url.user + "/users/sharedProjects/" + this.state.idProjekta).then(res => {
                 this.setState({
                     korisnici: res.data,
@@ -43,7 +41,6 @@ class Collaboration extends Component {
                 else {
                     this.setState({ postojeKorisnici: false });
                 }
-                console.log(res.data);
             })
                 .catch((error) => {
                     console.log("Greska u GET!");
@@ -142,10 +139,10 @@ class Collaboration extends Component {
                     <br />
                     <Row>
                         <Col>
-                            <Button outline color = "danger" style = {{float: "left", width: "30%", marginTop: '8%', marginLeft: '0'}} onClick = {(e) =>{
-                                        this.goBack()
-                                    }} >Cancel</Button>
-                            <Button type="submit" id="submitButton" style = {{float: "right", width: "30%", marginTop: '8%'}} className="bg-dark">Done</Button>
+                            <Button outline color="danger" style={{ float: "left", width: "30%", marginTop: '8%', marginLeft: '0' }} onClick={(e) => {
+                                this.goBack()
+                            }} >Cancel</Button>
+                            <Button type="submit" id="submitButton" style={{ float: "right", width: "30%", marginTop: '8%' }} className="bg-dark">Done</Button>
                         </Col>
                     </Row>
                 </Form>

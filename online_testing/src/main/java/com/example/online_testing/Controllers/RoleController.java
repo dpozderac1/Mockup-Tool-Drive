@@ -18,17 +18,17 @@ public class RoleController {
     private RoleService roleService;
 
     @PostMapping(value="/role",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity newRole(@Valid @RequestBody Role newRole){
+    public ResponseEntity newRole(@Valid @RequestBody Role newRole){
         return roleService.saveRole(newRole);
     }
 
     @DeleteMapping(value="/deleteRole/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity deleteRole(@PathVariable Long id) {
+    public ResponseEntity deleteRole(@PathVariable Long id) {
         return roleService.deleteRole(id);
     }
 
     @PutMapping(value="/updateRole/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity updateRole(@Valid @PathVariable Long id, @RequestBody Role role){
+    public ResponseEntity updateRole(@Valid @PathVariable Long id, @RequestBody Role role){
         return roleService.updateRole(id,role);
     }
 }

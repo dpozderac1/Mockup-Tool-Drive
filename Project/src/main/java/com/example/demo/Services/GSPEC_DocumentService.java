@@ -230,10 +230,9 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date date=new Date();
             GSPEC_Document gspec_document=new GSPEC_Document(mockup,naziv,blob,date,date,date);
-            GSPEC_Document gspec_documentZaOnlineTesting=new GSPEC_Document(mockup,naziv,null,date,date,date);
+            GSPEC_Document gspec_documentZaOnlineTesting=new GSPEC_Document(null,naziv,null,date,date,date);
 
-            System.out.println("Prije /addGspecDocument");
-            gspec_documentZaOnlineTesting.getMockupId().setFile(null);
+            //gspec_documentZaOnlineTesting.getMockupId().setFile(null);
             HttpEntity<GSPEC_Document> request = new HttpEntity<>(gspec_documentZaOnlineTesting);
             GSPEC_Document gspec_document11 = restTemplate.postForObject("http://online-testing/addGSPECDocument", request, GSPEC_Document.class);
 

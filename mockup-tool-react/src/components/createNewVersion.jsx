@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { UncontrolledButtonDropdown, Navbar, Nav, NavItem, NavLink, Button, Form, FormGroup, Label, Input, FormText, Col, Container, Row, ButtonGroup, Alert, UncontrolledDropdown, Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
+import { Navbar, Nav, Button, Form, FormGroup, Label, Input, Col, Container, Row, Alert, UncontrolledDropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
 import axios from 'axios';
 import { UrlContext } from '../urlContext';
 
@@ -59,7 +59,6 @@ class CreateNewVersion extends Component {
     }
 
     addProject(e) {
-        console.log("kliknuto");
         e.preventDefault();
         let url = this.context;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
@@ -95,7 +94,6 @@ class CreateNewVersion extends Component {
                         versionName: this.state.checked.name.toLocaleUpperCase()
                     })
                         .then(res => {
-                            console.log("odg verzija: ", res.data);
                             document.getElementById("projectName").value = "";
                             this.setState({ projectName: "", errorVisible: false, successProject: true, checked: this.state.versions[0] });
                             setTimeout(() => this.props.data.backToProjects(), 2000);
@@ -144,7 +142,6 @@ class CreateNewVersion extends Component {
             versionName: this.state.checked.name.toLocaleUpperCase()
         })
             .then(res => {
-                console.log("odg verzija: ", res.data);
                 this.setState({ errorVisible: false, successVersion: true, checked: this.state.versions[0] });
                 setTimeout(() => this.props.data.backToProjects(), 2000);
             })
@@ -180,8 +177,6 @@ class CreateNewVersion extends Component {
         let seconds = today.getSeconds().toString();
         seconds.length === 1 ? seconds = "0" + seconds : seconds = seconds;
         const date = today.getFullYear() + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":" + seconds + "." + today.getMilliseconds() + "Z";
-        console.log("Projekat je: ", project);
-        console.log("Verzija je: ", version);
         axios.post(url.project + "/addMockup", {
             versionId: {
                 projectId: {
@@ -201,8 +196,7 @@ class CreateNewVersion extends Component {
             accessed_date: date
         })
             .then(res => {
-                console.log("odg verzija: ", res.data);
-                this.setState({ errorVisible: false, successMockup: true});
+                this.setState({ errorVisible: false, successMockup: true });
                 setTimeout(() => this.props.data.goBack(), 2000);
             })
             .catch((error) => {
@@ -234,7 +228,7 @@ class CreateNewVersion extends Component {
                 }>
                     <Form className="row align-items-center row justify-content-center">
                         <Form className="col-md-5 my-auto">
-                            <h1 className="text-secondary" style={{ textAlign: "left" }}>{this.state.project === "project" ? "Create project" : this.state.project == "version" ? "Create new version" : "Create mockup"}</h1>
+                            <h1 className="text-secondary" style={{ textAlign: "left" }}>{this.state.project === "project" ? "Create project" : this.state.project === "version" ? "Create new version" : "Create mockup"}</h1>
                             <hr className="my-2" />
                             <FormGroup style={{ display: (this.state.project === "project") ? "block" : "none" }}>
                                 <Label for="projectNameLabel">Project name</Label>

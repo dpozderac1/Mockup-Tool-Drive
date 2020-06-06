@@ -3,7 +3,6 @@ package com.example.demo.Services;
 import com.example.demo.Models.Project;
 import com.example.demo.Models.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 import java.util.List;

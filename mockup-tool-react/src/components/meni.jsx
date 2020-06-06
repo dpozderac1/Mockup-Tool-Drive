@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react';
+import React, { Component } from 'react';
 import {
     Navbar,
     NavbarToggler,
@@ -6,8 +6,9 @@ import {
     Nav,
     NavLink,
     Button,
-    Row, Form, FormGroup, Alert, Modal, ModalHeader, ModalBody, ModalFooter, 
-    Input, Label, Spinner, Col} from 'reactstrap';
+    Row, Form, FormGroup, Alert, Modal, ModalHeader, ModalBody, ModalFooter,
+    Input, Label, Spinner, Col
+} from 'reactstrap';
 import SignIn from './signIn';
 import SignUp from './signUp';
 import CreateNewServer from './createNewServer';
@@ -65,7 +66,6 @@ class Meni extends Component {
     };
 
     componentDidMount() {
-        console.log("desilo se");
         let url = this.context;
         axios.get(url.gateway + "/getUser/" + localStorage.getItem('token')).then(res => {
             this.setState({ role: res.data.roleID.role_name });
@@ -85,7 +85,6 @@ class Meni extends Component {
     };
 
     hideComponent(name) {
-        console.log(name);
 
         switch (name) {
             case "showSignIn":
@@ -175,7 +174,6 @@ class Meni extends Component {
 
     snimiFajl(e) {
         e.preventDefault();
-        console.log("Pozvana je snimiFajl funkcija!");
         document.getElementById("glavni").click();
         var fajl = `<!DOCTYPE html><html><head></head><meta charset="utf-8"><body>`;
         var sviElementi = document.getElementById("glavni").getElementsByTagName("*");
@@ -183,7 +181,7 @@ class Meni extends Component {
         var element = ``;
 
         for (var i = 0; i < sviElementi.length; i++) {
-            if (sviElementi[i].id != "") {
+            if (sviElementi[i].id !== "") {
 
                 let vrijednost = this.napraviCSS(sviElementi[i], true);
                 stil += `#` + sviElementi[i].id + ` {` + vrijednost + `}\n`;
@@ -191,11 +189,11 @@ class Meni extends Component {
                 stil += `#` + sviElementi[i].id + `::after {` + vrijednost + `}\n`;
                 vrijednost = this.napraviCSSBefore(sviElementi[i]);
                 stil += `#` + sviElementi[i].id + `::before {` + vrijednost + `}\n`;
-                if (sviElementi[i].tagName != "LI") {
+                if (sviElementi[i].tagName !== "LI") {
                     element = sviElementi[i];
                 }
             }
-            else if (sviElementi[i].className != "") {
+            else if (sviElementi[i].className !== "") {
                 var klasa = sviElementi[i].className.split(" ")[0];
                 let vrijednost = this.napraviCSS(sviElementi[i], true);
                 stil += `.` + klasa + ` {` + vrijednost + `}\n`;
@@ -225,16 +223,12 @@ class Meni extends Component {
         axios.get(url.project + "/mockup/" + this.state.mockupId).then(res => {
             var trenutniMockup = res.data;
             var formData = new FormData();
-            console.log("Trenutni mockup je: ", trenutniMockup);
 
             const byteNumbers = new Array(fajl.length);
             for (let i = 0; i < fajl.length; i++) {
                 byteNumbers[i] = fajl.charCodeAt(i);
             }
             formData.append('file', new Blob([fajl]));
-            /*for (var key of formData.entries()) {
-                console.log(key[0] + ', ' + key[1]);
-            }*/
             axios.put(url.project + "/addOrUpdateFile/" + this.state.mockupId, formData, { headers: { 'content-type': 'multipart/form-data' } }).then(res => {
                 console.log("Uspjesno");
                 this.toggle();
@@ -299,9 +293,7 @@ class Meni extends Component {
 
     snimiPDF(e) {
         e.preventDefault();
-        //let mockupId = 3;
         let url = this.context;
-        console.log("Naziv PDF-a: ", this.state.pdfNaziv);
         if (this.state.pdfNaziv === null || this.state.pdfNaziv.length < 2 || this.state.pdfNaziv.length > 255) {
             this.setState({
                 pdfAlert: "visible",
@@ -321,11 +313,7 @@ class Meni extends Component {
                     var formData = new FormData();
                     formData.append('pdfFile', new Blob([imgData]));
                     formData.append('name', this.state.pdfNaziv);
-                    /*for (var key of formData.entries()) {
-                        console.log(key[0] + ', ' + key[1]);
-                    }*/
                     axios.post(url.project + "/addPDFFile/" + this.state.mockupId, formData, { headers: { 'content-type': 'multipart/form-data' } }).then(res => {
-                        console.log("Uspjesno");
                         document.getElementById("spinnerZaPDF").style.display = "none";
                         this.setState({
                             pdfAlert: "visible",
@@ -381,12 +369,11 @@ class Meni extends Component {
                 });
             document.getElementById("glavni").click();
             var content = res.data;
-            //console.log("Content je: ", content);
 
             if (content !== null && content !== undefined && content !== "" && id === 0) {
                 var prviDio = content.split("</style>")[1];
                 var procitaniFajl = prviDio.split("</body>")[0];
-                if (procitaniFajl != "") {
+                if (procitaniFajl !== "") {
                     document.getElementById("glavni").innerHTML = procitaniFajl;
                     document.getElementById("importFajlaDugme").click();
                 }
@@ -415,7 +402,6 @@ class Meni extends Component {
     }
 
     dajIdMockupa(idIzKomponente) {
-        console.log("Pozvano dajIdMockupa: ", idIzKomponente);
         this.setState({
             mockupId: idIzKomponente
         });
@@ -499,7 +485,6 @@ class Meni extends Component {
     ucitajGalenFile(id, naziv, snimi = false) {
         let url = this.context;
         axios.get(url.project + "/gspec_document/file/" + id).then(res => {
-            //console.log("Content je: ", res.data);
             if (snimi) {
                 this.download(res.data, naziv + ".gspec", "txt");
             }
@@ -584,8 +569,8 @@ class Meni extends Component {
         return (
             <div>
                 <Navbar color="light" light expand="md">
-                    <Col xs = {2}>
-                    <NavbarBrand style={{fontSize:"150%"}} href="/">Mockup tool drive</NavbarBrand>
+                    <Col xs={2}>
+                        <NavbarBrand style={{ fontSize: "150%" }} href="/">Mockup tool drive</NavbarBrand>
                     </Col>
                     <NavbarToggler />
                     <Nav className="mr-auto" navbar>
@@ -604,7 +589,7 @@ class Meni extends Component {
                             </Nav>
                         </Navbar> : ""}
                 </Navbar>
-                
+
                 <Modal isOpen={this.state.modal} toggle={this.state.toggle} className="modal-sm text-center">
                     <Alert style={{ marginBottom: "0px" }}>All changes are saved successfully!</Alert>
                 </Modal>
