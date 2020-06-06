@@ -92,37 +92,37 @@ docker run --name mysql-system-events -e MYSQL_ROOT_PASSWORD=password -e MYSQL_D
 
 **Unutar terminala pozicionirajući se u odgovarajući projekat kreirati image za sve mikroservise:**
 
-- Eureka server
+- Eureka server | *eureka-server*
 
 ```bash
 docker build -f Dockerfile -t eureka .
 ```
 
-- System events
+- System events | *system-events*
 
 ```bash
 docker build -f Dockerfile -t system-events .
 ```
 
-- Zuul gateway
+- Zuul gateway | *routing-and-filtering-gateway*
 
 ```bash
 docker build -f Dockerfile -t zuul .
 ```
 
-- Mikroservis za upravljanje korisnicima
+- Mikroservis za upravljanje korisnicima | *User*
 
 ```bash
 docker build -f Dockerfile -t user .
 ```
 
-- Mikroservis za upravljanje datotekama
+- Mikroservis za upravljanje datotekama | *Project*
 
 ```bash
 docker build -f Dockerfile -t project .
 ```
 
-- Mikroservis za online testiranje
+- Mikroservis za online testiranje | *online_testing*
 
 ```bash
 docker build -f Dockerfile -t online-testing .
@@ -144,5 +144,11 @@ Pozicionirati se u root folder *Mockup-Tool-Drive* i otkucati komandu:
 
 ```bash
 docker-compose up -d
+```
+
+**Unutar terminala kreirati *phpMyAdmin* docker image za pristup bazi podataka:**
+
+```bash
+docker run --network=mockup-tool-drive_default --name myadmin -d --link mockup-tool-drive_mysql-system-events_1:db -p 8070:80 phpmyadmin/phpmyadmin
 ```
 
