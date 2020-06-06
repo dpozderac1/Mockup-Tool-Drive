@@ -16,7 +16,12 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -35,8 +40,6 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
         this.greet = binding.greeting();
     }
 
-
-
     @Override
     public ResponseEntity deleteGSPECDocumentByID(Long id) {
         JSONObject jo = new JSONObject();
@@ -49,13 +52,15 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
             this.greet.send(msg);
             return new ResponseEntity(jo.toString(), HttpStatus.OK);
         }
-
-        Command poruka = Command.FAIL;
-        MessageRabbitMq messageRabbitMq = new MessageRabbitMq(id, poruka);
-        Message<MessageRabbitMq> msg = MessageBuilder.withPayload(messageRabbitMq).build();
-        this.greet.send(msg);
-        return new ResponseEntity(HttpStatus.OK);
-        //throw new RecordNotFoundException("GSPEC Document does not exist!");
+        else{
+            Command poruka = Command.FAIL;
+            MessageRabbitMq messageRabbitMq = new MessageRabbitMq(id, poruka);
+            Message<MessageRabbitMq> msg = MessageBuilder.withPayload(messageRabbitMq).build();
+            this.greet.send(msg);
+            jo.put("message", "GSPEC Document is not found!");
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+            //throw new RecordNotFoundException("GSPEC Document does not exist!");
+        }
     }
 
     @Override
@@ -73,7 +78,10 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
             if(gspecDocument.getFile() != null) {
                 newGspecDocument.setFile(gspecDocument.getFile());
             }
-            List<GSPECDocument> gspecDocuments = gspecDocumentRepository.findAll();
+            oldGspecDocument.setName(newGspecDocument.getName());
+            oldGspecDocument.setFile(newGspecDocument.getFile());
+            gspecDocumentRepository.save(oldGspecDocument);
+            /*List<GSPECDocument> gspecDocuments = gspecDocumentRepository.findAll();
             boolean postoji = false;
             for (GSPECDocument g: gspecDocuments) {
                 if(g.getName().equals(newGspecDocument.getName()) && g.getFile() != null && newGspecDocument.getFile() != null && (g.getFile() == newGspecDocument.getFile()))  {
@@ -86,9 +94,10 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
                 gspecDocumentRepository.save(oldGspecDocument);
             }
             else {
-                throw new AlreadyExistsException("GSPEC DOcument already exists!");
-            }
+                throw new AlreadyExistsException("GSPEC Document already exists!");
+            }*/
         }
+        oldGspecDocument.setFile(null);
         return new ResponseEntity(oldGspecDocument, HttpStatus.OK);
     }
 
@@ -108,6 +117,24 @@ public class GSPECDocumentServiceImpl implements GSPECDocumentService {
             throw new AlreadyExistsException("GSPEC Document already exists!");
         }
         jo.put("message", "GSPEC Document is successfully added!");
+        gspecDocument.setFile(null);
         return new ResponseEntity(newGspecDocument, HttpStatus.CREATED);
     }
+
+    @Override
+    public ResponseEntity changeGSPECFile(MultipartFile gspecFile, Long id) throws IOException, SQLException {
+        if(gspecDocumentRepository.existsByID(id)){
+            GSPECDocument trenutniGSPEC=gspecDocumentRepository.findByID(id);
+            Blob blob=new SerialBlob(gspecFile.getBytes());
+            trenutniGSPEC.setFile(blob);
+            gspecDocumentRepository.save(trenutniGSPEC);
+            JSONObject jo = new JSONObject();
+            jo.put("message", "File for GSPEC Document is successfully updated!");
+            return new ResponseEntity(jo, HttpStatus.CREATED);
+        }
+        else{
+            throw new RecordNotFoundException("The GSPEC Document you want to update does not exist!");
+        }
+    }
+
 }

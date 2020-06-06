@@ -10,27 +10,17 @@ import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.RoleRepository;
 import com.example.demo.Repositories.UserRepository;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.ribbon.proxy.annotation.Http;
-import org.apache.coyote.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -165,12 +155,11 @@ public class UserServiceImpl implements UserService {
         List<User> sviKorisnici = userRepository.findAll();
         for (int i = 0; i < sviKorisnici.size(); i++) {
             User korisnik1 = sviKorisnici.get(i);
-            if (korisnik1.getUsername().equals(user.getUsername())) {
+            if (!korisnik.getID().equals(korisnik1.getID()) && korisnik1.getUsername().equals(user.getUsername())) {
                 grpcUserService.action("user","PUT","/updateUser/{id}","CONFLICT", new Timestamp(System.currentTimeMillis()));
-                System.out.println("Tu sam!");
                 throw new AlreadyExistsException("User with same username already exists!");
             }
-            if (korisnik1.getEmail().equals(user.getEmail())) {
+            if (!korisnik.getID().equals(korisnik1.getID()) && korisnik1.getEmail().equals(user.getEmail())) {
                 grpcUserService.action("user","PUT","/updateUser/{id}","CONFLICT", new Timestamp(System.currentTimeMillis()));
                 throw new AlreadyExistsException("User with same e-mail address already exists!");
             }
@@ -199,7 +188,7 @@ public class UserServiceImpl implements UserService {
         if (!user.getUsername().isEmpty()) {
             korisnik.setUsername(user.getUsername());
         }
-        if (!user.getPassword().isEmpty()) {
+        if (!user.getPassword().isEmpty() && !user.getPassword().equals(korisnik.getPassword())) {
             BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
             String sifra=user.getPassword();
             korisnik.setPassword(passwordEncoder.encode(sifra));
@@ -249,6 +238,20 @@ public class UserServiceImpl implements UserService {
         else {
             grpcUserService.action("user","DELETE","/deleteUser/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
             throw new RecordNotFoundException("User does not exist!");
+        }
+    }
+
+    @Override
+    public List<User> getUsersSharingProjectByProjectId(Long id) {
+        if(projectRepository.existsByID(id)){
+            Project projekat=projectRepository.findByID(id);
+            List<User> korisnici=projekat.getUsers();
+            grpcUserService.action("user","GET","/users/sharedProjects/{id}","SUCESS", new Timestamp(System.currentTimeMillis()));
+            return korisnici;
+        }
+        else {
+            grpcUserService.action("user","GET","/users/sharedProjects/{id}","NOT FOUND", new Timestamp(System.currentTimeMillis()));
+            throw new RecordNotFoundException("Project does not exist!");
         }
     }
 }

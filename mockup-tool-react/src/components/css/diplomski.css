@@ -1,0 +1,1077 @@
+@font-face {
+  src: url("./fonts/Caveat-Regular.ttf");
+  font-family: Caveat-Regular;
+  font-style: normal;
+}
+
+@font-face {
+  src: url("./fonts/OpenSans-Regular.ttf");
+  font-family: OpenSans;
+  font-style: normal;
+}
+
+@font-face {
+  src: url("./fonts/OpenSans-LightItalic.ttf");
+  font-family: OpenSans-Italic;
+}
+
+body {
+  height: 100vh;
+  margin: auto;
+}
+
+#glavni {
+  float: right;
+  width: 75%;
+  background-color: #f7f7f7;
+  height: calc(100% - 66px);
+  display: flex;
+  position: relative;
+  overflow: scroll;
+  background-color: white;
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+  background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+  background-image: -webkit-linear-gradient(#f2f2f2 2px, transparent 2px),
+    -webkit-linear-gradient(0, #f2f2f2 2px, transparent 2px),
+    -webkit-linear-gradient(rgba(242, 242, 242, 0.3) 1px, transparent 1px),
+    -webkit-linear-gradient(0, rgba(242, 242, 242, 0.3) 1px, transparent 1px);
+  background-image: -moz-linear-gradient(#f2f2f2 2px, transparent 2px),
+    -moz-linear-gradient(0, #f2f2f2 2px, transparent 2px),
+    -moz-linear-gradient(rgba(242, 242, 242, 0.3) 1px, transparent 1px),
+    -moz-linear-gradient(0, rgba(242, 242, 242, 0.3) 1px, transparent 1px);
+  background-image: linear-gradient(#f2f2f2 2px, transparent 2px),
+    linear-gradient(90deg, #f2f2f2 2px, transparent 2px),
+    linear-gradient(rgba(242, 242, 242, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 242, 242, 0.3) 1px, transparent 1px);
+  -pie-background: linear-gradient(#f2f2f2 2px, transparent 2px) -2px -2px /
+      100px,
+    linear-gradient(90deg, #f2f2f2 2px, transparent 2px) -2px -2px / 100px,
+    linear-gradient(rgba(242, 242, 242, 0.3) 1px, transparent 1px) -1px -1px /
+      20px,
+    linear-gradient(90deg, rgba(242, 242, 242, 0.3) 1px, transparent 1px) -1px -1px /
+      20px,
+    #269;
+  behavior: url(/pie/PIE.htc);
+}
+
+#lijevo {
+  float: left;
+  width: 25%;
+  background-color: #eeeeee;
+  height: calc(100% - 66px);
+  overflow-y: scroll;
+  display: flex;
+}
+
+#zaglavlje {
+  width: 100%;
+  height: 15%;
+  display: flex;
+  background-color: #2c3e50;
+  border-bottom: 1px rgb(52, 74, 95) solid;
+  /*border-style: groove; */
+}
+
+#h1Mockup {
+  font-family: OpenSans-Italic;
+  font-size: 2.3em;
+  margin-left: 1.5%;
+  margin-top: 1.8%;
+  color: #f7f7f7;
+  width: 20%;
+}
+
+p {
+  color: #f7f7f7;
+  font-family: OpenSans;
+  text-align: center;
+  font-size: 1em;
+  /*font-weight: bold;*/
+
+  pointer-events: none;
+}
+
+ul {
+  /*list-style-type: none;*/
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  margin-top: 10px;
+}
+
+li {
+  display: block;
+  width: 100%;
+  /*border-bottom: 1px solid;
+    border-bottom-color: #3b5998;*/
+}
+
+horizontal ul > li {
+  border: 1px solid rgb(255, 255, 255);
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  color: rgb(51, 51, 51);
+  margin: 0.1em;
+  padding: 0.2em 0.2em 0.3em;
+  display: inline;
+}
+
+.dugmeKlasa {
+  /*display:inline-block;
+    border:1px solid #3b5998;
+    background: #8b9dc3;
+    box-shadow: 0 0 5px -1px rgba(0,0,0,0.2);
+    vertical-align:middle;
+    height: 7%;
+    width: 40%;
+    margin-left: 30%;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 1%;
+    overflow: hidden;*/
+  cursor: pointer;
+  height: 7%;
+  width: 40%;
+  margin-left: 30%;
+  color: #fff;
+  background-color: #2c3e50;
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid #2c3e50;
+  /*padding: 0.375rem 0.75rem;*/
+  /*font-size: 0.9375rem;*/
+  line-height: 1.5;
+  border-radius: 0.25rem;
+}
+
+#dugme:active,
+#labela:active,
+#link:active,
+#divElement:active,
+#naslov:active,
+#slika:active,
+#tab:active,
+#radioButton:active {
+  box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.6);
+}
+
+#alati {
+  height: 50%;
+  width: 80%;
+  margin-left: 10%;
+  margin-bottom: 0px;
+  margin-top: 4%;
+}
+
+button {
+  /*background-color: transparent;*/
+  background-color: #c5c5c5;
+  /*color: #f7f7f7;*/
+  color: black;
+  /*border-radius: 20px;*/
+  border-radius: 0.25rem;
+  border: none;
+  text-align: center;
+  font-family: OpenSans;
+  font-size: 100%;
+  margin-bottom: 2%;
+  /*dodano*/
+  margin-left: 3.5%;
+}
+
+#unosVisineTextBox,
+#unosSirineTextBox,
+#unosVertikalneUdaljenosti,
+#unosHorizontalneUdaljenosti {
+  width: 50px;
+  font-family: OpenSans;
+}
+
+#unosSirineTextBox {
+  margin-left: 2%;
+}
+
+span {
+  font-family: OpenSans;
+  color: #f7f7f7;
+}
+
+select {
+  background: white;
+  border: white;
+  height: 1.5em;
+  border-radius: 0.25em;
+}
+
+/*#visinaISirina {
+    float: right;
+}*/
+
+.labelaKlasa,
+.linkKlasa,
+.paragrafKlasa,
+.naslovKlasa {
+  display: inline-block;
+  border: none;
+  background: transparent;
+  /*box-shadow: 0 0 5px -1px rgba(0,0,0,0.2);*/
+  vertical-align: middle;
+  height: 10%;
+  width: 70%;
+  margin-left: 15%;
+  margin-top: 5%;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 5%;
+  border-radius: 0.25rem;
+}
+
+#dugme {
+  margin-bottom: 5%;
+}
+
+#link:hover,
+#labela:hover,
+#naslov:hover,
+#paragraf:hover,
+#radioButton:hover,
+#checkbox:hover,
+#dugme:hover,
+#divElement:hover,
+#slika:hover,
+#inputText:hover,
+#spinner:hover,
+#tab:hover,
+#note:hover,
+#dropdown:hover,
+#tabela:hover,
+#verticalList:hover,
+#horizontalList:hover {
+  /*box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);*/
+  box-shadow: 0 0 5px -1px #20c997;
+}
+
+#pLabela {
+  color: #3b5998;
+  font-family: OpenSans;
+  text-align: center;
+  pointer-events: none;
+  margin: auto;
+}
+
+#pLink {
+  color: blue;
+  font-family: OpenSans;
+  text-align: center;
+  font-weight: bold;
+  pointer-events: none;
+  margin: auto;
+  text-decoration: underline;
+}
+
+.divElementKlasa {
+  display: inline-block;
+  /*border:1px solid #3b5998;*/
+  /*background: #8b9dc3;*/
+  background: #c5c5c5;
+  border: 1px solid #2c3e50;
+  box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.2);
+  vertical-align: middle;
+  height: 90%;
+  width: 90%;
+  margin-left: 5%;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 4%;
+  overflow: hidden;
+  border-radius: 0.25rem;
+}
+
+#divLi,
+#noteLi {
+  height: 40%;
+}
+
+#slikaLi {
+  height: 30%;
+}
+
+#tabelaLi {
+  height: 35%;
+}
+
+#pNaslov {
+  color: #3b5998;
+  /*font-family: Caveat-Regular;*/
+  font-family: OpenSans-Italic;
+  text-align: center;
+  /*font-weight: bold;*/
+  pointer-events: none;
+  margin: auto;
+  font-size: 2.3em;
+}
+
+.slikaKlasa {
+  display: inline-block;
+  border: 1px solid #3b5998;
+  background: gray;
+  box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.2);
+  vertical-align: middle;
+  /*height: 70%;*/
+  width: 55%;
+  margin-left: 23%;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 10%;
+  border-radius: 0.25rem;
+}
+
+.slikaKlasa {
+  position: relative;
+  overflow: hidden;
+  align-items: center;
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.slikaKlasa > * {
+  flex: 1 100%;
+}
+
+.inputKlasa {
+  display: inline-block;
+  border: 1px solid #3b5998;
+  background: #ffffff;
+  box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.2);
+  vertical-align: middle;
+  height: 40px;
+  width: 80%;
+  margin-left: 12.5%;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  /*padding: 0.1em 0.9em 0.9em 0.5em;*/
+}
+
+#pInputText {
+  color: #3b5998;
+  font-family: OpenSans;
+  text-align: center;
+  font-size: 1em;
+  pointer-events: none;
+  margin-top: 4%;
+}
+
+#pParagraf,
+#pDropdown,
+#pSpinner {
+  color: #3b5998;
+  font-family: OpenSans;
+  text-align: center;
+  font-size: 1em;
+  pointer-events: none;
+}
+
+.tabKlasa {
+  margin-left: 10%;
+  height: 45%;
+  width: 80%;
+  margin-top: 10%;
+  /*bio je 0.5em*/
+  padding-top: 0em;
+  cursor: pointer;
+}
+
+.listKlasa {
+  margin-left: 5%;
+  height: 100%;
+  width: 90%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  padding-top: 0.5em;
+  cursor: pointer;
+}
+
+.hListKlasa {
+  margin-left: 2%;
+  height: 100%;
+  width: 97%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  padding-top: 0.5em;
+  cursor: pointer;
+}
+
+#tabHorizontal,
+#listVertical {
+  pointer-events: none;
+}
+
+#tabDio {
+  height: 15%;
+}
+
+.tabListaKlasa,
+.verticalListKlasa {
+  pointer-events: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  height: 0;
+}
+
+.tabListaKlasa li {
+  padding: 0.1em 0.9em 0.9em 0.5em;
+  background: #2c3e50;
+  color: #f7f7f7;
+  font-family: OpenSans;
+  font-size: 100%;
+  text-align: center;
+  pointer-events: none;
+  margin-bottom: 1%;
+
+  /*pointer-events: none;*/
+}
+.elementListeV {
+  padding: 0.5em 0.9em 0.5em 0.5em;
+  background: #2c3e50;
+  color: #f7f7f7;
+  font-family: OpenSans;
+  font-size: 100%;
+  text-align: center;
+  pointer-events: none;
+  margin-bottom: 1%;
+  border-radius: 0.25rem;
+}
+
+.elementListeH {
+  padding: 0.6em 0.6em 0.6em 0.6em;
+  background: #2c3e50;
+  color: #f7f7f7;
+  font-family: OpenSans;
+  text-align: center;
+  pointer-events: none;
+  font-size: 86%;
+  margin-bottom: 1%;
+  border-radius: 0.25rem;
+}
+#unutrasnji {
+  height: 35px;
+  width: 100%;
+  pointer-events: none;
+  border-bottom: 2px solid #2c3e50;
+  position: sticky;
+}
+#unutarHorizontalneListe {
+  height: 35px;
+  width: 100%;
+  pointer-events: none;
+  position: sticky;
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+#unutarListe {
+  height: 120px;
+  width: 85%;
+  pointer-events: none;
+  margin-left: 4%;
+  margin-bottom: 2%;
+}
+
+[data-oznacen="1"] {
+  background: #3d5a75 !important;
+}
+
+.noteKlasa {
+  display: inline-block;
+  border: 1px solid #3b5998;
+  background: #f7ee9e;
+  /*box-shadow: 5px 5px 7px 0 rgba(0,0,0,0.2);*/
+  vertical-align: middle;
+  height: 50%;
+  width: 55%;
+  margin-left: 20%;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 5%;
+  /*background: linear-gradient(to bottom, #e5a253 0%,#fdf582 99%);*/
+  position: relative;
+  background-color: #f5c792;
+  text-align: center;
+  margin: 2.5em 0px;
+  padding: 1.5em 1em;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 0;
+
+  /*background-image: url(./yellow-watercolor-brush-stroke-2-20.png);
+background-repeat: no-repeat;
+background-size: 100% 100%;*/
+}
+
+.noteKlasa:after {
+  display: block;
+  content: " ";
+  position: absolute;
+  width: 110px;
+  height: 30px;
+  top: -21px;
+  left: 30%;
+  border: 1px solid #fff;
+  background: rgba(254, 254, 254, 0.6);
+  -webkit-transform: rotate(-5deg);
+  -moz-transform: rotate(-5deg);
+  -o-transform: rotate(-5deg);
+  transform: rotate(-5deg);
+}
+
+/*#pinSlika{
+    height: 61.44px;
+    width: 76.8px;
+    margin-top: -35px;
+    margin-left: 10%;
+}*/
+
+#pNote {
+  font-size: 2em;
+}
+
+.dropdownKlasa {
+  display: flex;
+  border: 1px solid #3b5998;
+  background: #ffffff;
+  box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.2);
+  height: 40px;
+  width: 80%;
+  margin-left: 12.5%;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+.spinnerKlasa {
+  display: flex;
+  border: 1px solid #3b5998;
+  background: #ffffff;
+  box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.2);
+  height: 40px;
+  width: 80%;
+  margin-left: 12.5%;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+#dropdownStrelicaDoljeSpan,
+#spinnerStrelicaDoljeSpan,
+#spinnerStrelicaGoreSpan {
+  float: right;
+  color: white;
+  text-align: center;
+}
+
+#pDropdown,
+#pSpinner {
+  width: 100%;
+  float: left;
+}
+
+#dropdownStrelicaDoljeDiv {
+  height: 100%;
+  background: #2c3e50;
+  border-left: 1px solid #3b5998;
+  pointer-events: none;
+  width: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#spinnerStrelicaDoljeDiv {
+  height: 50%;
+  background: #2c3e50;
+  border-left: 1px solid #3b5998;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#spinnerStrelicaGoreDiv {
+  height: 50%;
+  background: #2c3e50;
+  border-left: 1px solid #3b5998;
+  border-bottom: 1px rgb(52, 74, 95) solid;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#spinnerLi {
+  pointer-events: none;
+  width: 20%;
+  height: 100%;
+  float: right;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabelaKlasa {
+  width: 80%;
+  margin-left: 12.5%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90%;
+  cursor: pointer;
+  margin-top: 5%;
+}
+
+.tabelaElementKlasa {
+  border: 2px solid #3b5998;
+  border-collapse: collapse;
+  /*margin-left: 10%;
+    margin-top: 5%;*/
+  background: white;
+  color: #344c80;
+  font-size: 1em;
+  font-family: OpenSans;
+  text-align: center;
+  font-size: 1em;
+  pointer-events: none;
+  width: 80%;
+  height: 80%;
+}
+
+.tabelaElementKlasa tr {
+  text-align: center;
+}
+
+.tabelaElementKlasa td {
+  border: 1px solid #3b5998;
+}
+
+.tabelaElementKlasa th {
+  border: 1px solid #3b5998;
+}
+
+#desniToolbar {
+  position: absolute;
+  height: calc(100% - 66px);
+  width: 20%;
+  /*top: 16%;*/
+  right: 0;
+  background: #eeeeee;
+  border-left: 1px solid black;
+  display: none;
+  overflow: scroll;
+}
+
+#desniToolbarOpcije {
+  margin-top: 0;
+}
+
+#desniToolbarOpcije li {
+  background: #eeeeee;
+  /*padding-top: 0.4em;*/
+  padding-bottom: 0.4em;
+}
+
+#nazivElementaDiv {
+  background: #e1e1e1;
+}
+
+#desniToolbarOpcije span {
+  color: black;
+  /*padding-left: 1em;*/
+}
+
+#nazivOdabranogElementa {
+  color: black;
+  font-weight: bold;
+}
+
+#tekstOpcije {
+  list-style: none;
+}
+
+#tekstOpcije li {
+  display: block;
+  width: auto;
+  background: #eeeeee;
+}
+
+#formaPoravnanja input {
+  visibility: hidden;
+}
+
+#formaPoravnanja img {
+  cursor: pointer;
+  height: 5%;
+  width: 5%;
+  margin-top: 1%;
+}
+
+#formaPoravnanja input[type="radio"] {
+  opacity: 0.011;
+  z-index: 100;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  width: 0%;
+}
+
+#formaPoravnanja input[type="radio"]:checked + label {
+  background: #fff;
+}
+
+#formaPoravnanja label {
+  padding: 5px;
+  border: 1px solid #c5c5c5;
+  cursor: pointer;
+  z-index: 90;
+  text-align: center;
+  border-radius: 0.25rem;
+  border: none;
+}
+
+#formaPoravnanja label:hover {
+  background: #ddd;
+}
+
+#formaPoravnanja {
+  margin-top: 15%;
+}
+
+#standardneOpcije {
+  border-bottom: 1px solid black;
+}
+
+.radioButtonKlasa,
+.checkboxKlasa {
+  margin-left: 20%;
+  width: 60%;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  margin-bottom: 5%;
+  margin-top: 5%;
+}
+
+.radioButtonListaKlasa,
+.checkboxListaKlasa {
+  pointer-events: none;
+  margin-top: 0;
+}
+
+.radioButtonListaKlasa li,
+.checkboxListaKlasa li {
+  color: #3b5998;
+  font-family: OpenSans;
+  pointer-events: none;
+  margin-left: 5%;
+  border-bottom: none !important;
+}
+
+.radioButtonListaKlasa li::before {
+  content: " ";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  position: relative;
+  top: 0.1em;
+  margin: 0 0.3em 0 0;
+  border-radius: 10em;
+  border: white;
+  border: 2px solid #2c3e50;
+  border-top-color: #2c3e50;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-right-color: #2c3e50;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-bottom-color: #2c3e50;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-left-color: #2c3e50;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-image-source: initial;
+  border-image-slice: initial;
+  border-image-width: initial;
+  border-image-outset: initial;
+  border-image-repeat: initial;
+  box-sizing: border-box;
+}
+
+.oznacena::before,
+.checkboxOznacena::before {
+  content: "";
+  background: black;
+  background-clip: content-box;
+  padding: 0.1em;
+  padding-top: 0.1em;
+  padding-right: 0.11em;
+  padding-bottom: 0.11em;
+  padding-left: 0.1em;
+}
+
+.checkboxListaKlasa li::before {
+  content: " ";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  position: relative;
+  top: 0.1em;
+  margin: 0 0.3em 0 0;
+  border: white;
+  border: 2px solid #2c3e50;
+  border-top-color: #2c3e50;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border: 2px solid #2c3e50;
+  border-top-color: #2c3e50;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-right-color: #2c3e50;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-bottom-color: #2c3e50;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-left-color: #2c3e50;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-image-source: initial;
+  border-image-slice: initial;
+  border-image-width: initial;
+  border-image-outset: initial;
+  border-image-repeat: initial;
+  box-sizing: border-box;
+}
+
+#desniToolbar input[type="text"] {
+  /*float: right;
+    margin-right: 30%;*/
+  margin-top: 2%;
+  border-radius: 0.25rem;
+  border: white;
+}
+
+#listaDodatnihOpcija li {
+  display: none;
+}
+
+.searchBox {
+  /*padding: 1%;*/
+  pointer-events: none;
+  background: #2c3e50;
+  margin-bottom: 10%;
+  /*padding-top: 2%; */
+  height: 100%;
+}
+
+#searchLi {
+  height: 10%;
+  margin-bottom: 5%;
+}
+
+.searchText {
+  font-family: OpenSans;
+  margin-left: 3%;
+  border-radius: 0.25rem;
+  border: white;
+  pointer-events: all;
+  height: 40%;
+  width: 60%;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  margin-top: 2.3%;
+  border-bottom: 1px rgb(52, 74, 95) solid;
+}
+
+#listaMockupa {
+  margin-top: 0;
+}
+
+#listaMockupa li {
+  border-bottom: 1px solid #d6d6d6;
+}
+
+#deleteButton {
+  margin-left: -29px;
+  height: 40%;
+  margin-top: 1%;
+  margin-bottom: 1%;
+  background: #eeeeee;
+  color: #c5c5c5;
+  pointer-events: all;
+}
+
+.searchButton {
+  background: #c5c5c5;
+  border-radius: 0.25rem;
+  color: white;
+  height: 65%;
+  width: 25%;
+  margin-top: 2.3%;
+  pointer-events: all;
+  margin-left: 1%;
+}
+
+#upravljanjeElementimaLi {
+  height: 4.3em;
+}
+
+#fontElementa,
+#brojTabova,
+#brojTrenutnoOznacenogTaba,
+#brojRedova,
+#brojKolona,
+#brojTrenutnoOznacenogCheckboxa,
+#brojTrenutnoNeoznacenogCheckboxa {
+  font-family: OpenSans;
+  border-radius: 0.25rem;
+  border: white;
+  height: 1.5em;
+}
+
+#brojOpcijaRadioDugmadi,
+#brojTrenutnoOznacenogRadioDugmeta,
+#brojOpcijaCheckboxova,
+#brojOpcijaVertikalneListe,
+#brojOpcijaHorizontalneListe {
+  font-family: OpenSans;
+  border-radius: 0.25rem;
+  border: white;
+  height: 1.5em;
+  margin-left: 5%;
+  margin-top: 1%;
+}
+
+#ikonaZaSliku {
+  width: 100px;
+  height: 100px;
+}
+
+#unosIdTrenutnogElementa {
+  width: 100px;
+  font-family: OpenSans;
+}
+
+#unosKlaseTrenutnogElementa {
+  width: 100px;
+  font-family: OpenSans;
+}
+
+#strelicaToolbara {
+  position: absolute;
+  height: calc(100% - 66px);
+  width: 2%;
+  right: 0;
+  background: #eeeeee;
+  border-left: 1px solid black;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+#strelicaToolbara button {
+  color: black;
+  font-family: OpenSans;
+  background-color: transparent;
+}
+
+#strelicaToolbara button:hover {
+  background-color: #ddd;
+}
+
+#deleteDugme,
+#undoDugme,
+#bringToFrontDugme,
+#sendToBackDugme,
+#Group,
+#izborTestovaDugme {
+  position: static;
+}
+
+/* The Modal (background) */
+.modalKlasa {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 5%; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.sadrzajModalaKlasa {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 60%;
+  text-align: center;
+  height: 90%;
+}
+
+/* The Close Button */
+.zatvoriModalKlasa {
+  color: #aaaaaa;
+  float: right;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.zatvoriModalKlasa:hover,
+.zatvoriModalKlasa:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.sadrzajModalaKlasa p {
+  color: #000;
+  font-size: 1.3em;
+  font-family: OpenSans;
+  text-decoration: underline;
+}
+
+.sadrzajModalaKlasa {
+  color: #000;
+  font-size: 1em;
+  font-family: OpenSans;
+  overflow: scroll;
+}
+
+.sadrzajModalaKlasa button {
+  float: right;
+}
+
+#importFajlaInput {
+  display: none;
+}

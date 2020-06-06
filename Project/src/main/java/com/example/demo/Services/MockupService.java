@@ -15,8 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -57,6 +65,7 @@ public class MockupService implements MockupServiceInterface{
                     mockup.setAccessed_date(newMockup.getAccessed_date());
 
                 mockupRepository.save(mockup);
+                mockup.setFile(null);
                 return new ResponseEntity<>(mockup, HttpStatus.OK);
             }
             else{
@@ -71,6 +80,7 @@ public class MockupService implements MockupServiceInterface{
                 newMockup.setVersionId(version);
                 newMockup.setID(id);
                 mockupRepository.save(newMockup);
+                newMockup.setFile(null);
                 return new ResponseEntity<>(newMockup, HttpStatus.OK);
             }
             else{
@@ -85,6 +95,9 @@ public class MockupService implements MockupServiceInterface{
         Version version = versionRepository.findByID(id);
         if(version != null){
             List<Mockup> mockups = mockupRepository.findAllByversionId(version);
+            for(Mockup m:mockups){
+                m.setFile(null);
+            }
             if(mockups != null){
                 grpcProjectService.action("project-client-service","GET","/mockups/version/{id}","SUCCESS", new Timestamp(System.currentTimeMillis()));
                 return new ResponseEntity<>(mockups, HttpStatus.OK);
@@ -128,6 +141,7 @@ public class MockupService implements MockupServiceInterface{
                 grpcProjectService.action("project-client-service","POST","/addMockup","SUCCESS", new Timestamp(System.currentTimeMillis()));
                 newMockup.setVersionId(version);
                 Mockup mockup = mockupRepository.save(newMockup);
+                mockup.setFile(null);
                 return new ResponseEntity<>(mockup, HttpStatus.CREATED);
             }
             else{
@@ -145,8 +159,12 @@ public class MockupService implements MockupServiceInterface{
     public ResponseEntity getAllMockups(){
         grpcProjectService.action("project-client-service","GET","/mockups","SUCCESS", new Timestamp(System.currentTimeMillis()));
         List<Mockup> mockups = mockupRepository.findAll();
-        if(mockups != null)
+        if(mockups != null) {
+            for(Mockup m:mockups){
+                m.setFile(null);
+            }
             return new ResponseEntity<>(mockups, HttpStatus.OK);
+        }
         else
             throw new ObjectNotFoundException("Mockups do not exist!");
     }
@@ -155,11 +173,61 @@ public class MockupService implements MockupServiceInterface{
     public ResponseEntity getOneMockup(Long id){
         Mockup mockup = mockupRepository.findByID(id);
         if(mockup != null){
+            mockup.setFile(null);
             grpcProjectService.action("project-client-service","GET","/mockup/{id}","SUCCESS", new Timestamp(System.currentTimeMillis()));
             return new ResponseEntity<>(mockup, HttpStatus.OK);
         }
         else{
             grpcProjectService.action("project-client-service","GET","/mockup/{id}","NOT_FOUND", new Timestamp(System.currentTimeMillis()));
+            throw new ObjectNotFoundException("Mockup with id " + id + "does not exist!");
+        }
+    }
+
+    @Override
+    public ResponseEntity addOrUpdateFile(MultipartFile fajl, Long id) throws IOException, SQLException {
+        System.out.println("Usao sam u addOrUpdateFile");
+        Mockup mockup = mockupRepository.findByID(id);
+        if(mockup != null){
+            Blob blob=new SerialBlob(fajl.getBytes());
+            mockup.setFile(blob);
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date=new Date();
+            mockup.setAccessed_date(date);
+            mockup.setDate_modified(date);
+            mockupRepository.save(mockup);
+
+            grpcProjectService.action("project-client-service","PUT","/addOrUpdateFile/{id}","SUCCESS", new Timestamp(System.currentTimeMillis()));
+            JSONObject objekat = new JSONObject();
+            try {
+                objekat.put("message","Mockup is successfully updated!");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return new ResponseEntity<>(objekat.toString(), HttpStatus.OK);
+        }
+        else{
+            grpcProjectService.action("project-client-service","PUT","/addOrUpdateFile/{id}","NOT_FOUND", new Timestamp(System.currentTimeMillis()));
+            throw new ObjectNotFoundException("Mockup with id " + id + "does not exist!");
+        }
+    }
+
+    @Override
+    public ResponseEntity getOneFile(Long id) throws SQLException {
+        Mockup mockup = mockupRepository.findByID(id);
+        if(mockup != null){
+            Blob blob=mockup.getFile();
+            String rezultat="";
+            if(blob!=null){
+                byte[] niz=blob.getBytes(1l, (int) blob.length());
+                blob.free();
+                rezultat = new String(niz, StandardCharsets.UTF_8);
+            }
+            grpcProjectService.action("project-client-service","GET","/mockup/file/{id}","SUCCESS", new Timestamp(System.currentTimeMillis()));
+            return new ResponseEntity<>(rezultat, HttpStatus.OK);
+        }
+        else {
+            grpcProjectService.action("project-client-service", "GET", "/mockup/file/{id}", "NOT_FOUND", new Timestamp(System.currentTimeMillis()));
             throw new ObjectNotFoundException("Mockup with id " + id + "does not exist!");
         }
     }

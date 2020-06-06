@@ -9,4 +9,5 @@ import java.util.List;
 public interface PDF_DocumentRepository extends JpaRepository<PDF_Document,Long> {
     PDF_Document findByID(Long Id);
     List<PDF_Document> findAllBymockupID(Mockup mockup);
+    Boolean existsByName(String name);
 }

@@ -6,7 +6,10 @@ import org.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 public interface PDF_DocumentServiceInterface {
@@ -18,4 +21,7 @@ public interface PDF_DocumentServiceInterface {
     public ResponseEntity getAllPDFs();
     public ResponseEntity getOnePDF(Long id);
 
+    public ResponseEntity addPDFFile(MultipartFile pdfFajl, Long id, String naziv) throws IOException, SQLException;
+
+    public byte[] getOnePDFFile(Long id) throws SQLException;
 }

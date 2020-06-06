@@ -66,9 +66,83 @@ Alternativno, moguće je koristiti [Spring Boot Maven plugin](https://docs.sprin
 kako je opisano u prethodnom koraku.
 
 
+## Pokretanje aplikacije kao Docker kontejner
 
+### Koraci
 
+**Instalirati Docker Desktop:**
 
+[Docker Desktop](https://www.docker.com/products/docker-desktop)
 
+**Ući u svaki Spring projekat i odraditi Maven clean install:**
 
+```bash
+mvn clean install
+```
+
+**Unutar terminala kreirati docker image za MySQL:**
+
+```bash
+docker pull mysql
+```
+
+```bash
+docker run --name mysql-system-events -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=system_events -e MYSQL_USER=us -e MYSQL_PASSWORD=password -d mysql:latest
+```
+
+**Unutar terminala pozicionirajući se u odgovarajući projekat kreirati image za sve mikroservise:**
+
+- Eureka server
+
+```bash
+docker build -f Dockerfile -t eureka .
+```
+
+- System events
+
+```bash
+docker build -f Dockerfile -t system-events .
+```
+
+- Zuul gateway
+
+```bash
+docker build -f Dockerfile -t zuul .
+```
+
+- Mikroservis za upravljanje korisnicima
+
+```bash
+docker build -f Dockerfile -t user .
+```
+
+- Mikroservis za upravljanje datotekama
+
+```bash
+docker build -f Dockerfile -t project .
+```
+
+- Mikroservis za online testiranje
+
+```bash
+docker build -f Dockerfile -t online-testing .
+```
+
+**Kreirati image za frontend *mockup-tool-react*:**
+
+Instalirati *yarn*:
+
+[Yarn Installation](https://classic.yarnpkg.com/en/docs/install/#windows-stable)
+
+```bash
+docker build -t mockup-tool-react .
+```
+
+**Pokrenuti docker-compose.yml datoteku:**
+
+Pozicionirati se u root folder *Mockup-Tool-Drive* i otkucati komandu:
+
+```bash
+docker-compose up -d
+```
 

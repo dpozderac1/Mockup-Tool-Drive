@@ -34,7 +34,7 @@ public class VersionService implements VersionServiceInterface {
         Version version = versionRepository.findByID(id);
         boolean versionExists = false;
         for(int i = 0; i < VersionNames.values().length; i++){
-            if(newVersion.getVersion_name().toString().equals(VersionNames.values()[i].name().toString())){
+            if(newVersion.getVersionName().toString().equals(VersionNames.values()[i].name().toString())){
                 versionExists = true;
                 break;
             }
@@ -42,7 +42,7 @@ public class VersionService implements VersionServiceInterface {
 
         if(version != null){
             if(versionExists)
-                version.setVersion_name(newVersion.getVersion_name());
+                version.setVersionName(newVersion.getVersionName());
             else
                 throw new ObjectNotFoundException("Version name does not exist!");
             Project project = projectRepository.findByID(newVersion.getProjectId().getID());
@@ -77,7 +77,7 @@ public class VersionService implements VersionServiceInterface {
     public ResponseEntity changeVersion(VersionNames name, Long id){
         Version version = versionRepository.findByID(id);
         if(version != null){
-            version.setVersion_name(name);
+            version.setVersionName(name);
             versionRepository.save(version);
             return new ResponseEntity<>(version, HttpStatus.OK);
         }
@@ -122,7 +122,7 @@ public class VersionService implements VersionServiceInterface {
         if(!alreadyExists){
             boolean versionExists = false;
             for(int i = 0; i < VersionNames.values().length; i++){
-                if(newVersion.getVersion_name().toString().equals(VersionNames.values()[i].name().toString())){
+                if(newVersion.getVersionName().toString().equals(VersionNames.values()[i].name().toString())){
                     versionExists = true;
                     break;
                 }

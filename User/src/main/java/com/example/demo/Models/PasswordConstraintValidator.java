@@ -1,6 +1,5 @@
 package com.example.demo.Models;
 
-import com.example.demo.Models.User;
 import org.passay.*;
 
 import javax.validation.ConstraintValidator;

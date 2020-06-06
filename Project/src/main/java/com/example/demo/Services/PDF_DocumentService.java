@@ -7,13 +7,23 @@ import com.example.demo.Models.PDF_Document;
 import com.example.demo.Repositories.MockupRepository;
 import com.example.demo.Repositories.PDF_DocumentRepository;
 import com.example.demo.ServisInterfaces.PDF_DocumentServiceInterface;
+import io.swagger.models.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -32,9 +42,11 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
     public ResponseEntity addOrReplacePDF(PDF_Document newPdf, Long id){
         PDF_Document pdf_document = pdf_documentRepository.findByID(id);
         if(pdf_document != null) {
-            Mockup mockup = mockupRepository.findByID(newPdf.getMockupId().getID());
-            if(mockup != null){
-                pdf_document.setMockupId(mockup);
+            Mockup mockup = mockupRepository.findByID(pdf_document.getMockupId().getID());
+            if(mockup != null) {
+                if (newPdf.getMockupId() != null && mockupRepository.findByID(newPdf.getMockupId().getID()) != null) {
+                    pdf_document.setMockupId(mockup);
+                }
 
                 if(!newPdf.getName().equals(" ")) pdf_document.setName(newPdf.getName());
                 if(newPdf.getDate_created() != null) pdf_document.setDate_created(newPdf.getDate_created());
@@ -43,6 +55,8 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
                 if(newPdf.getAccessed_date() != null) pdf_document.setAccessed_date(newPdf.getAccessed_date());
 
                 pdf_documentRepository.save(pdf_document);
+                pdf_document.setFile(null);
+                mockup.setFile(null);
                 return new ResponseEntity<>(pdf_document, HttpStatus.OK);
             }
             else
@@ -54,6 +68,8 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
                 newPdf.setMockupId(mockup);
                 newPdf.setID(id);
                 pdf_documentRepository.save(newPdf);
+                newPdf.setFile(null);
+                mockup.setFile(null);
                 return new ResponseEntity<>(newPdf, HttpStatus.OK);
             }
             else
@@ -66,6 +82,10 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
         Mockup mockup = mockupRepository.findByID(id);
         if(mockup != null){
             List<PDF_Document> pdf_documents = pdf_documentRepository.findAllBymockupID(mockup);
+            for(PDF_Document pdf:pdf_documents){
+                pdf.setFile(null);
+            }
+            mockup.setFile(null);
             if(pdf_documents != null)
                 return new ResponseEntity<>(pdf_documents, HttpStatus.OK);
             else
@@ -99,6 +119,8 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
             if(mockup != null) {
                 newPDF.setMockupId(mockup);
                 PDF_Document pdf_document = pdf_documentRepository.save(newPDF);
+                pdf_document.setFile(null);
+                mockup.setFile(null);
                 return new ResponseEntity<>(pdf_document, HttpStatus.CREATED);
             }
             else
@@ -111,8 +133,13 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
     @Override
     public ResponseEntity getAllPDFs(){
         List<PDF_Document> pdf_documents = pdf_documentRepository.findAll();
-        if(pdf_documents != null)
+        if(pdf_documents != null) {
+            for(PDF_Document pdf:pdf_documents){
+                pdf.getMockupId().setFile(null);
+                pdf.setFile(null);
+            }
             return new ResponseEntity<>(pdf_documents, HttpStatus.OK);
+        }
         else
             throw new ObjectNotFoundException("PDF documents do not exist!");
     }
@@ -120,8 +147,52 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
     @Override
     public ResponseEntity getOnePDF(Long id){
         PDF_Document pdf_document = pdf_documentRepository.findByID(id);
-        if(pdf_document != null)
+        if(pdf_document != null) {
+            pdf_document.getMockupId().setFile(null);
+            pdf_document.setFile(null);
             return new ResponseEntity<>(pdf_document, HttpStatus.OK);
+        }
+        else
+            throw new ObjectNotFoundException("PDF document with id " + id + "does not exist!");
+    }
+
+    public ResponseEntity addPDFFile(MultipartFile pdfFajl, Long id, String naziv) throws IOException, SQLException {
+        //System.out.println("Usao sam u updatePDFFile");
+        //System.out.println(pdfFajl.getSize());
+        Mockup mockup = mockupRepository.findByID(id);
+        if(mockup != null){
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date=new Date();
+            //String datum=format.format(date);
+            Blob blob=new SerialBlob(pdfFajl.getBytes());
+            PDF_Document pdf=new PDF_Document(mockup,naziv,blob,date,date,date);
+            pdf_documentRepository.save(pdf);
+
+            JSONObject objekat = new JSONObject();
+            try {
+                objekat.put("message","PDF is successfully added!");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return new ResponseEntity<>(objekat.toString(), HttpStatus.OK);
+        }
+        else{
+            throw new ObjectNotFoundException("Mockup with id " + id + "does not exist!");
+        }
+    }
+
+    @Override
+    public byte[] getOnePDFFile(Long id) throws SQLException {
+        PDF_Document pdf_document = pdf_documentRepository.findByID(id);
+        if(pdf_document != null) {
+            Blob blob=pdf_document.getFile();
+            byte[] niz=null;
+            if(blob!=null){
+                niz=blob.getBytes(1l, (int) blob.length());
+                blob.free();
+            }
+            return niz;
+        }
         else
             throw new ObjectNotFoundException("PDF document with id " + id + "does not exist!");
     }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 public class BrowserController {
 
@@ -18,32 +18,32 @@ public class BrowserController {
     private BrowserService browserService;
 
     @GetMapping("/browsers")
-    List<Browser> all(){
+    public List<Browser> all(){
         return browserService.getAllBrowsers();
     }
 
     @GetMapping("/browser/{id}")
-    ResponseEntity oneId(@PathVariable Long id) {
+    public ResponseEntity oneId(@PathVariable Long id) {
         return browserService.getBrowserByID(id);
     }
 
     @DeleteMapping(value = "/browser/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity deleteBrowser(@PathVariable Long id) {
+    public ResponseEntity deleteBrowser(@PathVariable Long id) {
         return browserService.deleteBrowserByID(id);
     }
 
     @GetMapping("/browsersServer/{id}")
-    List<Browser> browsersServer(@PathVariable Long id) {
+    public List<Browser> browsersServer(@PathVariable Long id) {
         return browserService.getBrowsersServer(id);
     }
 
     @PostMapping("/addBrowser")
-    ResponseEntity addBrowser(@Valid @RequestBody Browser browser) {
+    public ResponseEntity addBrowser(@Valid @RequestBody Browser browser) {
         return browserService.saveBrowser(browser);
     }
 
     @PutMapping("/updateBrowser/{id}")
-    ResponseEntity updateBrowser(@Valid @RequestBody Browser browser, @PathVariable Long id) {
+    public ResponseEntity updateBrowser(@Valid @RequestBody Browser browser, @PathVariable Long id) {
         return browserService.updateBrowser(browser, id);
     }
 }

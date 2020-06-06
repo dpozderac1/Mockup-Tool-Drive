@@ -227,6 +227,10 @@
 
 
         </plugins>
+
+        <finalName>online-testing</finalName>
+
+
     </build>
 
 </project>

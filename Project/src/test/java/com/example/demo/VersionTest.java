@@ -84,7 +84,7 @@ public class VersionTest {
 
     @Test
     public void testGetVersionsOfProject() throws Exception{
-        Project project = new Project(null, null, null, 1);
+        Project project = new Project(null, null, null, 1, 1);
         project.setID(1L);
 
         Version version = new Version(project, VersionNames.DESKTOP);
@@ -97,7 +97,7 @@ public class VersionTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].version_name").value(version.getVersion_name().toString().trim()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].version_name").value(version.getVersionName().toString().trim()));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class VersionTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.projectId").value(version.getProjectId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.version_name").value(version.getVersion_name().toString().trim()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.version_name").value(version.getVersionName().toString().trim()));
     }
 
     @Test
@@ -158,7 +158,7 @@ public class VersionTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.version_name").value(version.getVersion_name().toString().trim()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.version_name").value(version.getVersionName().toString().trim()));
     }
 
 

@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-@CrossOrigin
+//@CrossOrigin
 @RestController
 public class ProjectController {
 

@@ -1,16 +1,12 @@
 package com.example.demo;
 
 import com.example.demo.Controllers.RoleController;
-import com.example.demo.Controllers.UserController;
 import com.example.demo.ErrorHandling.ApiError;
 import com.example.demo.Models.Role;
 import com.example.demo.Models.RoleNames;
-import com.example.demo.Models.User;
 import com.example.demo.Repositories.RoleRepository;
-import com.example.demo.Repositories.UserRepository;
 import com.example.demo.Services.RoleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.bytebuddy.asm.Advice;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

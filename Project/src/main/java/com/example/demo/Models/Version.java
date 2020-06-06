@@ -26,11 +26,11 @@ public class Version {
         ID = id;
     }
 
-    public VersionNames getVersion_name() {
+    public VersionNames getVersionName() {
         return versionName;
     }
 
-    public void setVersion_name(VersionNames version_name) {
+    public void setVersionName(VersionNames version_name) {
         this.versionName = version_name;
     }
 

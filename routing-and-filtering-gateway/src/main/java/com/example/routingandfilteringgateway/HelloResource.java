@@ -17,14 +17,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.json.JSONObject;
 
 import java.security.SignatureException;
 
+@CrossOrigin
 @RestController
 public class HelloResource {
 
@@ -45,6 +43,21 @@ public class HelloResource {
     @RequestMapping(value="/check",method=RequestMethod.GET)
     public void check(){
         System.out.println("Usao sam u check!");
+    }
+
+    @RequestMapping(value = "/getUser/{token}", method = RequestMethod.GET)
+    public ResponseEntity returnUser(@PathVariable String token) throws Exception {
+        String username = "";
+        UserDetails userDetails = null;
+        try {
+            username = jwtTokenUtil.extractUsername(token);
+            userDetails = userDetailsService.loadUserByUsername(username);
+        }
+        catch (Exception e){
+            Message poruka = new Message("Token invalid!");
+            return new ResponseEntity(poruka, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity(userDetails, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)

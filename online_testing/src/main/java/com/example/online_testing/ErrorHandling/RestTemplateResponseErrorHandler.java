@@ -1,7 +1,5 @@
 package com.example.online_testing.ErrorHandling;
 
-import com.netflix.ribbon.proxy.annotation.Http;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
@@ -9,7 +7,6 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.charset.Charset;
 
 import static org.springframework.http.HttpStatus.Series.CLIENT_ERROR;

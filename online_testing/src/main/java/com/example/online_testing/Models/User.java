@@ -23,7 +23,7 @@ public class User {
 
     @Column(name = "Username", unique = true)
     @NotEmpty(message = "Username cannot be null or empty")
-    @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
+    @Size(min = 5, max = 50, message = "Username must be between 5 and 20 characters")
     private String username;
 
 

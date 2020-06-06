@@ -12,11 +12,14 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.sql.SQLException;
 
 @EnableBinding(BindingInterface.class)
-@CrossOrigin
+//@CrossOrigin
 @RestController
 public class GSPECDocumentController {
 
@@ -43,18 +46,23 @@ public class GSPECDocumentController {
 
 
     @DeleteMapping(value = "/GSPECDocument/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity deleteGSPECDocument(@PathVariable Long id) {
+    public ResponseEntity deleteGSPECDocument(@PathVariable Long id) {
         return gspecDocumentService.deleteGSPECDocumentByID(id);
     }
 
     @PutMapping("/updateGSPECDocument/{id}")
-    ResponseEntity updateGSPECDocument (@Valid @RequestBody GSPECDocument gspecDocument, @PathVariable Long id) {
+    public ResponseEntity updateGSPECDocument (@Valid @RequestBody GSPECDocument gspecDocument, @PathVariable Long id) {
         return gspecDocumentService.updateGSPECDocument(gspecDocument, id);
     }
 
     @PostMapping("/addGSPECDocument")
-    ResponseEntity addGSPECDocument(@Valid @RequestBody GSPECDocument gspecDocument) {
+    public ResponseEntity addGSPECDocument(@Valid @RequestBody GSPECDocument gspecDocument) {
         return gspecDocumentService.saveGSPECDocument(gspecDocument);
+    }
+
+    @PutMapping(value="/changeGSPECFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity changeGSPECFile (@RequestParam("gspecFile") MultipartFile gspecFile, @PathVariable Long id) throws IOException, SQLException {
+        return gspecDocumentService.changeGSPECFile(gspecFile, id);
     }
 
 }
