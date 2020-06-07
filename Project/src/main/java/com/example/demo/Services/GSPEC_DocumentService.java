@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -198,15 +197,11 @@ public class GSPEC_DocumentService implements GSPEC_DocumentServiceInterface {
     @Override
     public ResponseEntity getAllGSPECs(){
         List<GSPEC_Document> gspec_documents = gspec_documentRepository.findAll();
-        if(gspec_documents != null) {
-            for(GSPEC_Document gspec:gspec_documents){
-                gspec.setFile(null);
-                gspec.getMockupId().setFile(null);
-            }
-            return new ResponseEntity<>(gspec_documents, HttpStatus.OK);
+        for(GSPEC_Document gspec:gspec_documents){
+            gspec.setFile(null);
+            gspec.getMockupId().setFile(null);
         }
-        else
-            throw new ObjectNotFoundException("GSPEC documents do not exist!");
+        return new ResponseEntity<>(gspec_documents, HttpStatus.OK);
     }
 
     @Override

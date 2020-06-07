@@ -8,7 +8,6 @@ import com.example.demo.Models.VersionNames;
 import com.example.demo.Repositories.ProjectRepository;
 import com.example.demo.Repositories.VersionRepository;
 import com.example.demo.ServisInterfaces.VersionServiceInterface;
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,10 +144,7 @@ public class VersionService implements VersionServiceInterface {
     @Override
     public ResponseEntity getAllVersions(){
         List<Version> versions = versionRepository.findAll();
-        if(versions != null)
-            return new ResponseEntity<>(versions, HttpStatus.OK);
-        else
-            throw new ObjectNotFoundException("Versions do not exist!");
+        return new ResponseEntity<>(versions, HttpStatus.OK);
     }
 
     @Override

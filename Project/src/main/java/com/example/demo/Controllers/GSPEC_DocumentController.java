@@ -1,14 +1,11 @@
 package com.example.demo.Controllers;
 
-import com.example.demo.RabbitMQ.MessageRabbitMq;
 import com.example.demo.Models.GSPEC_Document;
-import com.example.demo.Repositories.GSPEC_DocumentRepository;
 import com.example.demo.Services.GSPEC_DocumentService;
 import com.example.demo.RabbitMQ.BindingInterfaceInput;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +17,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 @EnableBinding(BindingInterfaceInput.class)
-//@CrossOrigin
+
+
 @RestController
 public class GSPEC_DocumentController {
 
@@ -35,45 +33,45 @@ public class GSPEC_DocumentController {
 
     //RabbitMQ
     @DeleteMapping("/delete/gspec_document/{id}")
-    ResponseEntity deleteOneGSPEC(@PathVariable Long id) throws JSONException {
+    public ResponseEntity deleteOneGSPEC(@PathVariable Long id) throws JSONException {
         return gspec_documentService.deleteOneGSPEC(id);
     }
 
     @PutMapping("/addOrUpdateGSPEC_Document/{id}")
-    ResponseEntity<?> addOrReplaceGSPEC(@Valid @RequestBody GSPEC_Document newGspec, @PathVariable Long id) {
+    public ResponseEntity<?> addOrReplaceGSPEC(@Valid @RequestBody GSPEC_Document newGspec, @PathVariable Long id) {
         return gspec_documentService.addOrReplaceGSPEC(newGspec, id);
     }
 
     @GetMapping("/GSPEC_Documents/mockup/{id}")
-    ResponseEntity<?> allGSPECsOfMockup(@PathVariable Long id){
+    public ResponseEntity<?> allGSPECsOfMockup(@PathVariable Long id){
         return gspec_documentService.allGSPECsOfMockup(id);
     }
 
 
 
     @PostMapping("/addGSPEC_Document")
-    ResponseEntity<?> newGSPEC(@RequestBody GSPEC_Document newGspec) {
+    public ResponseEntity<?> newGSPEC(@RequestBody GSPEC_Document newGspec) {
         return gspec_documentService.newGSPEC(newGspec);
     }
 
     @GetMapping("/gspec_documents")
-    ResponseEntity<?> getAllGSPECs(){
+    public ResponseEntity<?> getAllGSPECs(){
         return gspec_documentService.getAllGSPECs();
     }
 
     @GetMapping("/gspec_document/{id}")
-    ResponseEntity<?> getOneGSPEC(@PathVariable Long id) {
+    public ResponseEntity<?> getOneGSPEC(@PathVariable Long id) {
         return gspec_documentService.getOneGSPEC(id);
 
     }
 
     @PostMapping(value="/addGSPECFile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<?> addGSPECFile(@PathVariable Long id, @RequestParam("gspecFile") MultipartFile gspecFajl, @RequestParam("name") String naziv, HttpServletRequest request) throws IOException, SQLException {
+    public ResponseEntity<?> addGSPECFile(@PathVariable Long id, @RequestParam("gspecFile") MultipartFile gspecFajl, @RequestParam("name") String naziv, HttpServletRequest request) throws IOException, SQLException {
         return gspec_documentService.addGSPECFile(id,gspecFajl,naziv,request);
     }
 
     @GetMapping("/gspec_document/file/{id}")
-    ResponseEntity<?> getOneGSPECFile(@PathVariable Long id) throws SQLException {
+    public ResponseEntity<?> getOneGSPECFile(@PathVariable Long id) throws SQLException {
         return gspec_documentService.getOneGSPECFile(id);
     }
 }

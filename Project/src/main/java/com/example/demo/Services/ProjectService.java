@@ -1,23 +1,15 @@
 package com.example.demo.Services;
 
-import com.example.demo.ErrorMessageHandling.CustomRestExceptionHandler;
 import com.example.demo.ErrorMessageHandling.ObjectAlreadyExistsException;
 import com.example.demo.ErrorMessageHandling.ObjectNotFoundException;
 import com.example.demo.Models.*;
 import com.example.demo.Repositories.*;
 import com.example.demo.ServisInterfaces.ProjectServiceInterface;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -50,8 +42,8 @@ public class ProjectService implements ProjectServiceInterface {
             if(!newProject.getName().isEmpty()) project.setName(newProject.getName());
             if(newProject.getDate_created() != null) project.setDate_created(newProject.getDate_created());
             if(newProject.getDate_modified() != null) project.setDate_modified(newProject.getDate_modified());
-            if(!newProject.getPriority().equals("")) project.setPriority(newProject.getPriority());
-            if(!newProject.getUserID().equals("")) project.setUserID(newProject.getUserID());
+            project.setPriority(newProject.getPriority());
+            project.setUserID(newProject.getUserID());
             projectRepository.save(project);
             return new ResponseEntity<>(project, HttpStatus.OK);
         }
@@ -114,11 +106,7 @@ public class ProjectService implements ProjectServiceInterface {
     @Override
     public ResponseEntity getAllProjects(){
         List<Project> projects = projectRepository.findAll();
-        if(projects != null){
-            return new ResponseEntity<>(projects, HttpStatus.OK);
-        }
-        else
-            throw new ObjectNotFoundException("Projects not found!");
+        return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 
     @Override

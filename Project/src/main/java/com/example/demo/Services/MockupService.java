@@ -4,7 +4,6 @@ import com.example.demo.ErrorMessageHandling.ObjectAlreadyExistsException;
 import com.example.demo.ErrorMessageHandling.ObjectNotFoundException;
 import com.example.demo.GRPCProjectService;
 import com.example.demo.Models.Mockup;
-import com.example.demo.Models.Project;
 import com.example.demo.Models.Version;
 import com.example.demo.Repositories.MockupRepository;
 import com.example.demo.Repositories.VersionRepository;
@@ -159,14 +158,10 @@ public class MockupService implements MockupServiceInterface{
     public ResponseEntity getAllMockups(){
         grpcProjectService.action("project-client-service","GET","/mockups","SUCCESS", new Timestamp(System.currentTimeMillis()));
         List<Mockup> mockups = mockupRepository.findAll();
-        if(mockups != null) {
-            for(Mockup m:mockups){
-                m.setFile(null);
-            }
-            return new ResponseEntity<>(mockups, HttpStatus.OK);
+        for(Mockup m:mockups){
+            m.setFile(null);
         }
-        else
-            throw new ObjectNotFoundException("Mockups do not exist!");
+        return new ResponseEntity<>(mockups, HttpStatus.OK);
     }
 
     @Override

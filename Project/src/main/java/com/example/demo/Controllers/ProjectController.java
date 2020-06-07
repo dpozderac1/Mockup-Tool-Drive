@@ -13,7 +13,6 @@ import javax.validation.Valid;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
-//@CrossOrigin
 @RestController
 public class ProjectController {
 
@@ -29,34 +28,34 @@ public class ProjectController {
     }
 
     @PutMapping("/addOrUpdateProject/{id}")
-    ResponseEntity<?> addOrReplace(@Valid @RequestBody Project newProject, @PathVariable Long id) {
+    public ResponseEntity<?> addOrReplace(@Valid @RequestBody Project newProject, @PathVariable Long id) {
         return projectService.addOrReplace(newProject, id);
     }
 
     @PutMapping("/renameProject/{id}")
-    ResponseEntity<?> renameProject(@Valid @RequestBody String name, @PathVariable Long id) {
+    public ResponseEntity<?> renameProject(@Valid @RequestBody String name, @PathVariable Long id) {
         return projectService.renameProject(name, id);
     }
 
     @DeleteMapping("/delete/project/{id}")
-    ResponseEntity<?> deleteOne(@PathVariable Long id) throws JSONException {
+    public ResponseEntity<?> deleteOne(@PathVariable Long id) throws JSONException {
         ResponseEntity<?> responseEntity = projectService.deleteOne(id);
         return responseEntity;
     }
 
     @PostMapping("/addProject/{id}")
-    ResponseEntity<Project> newProject(@Valid @RequestBody Project newProject, @PathVariable Long id) throws URISyntaxException {
+    public ResponseEntity<Project> newProject(@Valid @RequestBody Project newProject, @PathVariable Long id) throws URISyntaxException {
         ResponseEntity<Project> projectResponseEntity = projectService.newProject(newProject, id);
         return projectResponseEntity;
     }
 
     @GetMapping("/projects")
-    ResponseEntity<?> getAllProjects(){
+    public ResponseEntity<?> getAllProjects(){
         return projectService.getAllProjects();
     }
 
     @GetMapping("/project/{id}")
-    ResponseEntity<?> getOneProject(@PathVariable Long id) {
+    public ResponseEntity<?> getOneProject(@PathVariable Long id) {
         return projectService.getOneProject(id);
     }
 
@@ -71,12 +70,12 @@ public class ProjectController {
     }
 
     @GetMapping(value = "/allFiles/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    HashMap<String, Object> getAllFiles(@PathVariable Long id) {
+    public HashMap<String, Object> getAllFiles(@PathVariable Long id) {
         return projectService.getAllUserFiles(id);
     }
 
     @GetMapping(value = "/recentFiles/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    HashMap<String, Object> getRecentFiles(@PathVariable Long id) {
+    public HashMap<String, Object> getRecentFiles(@PathVariable Long id) {
         return projectService.getRecentUserFiles(id);
     }
 

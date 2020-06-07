@@ -1,7 +1,5 @@
 package com.example.demo.RabbitMQ;
 
-import com.example.demo.RabbitMQ.Command;
-
 public class MessageRabbitMq {
     private Long id;
     Command command;

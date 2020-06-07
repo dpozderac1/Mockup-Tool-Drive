@@ -7,7 +7,6 @@ import com.example.demo.Models.PDF_Document;
 import com.example.demo.Repositories.MockupRepository;
 import com.example.demo.Repositories.PDF_DocumentRepository;
 import com.example.demo.ServisInterfaces.PDF_DocumentServiceInterface;
-import io.swagger.models.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -133,15 +130,13 @@ public class PDF_DocumentService implements PDF_DocumentServiceInterface {
     @Override
     public ResponseEntity getAllPDFs(){
         List<PDF_Document> pdf_documents = pdf_documentRepository.findAll();
-        if(pdf_documents != null) {
-            for(PDF_Document pdf:pdf_documents){
-                pdf.getMockupId().setFile(null);
-                pdf.setFile(null);
-            }
-            return new ResponseEntity<>(pdf_documents, HttpStatus.OK);
+
+        for(PDF_Document pdf:pdf_documents){
+            pdf.getMockupId().setFile(null);
+            pdf.setFile(null);
         }
-        else
-            throw new ObjectNotFoundException("PDF documents do not exist!");
+        return new ResponseEntity<>(pdf_documents, HttpStatus.OK);
+
     }
 
     @Override
