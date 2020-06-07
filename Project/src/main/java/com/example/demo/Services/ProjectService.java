@@ -373,7 +373,9 @@ public class ProjectService implements ProjectServiceInterface {
 
         HashMap<String, Object> mapa = new HashMap<>();
         if(mockupi.size()!=0) {
-            mapa.put("html", mockupi.get(0));
+            Mockup mockup = mockupi.get(0);
+            mockup.setFile(null);
+            mapa.put("html", mockup);
         }
         else{
             mapa.put("html", new ArrayList<Mockup>());

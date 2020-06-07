@@ -35,7 +35,7 @@ public class Seeder {
         insert_role();
         insert_user();
         insert_server();
-        insert_GSPEC_document();
+        //insert_GSPEC_document();
         insert_online_test();
         insert_browser();
     }

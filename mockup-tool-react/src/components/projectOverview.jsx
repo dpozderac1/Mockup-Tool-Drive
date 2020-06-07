@@ -774,7 +774,7 @@ class ProjectOverview extends Component {
                                 a[2] && indeks === 2 && this.udjiUPDF();
                                 a[3] && this.props.data.dajIdMockupa(this.state.mockupi[indeks].id);
                                 if (a[3]) {
-                                    this.azurirajMockup(el);
+                                    //this.azurirajMockup(el);
                                     var nazivVerzije = this.state.verzije[this.state.indeksKlikaVerzija].versionName;
                                     var velicina = 2;
                                     if (nazivVerzije === "MOBILE") {
@@ -786,17 +786,16 @@ class ProjectOverview extends Component {
                                     this.props.data.velicinaEkrana(velicina);
                                 }
                                 if (a[4]) {
+                                    //this.azurirajFile("GSPEC_Document", el)
                                     this.props.data.ucitajGalenFile(this.state.gspecs[indeks].id, this.state.gspecs[indeks].name);
-                                    this.azurirajFile("GSPEC_Document", el)
                                 }
                                 if (a[5]) {
+                                    //this.azurirajFile("PDF_Document", el)
                                     this.props.data.ucitajPDFFile(this.state.pdfs[indeks].id, this.state.pdfs[indeks].name);
-                                    this.azurirajFile("PDF_Document", el)
                                 }
                                 if (a[8]) {
                                     var velicina = 2;
                                     if (el.tip === "html") {
-                                        this.azurirajMockup(el);
                                         this.props.data.dajIdMockupa(el.id);
                                         var nazivVerzije = el.versionId.versionName;
                                         if (nazivVerzije === "MOBILE") {
@@ -807,12 +806,10 @@ class ProjectOverview extends Component {
                                         }
                                         this.props.data.velicinaEkrana(velicina);
                                     }
-                                    else if (e.tip === "galen") {
-                                        this.azurirajFile("GSPEC_Document", el)
+                                    if (el.tip === "galen") {
                                         this.props.data.ucitajGalenFile(el.id, el.name);
                                     }
-                                    else if (e.tip === "pdf") {
-                                        this.azurirajFile("PDF_Document", el)
+                                    if (el.tip === "pdf") {
                                         this.props.data.ucitajPDFFile(el.id, el.name);
                                     }
                                 }

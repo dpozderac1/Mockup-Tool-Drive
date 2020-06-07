@@ -34,7 +34,7 @@ public class Seeder {
         addVersion();
         addMockup();
         addPDF();
-        addGSPEC();
+        //addGSPEC();
     }
 
     public void addProject() throws ParseException {
